@@ -14,4 +14,6 @@ class AG_API AAGGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AAGGameModeBase();
 };
