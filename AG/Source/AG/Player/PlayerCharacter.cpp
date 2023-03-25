@@ -20,7 +20,7 @@ APlayerCharacter::APlayerCharacter()
 
 
 	//---------------------------
-	// 카메라 세팅.
+	// 3인칭 카메라 세팅.
 	//---------------------------
 	mSpringArm->TargetArmLength = 500.f;
 	mSpringArm->SetRelativeLocation(FVector(0.0, 0.0, 160.0));
@@ -30,10 +30,12 @@ APlayerCharacter::APlayerCharacter()
 	mSpringArm->bInheritRoll = true;
 	mSpringArm->bInheritYaw = true;
 	mSpringArm->bDoCollisionTest = true;
+	bUseControllerRotationYaw = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
+
 
 
 
@@ -44,24 +46,57 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 }
 
-// Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveForward"), this, &APlayerCharacter::MoveForward);
+	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
+	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
+	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
+}
+
+void APlayerCharacter::MoveForward(float _scale)
+{
+	if (_scale == 0.f)
+		return;
+
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _scale);
+}
+
+void APlayerCharacter::MoveHorizontal(float _scale)
+{
+	if (_scale == 0.f)
+		return;
+
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _scale);
+}
+
+void APlayerCharacter::MouseRotateY(float _scale)
+{
+	if (_scale == 0.f)
+		return;
+
+	AddControllerPitchInput(_scale * 180.f * GetWorld()->GetDeltaSeconds());
+}
+
+void APlayerCharacter::MouseRotateZ(float _scale)
+{
+	if (_scale == 0.f)
+		return;
+
+	AddControllerYawInput(_scale * 180.f * GetWorld()->GetDeltaSeconds());
 }
 

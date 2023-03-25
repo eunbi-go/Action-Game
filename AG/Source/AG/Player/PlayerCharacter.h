@@ -12,26 +12,29 @@ class AG_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	APlayerCharacter();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
 
+public:
+	void MoveForward(float _scale);
+	void MoveHorizontal(float _scale);
+	void MouseRotateY(float _scale);
+	void MouseRotateZ(float _scale);
+
+
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		USpringArmComponent* mSpringArm;
+	USpringArmComponent* mSpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		UCameraComponent* mCamera;
+	UCameraComponent* mCamera;
 };
