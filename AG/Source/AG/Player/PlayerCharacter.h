@@ -29,6 +29,7 @@ public:
 	void MouseRotateY(float _scale);
 	void MouseRotateZ(float _scale);
 
+	void ChangePlayModeKey();
 
 
 protected:
@@ -37,4 +38,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCamera;
+
+	class UPlayerAnimInstance* mAnimInst;
 };

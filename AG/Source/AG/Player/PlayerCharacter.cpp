@@ -3,6 +3,8 @@
 
 #include "PlayerCharacter.h"
 
+#include "PlayerAnimInstance.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -50,6 +52,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -66,6 +69,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
+	
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::ChangePlayModeKey);
 }
 
 void APlayerCharacter::MoveForward(float _scale)
@@ -98,5 +104,10 @@ void APlayerCharacter::MouseRotateZ(float _scale)
 		return;
 
 	AddControllerYawInput(_scale * 180.f * GetWorld()->GetDeltaSeconds());
+}
+
+void APlayerCharacter::ChangePlayModeKey()
+{
+	mAnimInst->ChangePlayMode();
 }
 

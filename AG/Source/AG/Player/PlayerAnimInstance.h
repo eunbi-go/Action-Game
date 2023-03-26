@@ -14,7 +14,6 @@ enum class PLAYE_MODE : uint8
 	NO_BATTLE, BATTLE, PLAYER_MODE_END
 };
 
-
 UCLASS()
 class AG_API UPlayerAnimInstance : public UAnimInstance
 {
@@ -30,14 +29,16 @@ public:
 
 
 public:
-	//void SetPlayMode(PLAYE_MODE _mode);
-
-
+	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
+	void ChangePlayMode();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	PLAYE_MODE	mPlayMode;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*>	mIdleModeMontageArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mPlayModeValue;
+	
+	PLAYE_MODE	mCurPlayMode;
+	PLAYER_STATE	mPlayerState;
 };
