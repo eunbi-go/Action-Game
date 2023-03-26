@@ -20,6 +20,12 @@ enum class PLAYER_STATE : uint8
 	IDLE, MOVE, PLAYER_STATE_END
 };
 
+UENUM(BlueprintType)
+enum class DIRECTION : uint8
+{
+	FORWARD, BACKWARD, DIRECTION_END
+};
+
 UCLASS()
 class AG_API UPlayerAnimInstance : public UAnimInstance
 {
@@ -38,7 +44,8 @@ public:
 	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
 	void SetSpeedValue(float _value) { mSpeedValue = _value; }
 	void ChangePlayMode();
-
+	void Evade(DIRECTION direction);
+	
 
 
 protected:
@@ -50,6 +57,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<UAnimMontage*>	mIdleModeMontageArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*>	mEvadeMontage;
 
 	// Idle_Move BlendSpace.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

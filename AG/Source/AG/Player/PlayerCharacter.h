@@ -30,7 +30,8 @@ public:
 	void MouseRotateZ(float _scale);
 
 	void ChangePlayModeKey();
-
+	void EvadeKey();
+	void EvadeBackwardKey();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

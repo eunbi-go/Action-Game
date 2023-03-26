@@ -175,3 +175,14 @@ void UPlayerAnimInstance::ChangePlayMode()
 
 
 }
+
+void UPlayerAnimInstance::Evade(DIRECTION direction)
+{
+	int index = (uint8)direction;
+
+	if (!Montage_IsPlaying(mEvadeMontage[index]))
+	{
+		Montage_SetPosition(mEvadeMontage[index], 0.f);
+		Montage_Play(mEvadeMontage[index]);
+	}
+}

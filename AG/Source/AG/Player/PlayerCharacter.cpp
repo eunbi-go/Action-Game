@@ -67,7 +67,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::ChangePlayModeKey);
-
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Evade"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::EvadeKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("EvadeBackward"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::EvadeBackwardKey);
+	
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveForward"), this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
@@ -113,5 +117,15 @@ void APlayerCharacter::MouseRotateZ(float _scale)
 void APlayerCharacter::ChangePlayModeKey()
 {
 	//mAnimInst->ChangePlayMode();
+}
+
+void APlayerCharacter::EvadeKey()
+{
+	mAnimInst->Evade(DIRECTION::FORWARD);
+}
+
+void APlayerCharacter::EvadeBackwardKey()
+{
+	mAnimInst->Evade(DIRECTION::BACKWARD);
 }
 
