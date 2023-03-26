@@ -22,6 +22,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+public:
+	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
+	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
 
 public:
 	void MoveForward(float _scale);
@@ -32,6 +35,8 @@ public:
 	void ChangePlayModeKey();
 	void EvadeKey();
 	void EvadeBackwardKey();
+	void JumpKey();
+	void JumpEnd();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

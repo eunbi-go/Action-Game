@@ -46,6 +46,15 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+
+
+
+	//---------------------------
+	// Jump.
+	//---------------------------
+	GetCharacterMovement()->JumpZVelocity = 700.0f;
+	JumpMaxCount = 2;
+	JumpMaxHoldTime = 0.4f;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -59,25 +68,46 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::JUMP)
+	{
+		FVector startPos = GetActorLocation();
+		FVector endPos = FVector(startPos.X, startPos.Y, -100.f);
+		FHitResult hitInfo;
+		FCollisionQueryParams params;
+		bool isHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+
+		if (isHit)
+		{
+			if (hitInfo.Distance <= 70.f)
+			{
+				PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("down")));
+				mAnimInst->SetIsLandStart(true);
+			}
+		}
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
-		this, &APlayerCharacter::ChangePlayModeKey);
-	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Evade"), EInputEvent::IE_Pressed,
-		this, &APlayerCharacter::EvadeKey);
-	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("EvadeBackward"), EInputEvent::IE_Pressed,
-		this, &APlayerCharacter::EvadeBackwardKey);
+
 	
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveForward"), this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
 	
-
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::ChangePlayModeKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Evade"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::EvadeKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("EvadeBackward"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::EvadeBackwardKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Jump"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::JumpKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Jump"), EInputEvent::IE_Released,
+		this, &APlayerCharacter::JumpEnd);
 }
 
 void APlayerCharacter::MoveForward(float _scale)
@@ -86,7 +116,6 @@ void APlayerCharacter::MoveForward(float _scale)
 		return;
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _scale);
-	//mAnimInst->SetSpeedValue(1.f);
 }
 
 void APlayerCharacter::MoveHorizontal(float _scale)
@@ -95,7 +124,6 @@ void APlayerCharacter::MoveHorizontal(float _scale)
 		return;
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _scale);
-	//mAnimInst->SetSpeedValue(1.f);
 }
 
 void APlayerCharacter::MouseRotateY(float _scale)
@@ -103,7 +131,7 @@ void APlayerCharacter::MouseRotateY(float _scale)
 	if (_scale == 0.f)
 		return;
 
-	AddControllerPitchInput(_scale * 180.f * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::MouseRotateZ(float _scale)
@@ -111,7 +139,7 @@ void APlayerCharacter::MouseRotateZ(float _scale)
 	if (_scale == 0.f)
 		return;
 
-	AddControllerYawInput(_scale * 180.f * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::ChangePlayModeKey()
@@ -129,3 +157,19 @@ void APlayerCharacter::EvadeBackwardKey()
 	mAnimInst->Evade(DIRECTION::BACKWARD);
 }
 
+void APlayerCharacter::JumpKey()
+{
+	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::IDLE || mAnimInst->GetPlayerMotion() == PLAYER_MOTION::MOVE)
+	{
+		Jump();
+		bPressedJump = true;
+
+		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JUMP")));
+		mAnimInst->JumpStart();
+	}
+}
+
+void APlayerCharacter::JumpEnd()
+{
+	bPressedJump = false;
+}

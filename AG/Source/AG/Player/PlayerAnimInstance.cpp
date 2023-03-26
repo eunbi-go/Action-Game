@@ -8,7 +8,7 @@
 UPlayerAnimInstance::UPlayerAnimInstance()
 {
 	mCurPlayMode = PLAYE_MODE::BATTLE;
-	mPlayerState = PLAYER_STATE::IDLE;
+	mPlayerState = PLAYER_MOTION::IDLE;
 
 	mPlayModeValue = 2.f;
 	mSpeedValue = 0.f;
@@ -18,6 +18,10 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	
 	mRunInterpTime = 0.f;
 	mIsRunInterp = false;
+
+	mIsAir = false;
+	mIsGround = true;
+	mIsLandStart = false;
 }
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -30,7 +34,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
 	
 	//------------------------
 	// Walk <-> Run 전환.
@@ -39,12 +42,22 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		UCharacterMovementComponent* movement = playerCharacter->GetCharacterMovement();
 
-		// Run 상태일 경우
+		mIsGround = movement->IsMovingOnGround();
+		mIsAir = movement->IsFalling();
+		if (mIsAir)
+		{
+			//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("mIsAir")));
+			return;
+		}
+
+		// Run 상태일 경우.
 		if (mIsRun)
 		{
 			// 처음 Run으로 바뀌었을 경우 mSpeedValue가 1 ~ 3 으로 바뀔 때, 보간하여 값을 지정함.
 			if (mIsRunInterp)
 			{
+				playerCharacter->SetRunStateSpeed();
+
 				// 1 ~ 3으로 바뀌어야 함.
 				mRunInterpTime += DeltaSeconds;
 				mSpeedValue = FMath::Lerp(1.f, 3.f, mRunInterpTime);
@@ -56,32 +69,33 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 					mIsRunInterp = false;
 					mRunInterpTime = 0.f;
 				}
-				//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("ing, speed: %f"), mSpeedValue));
 			}
+
 			// Run 상태이고, mSpeedValue 값이 3.0f 이상이 되어 보간을 할 필요가 없을 경우.
 			else
 			{
 				mSpeedValue = movement->Velocity.Size() / (movement->MaxWalkSpeed / 3.f);
-				//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("finish, speed: %f"), mSpeedValue));
 			}
 		}
+
 		// Walk 상태일 경우.
 		else
 		{
+			playerCharacter->SetWalkStsteSpeed();
 			mSpeedValue = movement->Velocity.Size() / movement->MaxWalkSpeed;	// MaxWalkSpeed: 600
 		}
 
-		//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("mSpeedValue: %f"), mSpeedValue));
+		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("mSpeedValue: %f, walkSpeed: %f"), mSpeedValue, movement->MaxWalkSpeed));
 
 
 		// 움직임을 멈추면 MOVE -> IDLE 변경.
 		if (mSpeedValue <= 0.f)
 		{
 			mIsRun = false;
-			mPlayerState = PLAYER_STATE::IDLE;
+			mPlayerState = PLAYER_MOTION::IDLE;
 		}
 		else
-			mPlayerState = PLAYER_STATE::MOVE;
+			mPlayerState = PLAYER_MOTION::MOVE;
 
 
 
@@ -125,10 +139,16 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
+void UPlayerAnimInstance::AnimNotify_JumpEnd()
+{
+	PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("AnimNotify_JumpEnd")));
+	mPlayerState = PLAYER_MOTION::IDLE;
+}
+
 void UPlayerAnimInstance::ChangePlayMode()
 {
 	// 현재 움직이는 중이면 몽타주는 재생하지 않고, 플레이 모드만 변경.
-	if (mPlayerState != PLAYER_STATE::IDLE)
+	if (mPlayerState != PLAYER_MOTION::IDLE)
 	{
 		switch (mCurPlayMode)
 		{
@@ -185,4 +205,11 @@ void UPlayerAnimInstance::Evade(DIRECTION direction)
 		Montage_SetPosition(mEvadeMontage[index], 0.f);
 		Montage_Play(mEvadeMontage[index]);
 	}
+}
+
+void UPlayerAnimInstance::JumpStart()
+{
+	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JUMP")));
+	mPlayerState = PLAYER_MOTION::JUMP;
+	mIsLandStart = false;
 }

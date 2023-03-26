@@ -15,9 +15,9 @@ enum class PLAYE_MODE : uint8
 };
 
 UENUM(BlueprintType)
-enum class PLAYER_STATE : uint8
+enum class PLAYER_MOTION : uint8
 {
-	IDLE, MOVE, PLAYER_STATE_END
+	IDLE, MOVE, JUMP, PLAYER_STATE_END
 };
 
 UENUM(BlueprintType)
@@ -40,17 +40,28 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 
+
+public:
+	UFUNCTION()
+	void AnimNotify_JumpEnd();
+
+
+public:
+	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
+
 public:
 	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
 	void SetSpeedValue(float _value) { mSpeedValue = _value; }
+	void SetIsLandStart(bool _value) { mIsLandStart = _value; }
 	void ChangePlayMode();
 	void Evade(DIRECTION direction);
-	
+	void JumpStart();
 
 
 protected:
 	PLAYE_MODE		mCurPlayMode;
-	PLAYER_STATE	mPlayerState;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	PLAYER_MOTION	mPlayerState;
 
 
 	// Idle1 <-> Idle2 바뀔 때 재생할 몽타주 배열.
@@ -77,4 +88,14 @@ protected:
 	float	mRunInterpTime;
 	// Run 보간을 하는 중인가.
 	bool	mIsRunInterp;
+
+
+
+	// 공중에 있는가.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool	mIsAir;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		bool	mIsGround;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		bool	mIsLandStart;
 };
