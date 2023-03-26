@@ -14,6 +14,12 @@ enum class PLAYE_MODE : uint8
 	NO_BATTLE, BATTLE, PLAYER_MODE_END
 };
 
+UENUM(BlueprintType)
+enum class PLAYER_STATE : uint8
+{
+	IDLE, MOVE, PLAYER_STATE_END
+};
+
 UCLASS()
 class AG_API UPlayerAnimInstance : public UAnimInstance
 {
@@ -30,15 +36,36 @@ public:
 
 public:
 	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
+	void SetSpeedValue(float _value) { mSpeedValue = _value; }
 	void ChangePlayMode();
 
+
+
 protected:
+	PLAYE_MODE		mCurPlayMode;
+	PLAYER_STATE	mPlayerState;
+
+
+	// Idle1 <-> Idle2 바뀔 때 재생할 몽타주 배열.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<UAnimMontage*>	mIdleModeMontageArray;
 
+
+	// Idle_Move BlendSpace.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mPlayModeValue;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	float	mSpeedValue;
 	
-	PLAYE_MODE	mCurPlayMode;
-	PLAYER_STATE	mPlayerState;
+
+
+	// Walk -> Run 으로 바뀌기 위한 시간 계산.
+	float	mMovingTime;
+	// 현재 Move(Run) 상태인가.
+	bool	mIsRun;
+
+	// Run 보간을 위한 시간 저장.
+	float	mRunInterpTime;
+	// Run 보간을 하는 중인가.
+	bool	mIsRunInterp;
 };

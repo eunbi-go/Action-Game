@@ -65,13 +65,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::ChangePlayModeKey);
+
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveForward"), this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
 	
-	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
-		this, &APlayerCharacter::ChangePlayModeKey);
+
 }
 
 void APlayerCharacter::MoveForward(float _scale)
@@ -80,6 +82,7 @@ void APlayerCharacter::MoveForward(float _scale)
 		return;
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _scale);
+	//mAnimInst->SetSpeedValue(1.f);
 }
 
 void APlayerCharacter::MoveHorizontal(float _scale)
@@ -88,6 +91,7 @@ void APlayerCharacter::MoveHorizontal(float _scale)
 		return;
 
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _scale);
+	//mAnimInst->SetSpeedValue(1.f);
 }
 
 void APlayerCharacter::MouseRotateY(float _scale)
@@ -108,6 +112,6 @@ void APlayerCharacter::MouseRotateZ(float _scale)
 
 void APlayerCharacter::ChangePlayModeKey()
 {
-	mAnimInst->ChangePlayMode();
+	//mAnimInst->ChangePlayMode();
 }
 
