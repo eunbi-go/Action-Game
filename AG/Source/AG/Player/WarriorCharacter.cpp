@@ -2,6 +2,7 @@
 
 
 #include "WarriorCharacter.h"
+#include "../Particle/ParticleCascade.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -26,4 +27,16 @@ AWarriorCharacter::AWarriorCharacter()
 	
 	if (animInst.Succeeded())
 		GetMesh()->SetAnimInstanceClass(animInst.Class);
+
+
+
+	//-----------------------------------------
+	// Particle »ý¼º.
+	//-----------------------------------------
+	mDashParticle = CreateDefaultSubobject<AParticleCascade>(TEXT("DashParticle"));
+
+	AParticleCascade* particle = Cast<AParticleCascade>(mDashParticle);
+	particle->SetParticle(TEXT("ParticleSystem'/Game/Assets/InfinityBladeEffects1/Effects/FX_Ambient/Fire/P_LavaDrips.P_LavaDrips'"));
+	//particle->SetParticle(TEXT("ParticleSystem'/Game/Assets/InfinityBladeEffects1/Effects/FX_Ambient/Fire/P_Fire_TrapBossEnd_mobile.P_Fire_TrapBossEnd_mobile'"));
+	//Particle->SetSound(TEXT("SoundWave'/Game/Sound/Fire1.Fire1'"), false);
 }

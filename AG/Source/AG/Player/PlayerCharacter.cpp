@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 
 #include "PlayerAnimInstance.h"
+#include "../Particle/ParticleCascade.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -100,6 +101,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z));
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -190,6 +192,17 @@ void APlayerCharacter::Dash(float _scale)
 		mSpringArm->bEnableCameraLag = true;
 		mSpringArm->bEnableCameraRotationLag = true;
 		mAnimInst->Dash();
+
+		FActorSpawnParameters	SpawnParam;
+		SpawnParam.Template = mDashParticle;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AParticleCascade* Particle =
+			GetWorld()->SpawnActor<AParticleCascade>(
+				GetActorLocation(),
+				GetActorRotation(),
+				SpawnParam);
 	}
 }
 

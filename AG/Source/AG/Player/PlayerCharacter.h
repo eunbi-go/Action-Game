@@ -48,4 +48,8 @@ protected:
 	UCameraComponent* mCamera;
 
 	class UPlayerAnimInstance* mAnimInst;
+
+
+protected:
+	AActor* mDashParticle;
 };
