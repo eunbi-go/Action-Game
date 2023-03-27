@@ -15,4 +15,7 @@ class AG_API AWarriorCharacter : public APlayerCharacter
 	
 public:
 	AWarriorCharacter();
+
+protected:
+	virtual void BeginPlay() override;
 };

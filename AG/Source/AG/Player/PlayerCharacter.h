@@ -42,14 +42,18 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	USpringArmComponent* mSpringArm;
+	USpringArmComponent*		mSpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	UCameraComponent* mCamera;
+	UCameraComponent*			mCamera;
 
-	class UPlayerAnimInstance* mAnimInst;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		//UParticleSystemComponent* mDash;
+		UNiagaraComponent* mDash;
+
+	class UPlayerAnimInstance*	mAnimInst;
 
 
 protected:
-	AActor* mDashParticle;
+	class AWeaponActor* mWeapon;
 };

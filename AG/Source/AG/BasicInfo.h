@@ -8,8 +8,8 @@
 
 #include "EngineMinimal.h"
 
-//#include "NiagaraComponent.h"
-//#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"

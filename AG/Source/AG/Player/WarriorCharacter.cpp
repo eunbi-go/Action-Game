@@ -2,7 +2,9 @@
 
 
 #include "WarriorCharacter.h"
+
 #include "../Particle/ParticleCascade.h"
+#include "../Basic/WeaponActor.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -33,10 +35,33 @@ AWarriorCharacter::AWarriorCharacter()
 	//-----------------------------------------
 	// Particle 생성.
 	//-----------------------------------------
-	mDashParticle = CreateDefaultSubobject<AParticleCascade>(TEXT("DashParticle"));
+	//mDashParticle = CreateDefaultSubobject<AParticleCascade>(TEXT("DashParticle"));
 
-	AParticleCascade* particle = Cast<AParticleCascade>(mDashParticle);
-	particle->SetParticle(TEXT("ParticleSystem'/Game/Assets/InfinityBladeEffects1/Effects/FX_Ambient/Fire/P_LavaDrips.P_LavaDrips'"));
+	//AParticleCascade* particle = Cast<AParticleCascade>(mDashParticle);
+	//particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Combat_Base/WeaponShimmer/Fire/P_WeaponShimmer_Fire_Blade.P_WeaponShimmer_Fire_Blade'"));
 	//particle->SetParticle(TEXT("ParticleSystem'/Game/Assets/InfinityBladeEffects1/Effects/FX_Ambient/Fire/P_Fire_TrapBossEnd_mobile.P_Fire_TrapBossEnd_mobile'"));
 	//Particle->SetSound(TEXT("SoundWave'/Game/Sound/Fire1.Fire1'"), false);
+}
+
+void AWarriorCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//-----------------------------------------
+	// 무기 장착.
+	//-----------------------------------------
+	FActorSpawnParameters	SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+
+	mWeapon = GetWorld()->SpawnActor<AWeaponActor>(
+		AWeaponActor::StaticClass(), SpawnParam);
+
+	mWeapon->SetSkeletalMesh(TEXT("StaticMesh'/Game/Assets/Weapons/Sword1.Sword1'"));
+
+	mWeapon->AttachToComponent(GetMesh(),
+		FAttachmentTransformRules::KeepRelativeTransform,
+		TEXT("thumb_02_r"));
+
 }

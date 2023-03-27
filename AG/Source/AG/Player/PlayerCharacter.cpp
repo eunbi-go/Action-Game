@@ -16,7 +16,9 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	mSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	mDash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DashEffect"));
 
+	mDash->SetupAttachment(GetMesh());
 	mSpringArm->SetupAttachment(GetMesh());
 	mCamera->SetupAttachment(mSpringArm);
 
@@ -62,9 +64,17 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	// Camera Lag.
 	//---------------------------
-	mSpringArm->CameraLagSpeed = 2.f;
-	mSpringArm->CameraRotationLagSpeed = 1.f;
+	mSpringArm->CameraLagSpeed = 8.f;
+	mSpringArm->CameraRotationLagSpeed = 8.f;
 	mSpringArm->bEnableCameraLag = false;
+
+
+
+	//---------------------------
+	// Particles, Actors ...
+	//---------------------------
+	mWeapon = nullptr;
+
 }
 
 void APlayerCharacter::BeginPlay()
@@ -77,6 +87,20 @@ void APlayerCharacter::BeginPlay()
 	// Camera View Pitch 각도 제한.
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
+
+
+
+	//---------------------------
+	// Dash Niagara.
+	//---------------------------
+	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
+		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash2.NS_Dash2'"));
+
+	if (IsValid(Particle))
+		mDash->SetAsset(Particle);
+	mDash->SetVisibility(false);
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -171,6 +195,8 @@ void APlayerCharacter::Dash(float _scale)
 		mSpringArm->bEnableCameraLag = false;
 		mSpringArm->bEnableCameraRotationLag = false;
 
+		mDash->SetVisibility(false);
+
 		// 이전 속도로 돌아간다.
 		if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::MOVE)
 		{
@@ -192,17 +218,7 @@ void APlayerCharacter::Dash(float _scale)
 		mSpringArm->bEnableCameraLag = true;
 		mSpringArm->bEnableCameraRotationLag = true;
 		mAnimInst->Dash();
-
-		FActorSpawnParameters	SpawnParam;
-		SpawnParam.Template = mDashParticle;
-		SpawnParam.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		AParticleCascade* Particle =
-			GetWorld()->SpawnActor<AParticleCascade>(
-				GetActorLocation(),
-				GetActorRotation(),
-				SpawnParam);
+		mDash->SetVisibility(true);
 	}
 }
 

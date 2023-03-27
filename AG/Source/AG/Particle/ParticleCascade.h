@@ -25,6 +25,12 @@ public:
 	virtual void SetParticle(const FString& _path);
 
 
+
+public:
+	UParticleSystemComponent* GetParticle() { return mParticle; }
+
+
+
 public:
 	UFUNCTION()
 	void ParticleFinish(UParticleSystemComponent* _particle);
