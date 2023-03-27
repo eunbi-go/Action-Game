@@ -33,7 +33,6 @@ public:
 	void MouseRotateY(float _scale);
 	void MouseRotateZ(float _scale);
 	void Dash(float _scale);
-	void DashFinish(float _scale);
 
 	void ChangePlayModeKey();
 	void EvadeKey();

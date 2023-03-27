@@ -57,6 +57,10 @@ APlayerCharacter::APlayerCharacter()
 	JumpMaxHoldTime = 0.4f;
 
 	
+
+	//---------------------------
+	// Camera Lag.
+	//---------------------------
 	mSpringArm->CameraLagSpeed = 2.f;
 	mSpringArm->CameraRotationLagSpeed = 1.f;
 	mSpringArm->bEnableCameraLag = false;
@@ -68,6 +72,10 @@ void APlayerCharacter::BeginPlay()
 	
 	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 
+
+	// Camera View Pitch 각도 제한.
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -91,6 +99,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
