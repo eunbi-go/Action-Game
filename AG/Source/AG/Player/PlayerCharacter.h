@@ -25,12 +25,15 @@ public:
 public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
 	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
+	void SetDashStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1500.f; }
 
 public:
 	void MoveForward(float _scale);
 	void MoveHorizontal(float _scale);
 	void MouseRotateY(float _scale);
 	void MouseRotateZ(float _scale);
+	void Dash(float _scale);
+	void DashFinish(float _scale);
 
 	void ChangePlayModeKey();
 	void EvadeKey();

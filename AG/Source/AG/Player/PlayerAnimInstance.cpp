@@ -15,9 +15,12 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 
 	mMovingTime = 0.f;
 	mIsRun = false;
-	
+
 	mRunInterpTime = 0.f;
 	mIsRunInterp = false;
+
+	mIsDash = false;
+	mIsInitDash = false;
 
 	mIsAir = false;
 	mIsGround = true;
@@ -36,7 +39,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 	
 	//------------------------
-	// Walk <-> Run 전환.
+	// Walk <-> Run <-> Dash 전환.
 	//------------------------
 	if (IsValid(playerCharacter))
 	{
@@ -50,8 +53,23 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			return;
 		}
 
-		// Run 상태일 경우.
-		if (mIsRun)
+
+		// 1. Dash 상태일 경우.
+		if (mIsDash)
+		{
+			// 보간 없이 바로 값 변경.
+			mSpeedValue = 5.f;
+
+			if (!mIsInitDash)
+			{
+				mIsInitDash = true;
+				playerCharacter->SetDashStsteSpeed();
+			}
+		}
+
+
+		// 2. Run 상태일 경우.
+		else if (mIsRun)
 		{
 			// 처음 Run으로 바뀌었을 경우 mSpeedValue가 1 ~ 3 으로 바뀔 때, 보간하여 값을 지정함.
 			if (mIsRunInterp)
@@ -78,7 +96,8 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			}
 		}
 
-		// Walk 상태일 경우.
+
+		// 3. Walk 상태일 경우.
 		else
 		{
 			playerCharacter->SetWalkStsteSpeed();
@@ -88,10 +107,16 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("mSpeedValue: %f, walkSpeed: %f"), mSpeedValue, movement->MaxWalkSpeed));
 
 
+
+
+
 		// 움직임을 멈추면 MOVE -> IDLE 변경.
 		if (mSpeedValue <= 0.f)
 		{
 			mIsRun = false;
+			mIsRunInterp = false;
+			mMovingTime = 0.f;
+			mRunInterpTime = 0.f;
 			mPlayerState = PLAYER_MOTION::IDLE;
 		}
 		else
@@ -212,4 +237,16 @@ void UPlayerAnimInstance::JumpStart()
 	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JUMP")));
 	mPlayerState = PLAYER_MOTION::JUMP;
 	mIsLandStart = false;
+}
+
+void UPlayerAnimInstance::Dash()
+{
+	mIsDash = true;
+	mIsInitDash = false;
+}
+
+void UPlayerAnimInstance::FinishDash()
+{
+	mIsDash = false;
+	mIsInitDash = false;
 }

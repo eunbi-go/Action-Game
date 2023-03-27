@@ -21,6 +21,8 @@ void AAGPlayerController::PostInitializeComponents()
 void AAGPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
+
+
 }
 
 void AAGPlayerController::OnUnPossess()

@@ -46,8 +46,11 @@ public:
 	void AnimNotify_JumpEnd();
 
 
+
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
+	bool GetIsRun() { return mIsRun; }
+
 
 public:
 	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
@@ -56,6 +59,8 @@ public:
 	void ChangePlayMode();
 	void Evade(DIRECTION direction);
 	void JumpStart();
+	void Dash();
+	void FinishDash();
 
 
 protected:
@@ -84,12 +89,17 @@ protected:
 	// 현재 Move(Run) 상태인가.
 	bool	mIsRun;
 
+
 	// Run 보간을 위한 시간 저장.
 	float	mRunInterpTime;
 	// Run 보간을 하는 중인가.
 	bool	mIsRunInterp;
 
 
+
+	// 현재 Dash 상태인가.
+	bool	mIsDash;
+	bool	mIsInitDash;
 
 	// 공중에 있는가.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

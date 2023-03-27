@@ -55,6 +55,11 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->JumpZVelocity = 700.0f;
 	JumpMaxCount = 2;
 	JumpMaxHoldTime = 0.4f;
+
+	
+	mSpringArm->CameraLagSpeed = 2.f;
+	mSpringArm->CameraRotationLagSpeed = 1.f;
+	mSpringArm->bEnableCameraLag = false;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -62,6 +67,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -97,6 +103,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateY"), this, &APlayerCharacter::MouseRotateY);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
+	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("Dash"), this, &APlayerCharacter::Dash);
 	
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::ChangePlayModeKey);
@@ -140,6 +147,41 @@ void APlayerCharacter::MouseRotateZ(float _scale)
 		return;
 
 	AddControllerYawInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
+}
+
+void APlayerCharacter::Dash(float _scale)
+{
+	if (_scale == 0.f)
+	{
+		CustomTimeDilation = 1.f;
+		mAnimInst->FinishDash();
+
+		// 카메라 지연 끝.
+		mSpringArm->bEnableCameraLag = false;
+		mSpringArm->bEnableCameraRotationLag = false;
+
+		// 이전 속도로 돌아간다.
+		if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::MOVE)
+		{
+			if (mAnimInst->GetIsRun())
+				SetRunStateSpeed();
+			else
+				SetWalkStsteSpeed();
+		}
+
+		return;
+	}
+	
+
+	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::MOVE)
+	{
+		//CustomTimeDilation = 2.f;
+		
+		// 카메라 지연으로 플레이어 가속 효과 주기.
+		mSpringArm->bEnableCameraLag = true;
+		mSpringArm->bEnableCameraRotationLag = true;
+		mAnimInst->Dash();
+	}
 }
 
 void APlayerCharacter::ChangePlayModeKey()
