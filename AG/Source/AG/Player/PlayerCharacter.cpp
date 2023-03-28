@@ -279,4 +279,5 @@ void APlayerCharacter::EquipWeaponKey()
 		return;
 
 	mAnimInst->EquipWeapon();
+	mIsEquipWeapon = true;
 }
