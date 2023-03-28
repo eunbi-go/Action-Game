@@ -32,6 +32,17 @@ AWarriorCharacter::AWarriorCharacter()
 
 
 
+
+	//-----------------------------------------
+	// CameraShake 지정.
+	//-----------------------------------------
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack'"));
+
+	if (cameraShake.Succeeded())
+		mNormalAttackShake = cameraShake.Class;
+
+
+
 	//-----------------------------------------
 	// Particle 생성.
 	//-----------------------------------------
@@ -60,9 +71,7 @@ void AWarriorCharacter::BeginPlay()
 
 	mWeapon->SetSkeletalMesh(TEXT("StaticMesh'/Game/Assets/Weapons/Sword1.Sword1'"));
 
-	//mWeapon->AttachToComponent(GetMesh(),
-	//	FAttachmentTransformRules::KeepRelativeTransform,
-	//	TEXT("thumb_01_r"));
+
 	mWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::KeepRelativeTransform,
 		TEXT("thigh_l"));
@@ -72,4 +81,5 @@ void AWarriorCharacter::BeginPlay()
 
 void AWarriorCharacter::NormalAttackCheck()
 {
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
 }

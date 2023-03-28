@@ -321,7 +321,7 @@ void UPlayerAnimInstance::NormalAttack()
 
 		// 몽타주 재생.
 		Montage_Play(mNormalAttackMontageArray[mNormalAttackIndex]);
-
+		
 		// 0, 1, 2, 3 반복
 		mNormalAttackIndex = (mNormalAttackIndex + 1) % mNormalAttackMontageArray.Num();
 
@@ -329,6 +329,7 @@ void UPlayerAnimInstance::NormalAttack()
 		mIsNormalAttack = true;
 
 		mPlayerState = PLAYER_MOTION::NORMAL_ATTACK;
+
 	}
 	else
 		mIsNormalAttackEnable = true;

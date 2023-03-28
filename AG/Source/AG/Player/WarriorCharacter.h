@@ -21,4 +21,9 @@ protected:
 
 public:
 	virtual void NormalAttackCheck();
+
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> mNormalAttackShake;
 };

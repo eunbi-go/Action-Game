@@ -78,8 +78,10 @@ APlayerCharacter::APlayerCharacter()
 
 
 
-
 	mIsEquipWeapon = false;
+
+
+
 }
 
 void APlayerCharacter::BeginPlay()
@@ -92,6 +94,7 @@ void APlayerCharacter::BeginPlay()
 	// Camera View Pitch 각도 제한.
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
+
 
 
 
@@ -295,4 +298,8 @@ void APlayerCharacter::NormalAttackKey()
 
 	// 일반 공격 몽타주 재생 시작.
 	mAnimInst->NormalAttack();
+
+	//GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(cameraShake);
+	
+
 }

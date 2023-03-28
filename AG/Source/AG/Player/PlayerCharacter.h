@@ -70,6 +70,8 @@ protected:
 	class UPlayerAnimInstance*	mAnimInst;
 
 
+
+
 protected:
 	class AWeaponActor* mWeapon;
 
