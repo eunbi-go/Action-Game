@@ -60,8 +60,12 @@ void AWarriorCharacter::BeginPlay()
 
 	mWeapon->SetSkeletalMesh(TEXT("StaticMesh'/Game/Assets/Weapons/Sword1.Sword1'"));
 
+	//mWeapon->AttachToComponent(GetMesh(),
+	//	FAttachmentTransformRules::KeepRelativeTransform,
+	//	TEXT("thumb_01_r"));
 	mWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::KeepRelativeTransform,
-		TEXT("thumb_02_r"));
-
+		TEXT("thigh_l"));
+	mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
+	mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
 }

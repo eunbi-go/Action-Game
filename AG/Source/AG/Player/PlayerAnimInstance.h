@@ -45,6 +45,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_JumpEnd();
 
+	UFUNCTION()
+	void AnimNotify_EquipSword();
+
 
 
 public:
@@ -61,6 +64,7 @@ public:
 	void JumpStart();
 	void Dash();
 	void FinishDash();
+	void EquipWeapon();
 
 
 protected:
@@ -75,6 +79,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<UAnimMontage*>	mEvadeMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UAnimMontage*	mEquipWeaponMontage;
 
 	// Idle_Move BlendSpace.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

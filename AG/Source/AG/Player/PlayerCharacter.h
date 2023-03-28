@@ -23,6 +23,11 @@ public:
 
 
 public:
+	void EquipWeaponToHand();
+
+
+
+public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
 	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
 	void SetDashStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1500.f; }
@@ -39,6 +44,8 @@ public:
 	void EvadeBackwardKey();
 	void JumpKey();
 	void JumpEnd();
+	void EquipWeaponKey();
+
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
@@ -56,4 +63,7 @@ protected:
 
 protected:
 	class AWeaponActor* mWeapon;
+
+	// 현재 무기를 장착하고 있는지.
+	bool	mIsEquipWeapon;
 };

@@ -5,6 +5,7 @@
 
 #include "PlayerAnimInstance.h"
 #include "../Particle/ParticleCascade.h"
+#include "../Basic/WeaponActor.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -75,6 +76,10 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	mWeapon = nullptr;
 
+
+
+
+	mIsEquipWeapon = false;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -94,7 +99,7 @@ void APlayerCharacter::BeginPlay()
 	// Dash Niagara.
 	//---------------------------
 	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
-		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash2.NS_Dash2'"));
+		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash.NS_Dash'"));
 
 	if (IsValid(Particle))
 		mDash->SetAsset(Particle);
@@ -150,6 +155,18 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::JumpKey);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Jump"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::JumpEnd);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("EquipWeapon"), EInputEvent::IE_Released,
+		this, &APlayerCharacter::EquipWeaponKey);
+}
+
+void APlayerCharacter::EquipWeaponToHand()
+{
+	mWeapon->AttachToComponent(GetMesh(),
+		FAttachmentTransformRules::KeepRelativeTransform,
+		TEXT("middle_01_r"));
+
+	mWeapon->SetActorRelativeLocation(FVector(-1.0f, 9.0f, -1.0f));
+	mWeapon->SetActorRelativeRotation(FRotator(9.f, 151.f, 27.0f));
 }
 
 void APlayerCharacter::MoveForward(float _scale)
@@ -225,6 +242,8 @@ void APlayerCharacter::Dash(float _scale)
 void APlayerCharacter::ChangePlayModeKey()
 {
 	//mAnimInst->ChangePlayMode();
+
+
 }
 
 void APlayerCharacter::EvadeKey()
@@ -252,4 +271,12 @@ void APlayerCharacter::JumpKey()
 void APlayerCharacter::JumpEnd()
 {
 	bPressedJump = false;
+}
+
+void APlayerCharacter::EquipWeaponKey()
+{
+	if (mIsEquipWeapon)
+		return;
+
+	mAnimInst->EquipWeapon();
 }

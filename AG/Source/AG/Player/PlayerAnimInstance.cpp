@@ -170,6 +170,16 @@ void UPlayerAnimInstance::AnimNotify_JumpEnd()
 	mPlayerState = PLAYER_MOTION::IDLE;
 }
 
+void UPlayerAnimInstance::AnimNotify_EquipSword()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->EquipWeaponToHand();
+	}
+}
+
 void UPlayerAnimInstance::ChangePlayMode()
 {
 	// 현재 움직이는 중이면 몽타주는 재생하지 않고, 플레이 모드만 변경.
@@ -249,4 +259,13 @@ void UPlayerAnimInstance::FinishDash()
 {
 	mIsDash = false;
 	mIsInitDash = false;
+}
+
+void UPlayerAnimInstance::EquipWeapon()
+{
+	if (!Montage_IsPlaying(mEquipWeaponMontage))
+	{
+		Montage_SetPosition(mEquipWeaponMontage, 0.f);
+		Montage_Play(mEquipWeaponMontage);
+	}
 }
