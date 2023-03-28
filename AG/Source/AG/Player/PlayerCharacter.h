@@ -77,4 +77,14 @@ protected:
 
 	// 현재 무기를 장착하고 있는지.
 	bool	mIsEquipWeapon;
+
+
+
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	FPlayerInfo		mInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	FName				mPlayerTableRowName;
 };

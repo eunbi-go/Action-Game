@@ -4,6 +4,7 @@
 #include "AGGameModeBase.h"
 #include "Player/WarriorCharacter.h"
 #include "Player/AGPlayerController.h"
+#include "AGGameInstance.h"
 
 AAGGameModeBase::AAGGameModeBase()
 {

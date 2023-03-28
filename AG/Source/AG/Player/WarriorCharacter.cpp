@@ -36,7 +36,7 @@ AWarriorCharacter::AWarriorCharacter()
 	//-----------------------------------------
 	// CameraShake ÁöÁ¤.
 	//-----------------------------------------
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack'"));
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack_C'"));
 
 	if (cameraShake.Succeeded())
 		mNormalAttackShake = cameraShake.Class;
@@ -75,6 +75,7 @@ void AWarriorCharacter::BeginPlay()
 	mWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::KeepRelativeTransform,
 		TEXT("thigh_l"));
+	
 	mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
 	mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
 }

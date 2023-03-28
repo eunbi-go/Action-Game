@@ -6,6 +6,7 @@
 #include "PlayerAnimInstance.h"
 #include "../Particle/ParticleCascade.h"
 #include "../Basic/WeaponActor.h"
+#include "../AGGameInstance.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -82,15 +83,14 @@ APlayerCharacter::APlayerCharacter()
 
 
 
+
+	mPlayerTableRowName = TEXT("Player");
 }
 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-
-
 	// Camera View Pitch 각도 제한.
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
@@ -109,6 +109,42 @@ void APlayerCharacter::BeginPlay()
 	mDash->SetVisibility(false);
 
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+
+
+
+
+	//---------------------------
+	// Data Table 을 활용해 PlayerInfo 세팅.
+	//---------------------------
+	UAGGameInstance* gameInst =
+		GetWorld()->GetGameInstance<UAGGameInstance>();
+
+	const FPlayerTableInfo* info = gameInst->FindPlayerTable(mPlayerTableRowName);
+
+	if (info)
+	{
+		mInfo.name = info->name;
+		mInfo.attackPoint = info->attackPoint;
+		mInfo.defensePoint = info->defensePoint;
+		mInfo.hp = info->hp;
+		mInfo.maxHp = info->maxHp;
+		mInfo.mp = info->mp;
+		mInfo.maxMp = info->maxMp;
+		mInfo.level = info->level;
+		mInfo.exp = info->exp;
+		mInfo.gold = info->gold;
+		mInfo.movingWalkSpeed = info->movingWalkSpeed;
+		mInfo.movingRunSpeed = info->movingRunSpeed;
+		mInfo.movingDashSpeed = info->movingDashSpeed;
+		mInfo.attackDistance = info->attackDistance;
+
+		GetCharacterMovement()->MaxWalkSpeed = mInfo.movingWalkSpeed;
+
+		GetMesh()->SetSkeletalMesh(info->mesh);
+		GetMesh()->SetAnimInstanceClass(info->playerAnimClass);
+	}
+
+	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
