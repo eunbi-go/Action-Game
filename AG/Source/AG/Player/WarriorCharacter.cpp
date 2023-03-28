@@ -69,3 +69,7 @@ void AWarriorCharacter::BeginPlay()
 	mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
 	mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
 }
+
+void AWarriorCharacter::NormalAttackCheck()
+{
+}

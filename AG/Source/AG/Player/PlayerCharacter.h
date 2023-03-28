@@ -23,6 +23,14 @@ public:
 
 
 public:
+	//----------
+	// АјАн
+	//----------
+	virtual void NormalAttackCheck();
+
+
+
+public:
 	void EquipWeaponToHand();
 
 
@@ -45,6 +53,7 @@ public:
 	void JumpKey();
 	void JumpEnd();
 	void EquipWeaponKey();
+	void NormalAttackKey();
 
 
 protected:

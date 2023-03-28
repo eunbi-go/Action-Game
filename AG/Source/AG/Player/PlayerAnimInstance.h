@@ -17,7 +17,7 @@ enum class PLAYE_MODE : uint8
 UENUM(BlueprintType)
 enum class PLAYER_MOTION : uint8
 {
-	IDLE, MOVE, JUMP, PLAYER_STATE_END
+	IDLE, MOVE, JUMP, NORMAL_ATTACK, PLAYER_STATE_END
 };
 
 UENUM(BlueprintType)
@@ -48,6 +48,15 @@ public:
 	UFUNCTION()
 	void AnimNotify_EquipSword();
 
+	UFUNCTION()
+	void AnimNotify_AttackCheck();
+
+	UFUNCTION()
+	void AnimNotify_AttackEnable();
+
+	UFUNCTION()
+	void AnimNotify_AttackEnd();
+
 
 
 public:
@@ -65,6 +74,8 @@ public:
 	void Dash();
 	void FinishDash();
 	void EquipWeapon();
+	void NormalAttack();
+
 
 
 protected:
@@ -83,6 +94,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UAnimMontage*	mEquipWeaponMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*> mNormalAttackMontageArray;
+
+
+
+protected:
 	// Idle_Move BlendSpace.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mPlayModeValue;
@@ -112,7 +129,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool	mIsAir;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		bool	mIsGround;
+	bool	mIsGround;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		bool	mIsLandStart;
+	bool	mIsLandStart;
+
+
+
+
+	//--------------------------
+	// Normal Attack
+	//--------------------------
+	// 공격 가능 여부.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool	mIsNormalAttackEnable;
+
+	// 현재 공격 상태 확인.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool	mIsNormalAttack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	int32	mNormalAttackIndex;
 };

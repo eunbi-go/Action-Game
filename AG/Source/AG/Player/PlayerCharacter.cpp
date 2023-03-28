@@ -157,6 +157,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::JumpEnd);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("EquipWeapon"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::EquipWeaponKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("NormalAttack"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::NormalAttackKey);
+}
+
+void APlayerCharacter::NormalAttackCheck()
+{
 }
 
 void APlayerCharacter::EquipWeaponToHand()
@@ -280,4 +286,13 @@ void APlayerCharacter::EquipWeaponKey()
 
 	mAnimInst->EquipWeapon();
 	mIsEquipWeapon = true;
+}
+
+void APlayerCharacter::NormalAttackKey()
+{
+	if (!mIsEquipWeapon)
+		return;
+
+	// 일반 공격 몽타주 재생 시작.
+	mAnimInst->NormalAttack();
 }
