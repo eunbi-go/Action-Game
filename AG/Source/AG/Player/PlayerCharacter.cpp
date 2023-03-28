@@ -151,6 +151,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
+	//---------------------------
+	// 공격중에는 흔들리지 않게 플레이어와 카메라의 전면벡터가 일치하도록 보간.
+	//---------------------------
+	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::NORMAL_ATTACK)
+	{
+		FVector cameraForwardVector = mCamera->GetForwardVector().GetSafeNormal2D();
+		FRotator targetRot = FRotationMatrix::MakeFromX(cameraForwardVector).Rotator();
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRot, DeltaTime, 10.0f));
+	}
+
+
+
+	//---------------------------
+	// 플레이어와 지면 라인 트레이스로 지면과의 거리를 구해 일정 거리 이하가 되면 낙하 모션 재생.
+	//---------------------------
 	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::JUMP)
 	{
 		FVector startPos = GetActorLocation();
