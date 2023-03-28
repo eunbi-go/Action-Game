@@ -52,6 +52,9 @@ AWarriorCharacter::AWarriorCharacter()
 	//particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Combat_Base/WeaponShimmer/Fire/P_WeaponShimmer_Fire_Blade.P_WeaponShimmer_Fire_Blade'"));
 	//particle->SetParticle(TEXT("ParticleSystem'/Game/Assets/InfinityBladeEffects1/Effects/FX_Ambient/Fire/P_Fire_TrapBossEnd_mobile.P_Fire_TrapBossEnd_mobile'"));
 	//Particle->SetSound(TEXT("SoundWave'/Game/Sound/Fire1.Fire1'"), false);
+
+
+
 }
 
 void AWarriorCharacter::BeginPlay()
@@ -78,6 +81,16 @@ void AWarriorCharacter::BeginPlay()
 	
 	mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
 	mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
+
+
+
+
+	//---------------------------
+	// Trail Niagara.
+	//---------------------------
+
+	
+
 }
 
 void AWarriorCharacter::NormalAttackCheck()

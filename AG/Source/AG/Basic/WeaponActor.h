@@ -13,4 +13,12 @@ class AG_API AWeaponActor : public ABasicActor
 {
 	GENERATED_BODY()
 	
+public:
+	AWeaponActor();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		UNiagaraComponent* mTrail;
 };

@@ -85,6 +85,7 @@ APlayerCharacter::APlayerCharacter()
 
 
 	mPlayerTableRowName = TEXT("Player");
+	mIsDelay = false;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -185,6 +186,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
 
 	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z));
 }
@@ -288,6 +290,7 @@ void APlayerCharacter::Dash(float _scale)
 		return;
 	}
 	
+
 
 	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::MOVE)
 	{

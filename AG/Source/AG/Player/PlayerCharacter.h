@@ -39,6 +39,8 @@ public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
 	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
 	void SetDashStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1500.f; }
+	void SetCustomTimeDilation(float _value) { CustomTimeDilation = _value; }
+	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
 
 public:
 	void MoveForward(float _scale);
@@ -87,4 +89,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FName				mPlayerTableRowName;
+
+	bool	mIsDelay;
 };

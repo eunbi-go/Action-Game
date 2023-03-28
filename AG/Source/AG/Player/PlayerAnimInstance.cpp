@@ -214,6 +214,19 @@ void UPlayerAnimInstance::AnimNotify_AttackEnd()
 	mPlayerState = PLAYER_MOTION::IDLE;
 }
 
+void UPlayerAnimInstance::AnimNotify_Delay()
+{
+
+	Montage_SetPlayRate(mNormalAttackMontageArray[3], 0.3f);
+}
+
+void UPlayerAnimInstance::AnimNotify_Reset()
+{
+	Montage_SetPlayRate(mNormalAttackMontageArray[3], 1.2f);
+
+
+}
+
 void UPlayerAnimInstance::ChangePlayMode()
 {
 	// 현재 움직이는 중이면 몽타주는 재생하지 않고, 플레이 모드만 변경.
