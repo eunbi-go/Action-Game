@@ -4,6 +4,7 @@
 #include "PlayerAnimInstance.h"
 
 #include "PlayerCharacter.h"
+#include "../Particle/ParticleCascade.h"
 
 UPlayerAnimInstance::UPlayerAnimInstance()
 {
@@ -29,6 +30,19 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	mIsNormalAttackEnable = true;
 	mIsNormalAttack = false;
 	mNormalAttackIndex = 0;
+
+	mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+	mCurSkillPlayingIndex = -1;
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake2(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack2.CS_PlayerNormalAttack2_C'"));
+
+	if (cameraShake2.Succeeded())
+		mNormalAttackShake2 = cameraShake2.Class;
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake3(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Teleport.CS_Teleport_C'"));
+
+	if (cameraShake3.Succeeded())
+		mTel = cameraShake3.Class;
 }
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -40,7 +54,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (mPlayerState == PLAYER_MOTION::NORMAL_ATTACK)
+	if (mPlayerState == PLAYER_MOTION::NORMAL_ATTACK || mPlayerState == PLAYER_MOTION::SKILL)
 		return;
 
 
@@ -212,6 +226,12 @@ void UPlayerAnimInstance::AnimNotify_AttackEnd()
 	mIsNormalAttack = false;
 
 	mPlayerState = PLAYER_MOTION::IDLE;
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SetWeaponTrailOnOff(false);
+	}
 }
 
 void UPlayerAnimInstance::AnimNotify_Delay()
@@ -226,6 +246,88 @@ void UPlayerAnimInstance::AnimNotify_Reset()
 
 
 }
+
+void UPlayerAnimInstance::AnimNotify_SkillEnd()
+{
+	mPlayerState = PLAYER_MOTION::IDLE;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SetWeaponTrailOnOff(false);
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_StartGauge()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		float gauge = playerCharacter->GetTeleportGaueTime();
+
+		if (gauge > 0.f && mCurSkillPlayingIndex != -1)
+		{
+			Montage_Pause(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+		}
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_LastNormalAttack()
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake2);
+
+	FActorSpawnParameters	SpawnParam;
+	//SpawnParam.Template = mHitActor;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		FVector playerPosition = playerCharacter->GetActorLocation();
+		FVector position = FVector(playerPosition.X+70.f, playerPosition.Y, 60.f);
+		AParticleCascade* Particle =
+			GetWorld()->SpawnActor<AParticleCascade>(
+				position,
+				playerCharacter->GetActorRotation(),
+				SpawnParam);
+
+		Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Mobile/Fire/combat/P_Fire_AOE_Blast_mobile.P_Fire_AOE_Blast_mobile'"));
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_Teleport()
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mTel);
+}
+
+void UPlayerAnimInstance::AnimNotify_TeleportEff()
+{
+	FActorSpawnParameters	SpawnParam;
+	//SpawnParam.Template = mHitActor;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		FVector playerPosition = playerCharacter->GetActorLocation();
+		playerPosition += playerCharacter->GetActorForwardVector() * 200.f;
+		playerPosition.Z = 60.f;
+		AParticleCascade* Particle =
+			GetWorld()->SpawnActor<AParticleCascade>(
+				playerPosition,
+				playerCharacter->GetActorRotation(),
+				SpawnParam);
+
+		Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
+	}
+}
+
 
 void UPlayerAnimInstance::ChangePlayMode()
 {
@@ -346,4 +448,40 @@ void UPlayerAnimInstance::NormalAttack()
 	}
 	else
 		mIsNormalAttackEnable = true;
+}
+
+void UPlayerAnimInstance::UseSkill(SKILL_TYPE _skillType)
+{
+	int32	count = mSkillMontageArray.Num();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		if (mSkillMontageArray[i].skillType == _skillType)
+		{
+			mCurSkillType = _skillType;
+
+			mPlayerState = PLAYER_MOTION::SKILL;
+
+			if (!Montage_IsPlaying(mSkillMontageArray[i].Montage))
+			{
+				Montage_SetPosition(mSkillMontageArray[i].Montage, 0.f);
+				Montage_Play(mSkillMontageArray[i].Montage);
+
+				mCurSkillPlayingIndex = i;
+			}
+
+			break;
+		}
+	}
+}
+
+void UPlayerAnimInstance::GaugeEnd()
+{
+	Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.84f);
+}
+
+void UPlayerAnimInstance::RestartSkill()
+{
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.3f);
+	Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
 }

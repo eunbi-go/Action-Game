@@ -10,7 +10,7 @@ ABasicActor::ABasicActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	mBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-	mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 
 	SetRootComponent(mBox);
 
@@ -33,9 +33,9 @@ void ABasicActor::Tick(float DeltaTime)
 
 void ABasicActor::SetSkeletalMesh(const FString& _path)
 {
-	UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, *_path);
+	USkeletalMesh* mesh = LoadObject<USkeletalMesh>(nullptr, *_path);
 
 	if (IsValid(mesh))
-		mMesh->SetStaticMesh(mesh);
+		mMesh->SetSkeletalMesh(mesh);
 }
 

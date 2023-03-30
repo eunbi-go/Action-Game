@@ -17,7 +17,7 @@ enum class PLAYE_MODE : uint8
 UENUM(BlueprintType)
 enum class PLAYER_MOTION : uint8
 {
-	IDLE, MOVE, JUMP, NORMAL_ATTACK, PLAYER_STATE_END
+	IDLE, MOVE, JUMP, NORMAL_ATTACK, SKILL, PLAYER_STATE_END
 };
 
 UENUM(BlueprintType)
@@ -25,6 +25,20 @@ enum class DIRECTION : uint8
 {
 	FORWARD, BACKWARD, DIRECTION_END
 };
+
+USTRUCT(BlueprintType)
+struct FSkillAnimationInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		SKILL_TYPE	skillType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		UAnimMontage* Montage;
+};
+
 
 UCLASS()
 class AG_API UPlayerAnimInstance : public UAnimInstance
@@ -63,25 +77,44 @@ public:
 	UFUNCTION()
 		void AnimNotify_Reset();
 
+	UFUNCTION()
+		void AnimNotify_SkillEnd();
+
+	UFUNCTION()
+		void AnimNotify_StartGauge();
+
+	UFUNCTION()
+		void AnimNotify_LastNormalAttack();
+
+	UFUNCTION()
+		void AnimNotify_Teleport();
+
+	UFUNCTION()
+		void AnimNotify_TeleportEff();
 
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
 	bool GetIsRun() { return mIsRun; }
-
+	SKILL_TYPE GetCurSkillType() { return mCurSkillType; }
+	int GetNormalAttackIndex() { return mNormalAttackIndex; }
 
 public:
 	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
 	void SetSpeedValue(float _value) { mSpeedValue = _value; }
 	void SetIsLandStart(bool _value) { mIsLandStart = _value; }
+	void SetIsPlayerMotion(PLAYER_MOTION _value) { mPlayerState = _value; }
+
 	void ChangePlayMode();
-	void Evade(DIRECTION direction);
+	void Evade(DIRECTION _direction);
 	void JumpStart();
 	void Dash();
 	void FinishDash();
 	void EquipWeapon();
 	void NormalAttack();
-
+	void UseSkill(SKILL_TYPE _skillType);
+	void GaugeEnd();
+	void RestartSkill();
 
 
 protected:
@@ -103,7 +136,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<UAnimMontage*> mNormalAttackMontageArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<FSkillAnimationInfo>	mSkillMontageArray;
 
+	UPROPERTY()
+	FTimerHandle timerHandle;
 
 protected:
 	// Idle_Move BlendSpace.
@@ -143,7 +180,7 @@ protected:
 
 
 	//--------------------------
-	// Normal Attack
+	// Normal Attack.
 	//--------------------------
 	// 공격 가능 여부.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -155,4 +192,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mNormalAttackIndex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mNormalAttackShake2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mTel;
+
+	//--------------------------
+	// Skill
+	//--------------------------
+	SKILL_TYPE	mCurSkillType;
+	int mCurSkillPlayingIndex;
 };

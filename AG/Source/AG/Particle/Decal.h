@@ -4,37 +4,44 @@
 
 #include "../BasicInfo.h"
 #include "GameFramework/Actor.h"
-#include "BasicActor.generated.h"
+#include "Decal.generated.h"
 
 UCLASS()
-class AG_API ABasicActor : public AActor
+class AG_API ADecal : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ABasicActor();
-
+	// Sets default values for this actor's properties
+	ADecal();
 
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 
 public:
-	USkeletalMeshComponent* GetMesh() { return mMesh; }
+	void SetDecalRotation(const FRotator& Rot)
+	{
+		mDecal->SetRelativeRotation(Rot);
+	}
 
-
-public:
-	void SetSkeletalMesh(const FString& _path);
+	void SetDecalMaterial(const FString& Path);
+	void SetDecalVisibility(bool Visible)
+	{
+		mDecal->SetVisibility(Visible);
+	}
 
 
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		USkeletalMeshComponent* mMesh;
+		USceneComponent* mRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UBoxComponent* mBox;
+		UDecalComponent* mDecal;
 };

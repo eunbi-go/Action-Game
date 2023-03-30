@@ -15,9 +15,11 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+
+
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
-
 
 
 USTRUCT(BlueprintType)
@@ -132,6 +134,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UAnimInstance>	playerAnimClass;
 };
+
+
+
+UENUM(BlueprintType)
+enum class SKILL_TYPE : uint8
+{
+	TELEPORT, SKILL_TYPE_END
+};
+
+
+USTRUCT(BlueprintType)
+struct FSkillInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		int32	slotNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		SKILL_TYPE	skillType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		int32	minDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		int32	maxDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		class ASkillActor* skillActor;
+};
+
 
 
 DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);

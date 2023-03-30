@@ -8,6 +8,10 @@ AWeaponActor::AWeaponActor()
 	mTrail = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
 
 	mTrail->SetupAttachment(GetMesh());
+
+	mGauge = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Gauge"));
+
+	mGauge->SetupAttachment(GetMesh());
 }
 
 void AWeaponActor::BeginPlay()
@@ -19,7 +23,16 @@ void AWeaponActor::BeginPlay()
 
 	if (IsValid(Particle))
 		mTrail->SetAsset(Particle);
-	mTrail->SetVisibility(true);
+	mTrail->SetVisibility(false);
 
+	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	
+
+
+	UNiagaraSystem* gauge = LoadObject<UNiagaraSystem>(
+		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash2.NS_Dash2'"));
+
+	if (IsValid(gauge))
+		mGauge->SetAsset(gauge);
+	mGauge->SetVisibility(false);
 }

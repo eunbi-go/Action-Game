@@ -27,13 +27,27 @@ public:
 	// 공격
 	//----------
 	virtual void NormalAttackCheck();
+	virtual void Skill1();
+	virtual void Skill2();
+
+	
+public:
+	//---------------------
+	// 스킬 관련 가상 함수들.
+	//---------------------
+	virtual void UseSkill(SKILL_TYPE _skillType);
+	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex);
+
+	virtual void GaugeEnd();
+	virtual void StopLaunchCharacter();
+	void virtual RestartSkill();
 
 
 
 public:
 	void EquipWeaponToHand();
-
-
+	void SetWeaponTrailOnOff(bool _value);
+	void ClickDestination();
 
 public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
@@ -41,13 +55,24 @@ public:
 	void SetDashStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1500.f; }
 	void SetCustomTimeDilation(float _value) { CustomTimeDilation = _value; }
 	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
+	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
+
 
 public:
+	float GetTeleportGaueTime() { return mTeleportGauge; }
+
+
+
+public:
+	//---------------------
+	// 키 입력 함수들.
+	//---------------------
 	void MoveForward(float _scale);
 	void MoveHorizontal(float _scale);
 	void MouseRotateY(float _scale);
 	void MouseRotateZ(float _scale);
 	void Dash(float _scale);
+	virtual void Gauge(float _scale);
 
 	void ChangePlayModeKey();
 	void EvadeKey();
@@ -56,6 +81,8 @@ public:
 	void JumpEnd();
 	void EquipWeaponKey();
 	void NormalAttackKey();
+	void Skill1Key();
+
 
 
 protected:
@@ -65,13 +92,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent*			mCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill, meta = (AllowPrivateAccess = true))
+	TArray<FSkillInfo>	mSkillInfoArray;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		//UParticleSystemComponent* mDash;
-		UNiagaraComponent* mDash;
+	UNiagaraComponent* mDash;
 
 	class UPlayerAnimInstance*	mAnimInst;
 
-
+	UPROPERTY()
+	FTimerHandle timerHandle;
 
 
 protected:
@@ -88,7 +118,14 @@ protected:
 	FPlayerInfo		mInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	FName				mPlayerTableRowName;
+	FName			mPlayerTableRowName;
 
 	bool	mIsDelay;
+
+	float	mTeleportGauge;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mGaugeShake;
+
+	FVector	mTargetPosition;
 };

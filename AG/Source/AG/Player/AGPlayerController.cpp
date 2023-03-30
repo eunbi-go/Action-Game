@@ -2,15 +2,29 @@
 
 
 #include "AGPlayerController.h"
+#include "../Particle/Decal.h"
 
 AAGPlayerController::AAGPlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	bShowMouseCursor = true;
+
+	mPickingPosition = FVector(0.f, 0.f, 0.f);
 }
 
 void AAGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FInputModeGameAndUI	Mode;
+	SetInputMode(Mode);
+
+	mMousePick = GetWorld()->SpawnActor<ADecal>(FVector::ZeroVector,
+		FRotator::ZeroRotator);
+
+	mMousePick->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
+	mMousePick->SetDecalVisibility(false);
 }
 
 void AAGPlayerController::PostInitializeComponents()
@@ -21,8 +35,6 @@ void AAGPlayerController::PostInitializeComponents()
 void AAGPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-
-
 }
 
 void AAGPlayerController::OnUnPossess()
@@ -33,4 +45,45 @@ void AAGPlayerController::OnUnPossess()
 void AAGPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
+	//FHitResult	result;
+	//bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
+	//	false, result);
+
+	//if (Hit)
+	//{
+	//		mPickActor = result.GetActor();
+	//		mMousePick->SetActorLocation(result.ImpactPoint);
+	//}
+}
+
+void AAGPlayerController::SpawnDecalOnMousePick()
+{
+	FHitResult	result;
+	bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
+		false, result);
+
+	if (Hit)
+	{
+			mPickActor = result.GetActor();
+			mMousePick->SetActorLocation(result.ImpactPoint);
+
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			mPickingPosition = mMousePick->GetActorLocation();
+
+			ADecal* Decal =
+				GetWorld()->SpawnActor<ADecal>(
+					mPickingPosition,
+					FRotator(0.f, 0.f, 0.f),
+					SpawnParam);
+
+			Decal->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
+			Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
+			Decal->SetLifeSpan(5.f);
+			Decal->SetDecalVisibility(true);
+	}
 }
