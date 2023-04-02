@@ -22,19 +22,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+	
 public:
-	//----------
-	// 공격
-	//----------
+	//---------------------
+	// 공격, 스킬 관련 가상 함수들.
+	//---------------------
 	virtual void NormalAttackCheck();
 	virtual void Skill1();
 	virtual void Skill2();
 
-	
-public:
-	//---------------------
-	// 스킬 관련 가상 함수들.
-	//---------------------
 	virtual void UseSkill(SKILL_TYPE _skillType);
 	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex);
 
@@ -56,12 +52,12 @@ public:
 	void SetCustomTimeDilation(float _value) { CustomTimeDilation = _value; }
 	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
 	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
-
+	void SetISEnableSprint(bool _value) { isSprint = _value; }
 
 public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }
-
-
+	int GetSprintCount() { return mSprintCount; }
+	bool GetIsSprint() { return isSprint; }
 
 public:
 	//---------------------
@@ -82,6 +78,7 @@ public:
 	void EquipWeaponKey();
 	void NormalAttackKey();
 	void Skill1Key();
+	void Skill2Key();
 
 
 
@@ -89,7 +86,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	USpringArmComponent*		mSpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent*			mCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Skill, meta = (AllowPrivateAccess = true))
@@ -128,4 +125,8 @@ protected:
 		TSubclassOf<UCameraShakeBase> mGaugeShake;
 
 	FVector	mTargetPosition;
+	float dist = 5000.0f;
+
+	int mSprintCount;
+	bool isSprint;
 };

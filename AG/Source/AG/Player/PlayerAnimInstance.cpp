@@ -5,6 +5,7 @@
 
 #include "PlayerCharacter.h"
 #include "../Particle/ParticleCascade.h"
+#include "WarriorCharacter.h"
 
 UPlayerAnimInstance::UPlayerAnimInstance()
 {
@@ -43,6 +44,8 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 
 	if (cameraShake3.Succeeded())
 		mTel = cameraShake3.Class;
+
+	mSprintCount = 0;
 }
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -249,13 +252,57 @@ void UPlayerAnimInstance::AnimNotify_Reset()
 
 void UPlayerAnimInstance::AnimNotify_SkillEnd()
 {
-	mPlayerState = PLAYER_MOTION::IDLE;
+	
+	PrintViewport(1.f, FColor::Orange, TEXT("AnimNotify_SkillEnd()"));
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 
 	if (IsValid(playerCharacter))
 	{
 		playerCharacter->SetWeaponTrailOnOff(false);
+	}
+
+	if (mCurSkillType == SKILL_TYPE::TELEPORT)
+	{
+		mPlayerState = PLAYER_MOTION::IDLE;
+		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+	}
+
+	if (mCurSkillType == SKILL_TYPE::SPRINT)
+	{
+		mPlayerState = PLAYER_MOTION::SKILL;
+		
+		++mSprintCount;
+		Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
+		PrintViewport(5.f, FColor::Red, FString::Printf(TEXT("sprintCount: %d"), mSprintCount));
+
+		// 스킬이 아예 끝났다> IDLE로 돌아감.
+		if (mSprintCount == 5)
+		{
+			PrintViewport(10.f, FColor::Black, TEXT("AnimNotify_SkillEnd() end"));
+			Cast<AWarriorCharacter>(playerCharacter)->FinishSprint();
+			
+			mSprintCount = 0;
+			mPlayerState = PLAYER_MOTION::IDLE;
+			mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+		}
+		else if (mSprintCount < 4)
+		{
+			// 플레이어가 다시 이동할 수 있게 함.
+			Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 026.f);
+
+			playerCharacter->SetISEnableSprint(false);
+
+			Montage_Play(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+		}
+		// 마지막 점프 공격.
+		else if (mSprintCount == 4)
+		{
+			Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.96);
+			Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.5f);
+			
+			Cast<AWarriorCharacter>(playerCharacter)->SprintJumpStart();
+		}
 	}
 }
 
@@ -288,7 +335,7 @@ void UPlayerAnimInstance::AnimNotify_LastNormalAttack()
 	if (IsValid(playerCharacter))
 	{
 		FVector playerPosition = playerCharacter->GetActorLocation();
-		FVector position = FVector(playerPosition.X+70.f, playerPosition.Y, 60.f);
+		FVector position = FVector(playerPosition.X+70.f, playerPosition.Y, 40.f);
 		AParticleCascade* Particle =
 			GetWorld()->SpawnActor<AParticleCascade>(
 				position,
@@ -317,7 +364,7 @@ void UPlayerAnimInstance::AnimNotify_TeleportEff()
 	{
 		FVector playerPosition = playerCharacter->GetActorLocation();
 		playerPosition += playerCharacter->GetActorForwardVector() * 200.f;
-		playerPosition.Z = 60.f;
+		playerPosition.Z = 30.f;
 		AParticleCascade* Particle =
 			GetWorld()->SpawnActor<AParticleCascade>(
 				playerPosition,
@@ -326,6 +373,26 @@ void UPlayerAnimInstance::AnimNotify_TeleportEff()
 
 		Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
 	}
+}
+
+void UPlayerAnimInstance::AnimNotify_ArriveSprintPoint()
+{
+	// 플레이어로부터 이동이 끝났는지 확인.
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+}
+
+void UPlayerAnimInstance::AnimNotify_ResetSpeed()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		PrintViewport(10.f, FColor::Orange, TEXT("AnimNotify_ResetSpeed()"));
+		playerCharacter->GetCharacterMovement()->GravityScale = 5.f;
+		playerCharacter->GetCharacterMovement()->StopMovementImmediately();
+		Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
+	}
+
 }
 
 
@@ -459,7 +526,6 @@ void UPlayerAnimInstance::UseSkill(SKILL_TYPE _skillType)
 		if (mSkillMontageArray[i].skillType == _skillType)
 		{
 			mCurSkillType = _skillType;
-
 			mPlayerState = PLAYER_MOTION::SKILL;
 
 			if (!Montage_IsPlaying(mSkillMontageArray[i].Montage))
@@ -484,4 +550,34 @@ void UPlayerAnimInstance::RestartSkill()
 {
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.3f);
 	Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+}
+
+void UPlayerAnimInstance::ResumSprintAttackMontage()
+{
+	if (mPlayerState != PLAYER_MOTION::SKILL || mCurSkillType != SKILL_TYPE::SPRINT)
+		return;
+
+
+	if (mSprintCount < 5)
+	{
+		//PrintViewport(1.f, FColor::Green, TEXT("ResumSprintAttackMontage()"));
+		Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.13f);
+	}
+	else if (mSprintCount == 5)
+	{
+		//PrintViewport(1.f, FColor::Green, TEXT("ResumSprintAttackMontage()"));
+	}
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.3f);
+
+	//Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+}
+
+void UPlayerAnimInstance::ReplaySprintMontage()
+{
+	//Montage_Play(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+	PrintViewport(10.f, FColor::Red, FString::Printf(TEXT("ReplaySprintMontage")));
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.5f);
+
+	Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+	
 }

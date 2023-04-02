@@ -38,17 +38,26 @@ public:
 	virtual void GaugeEnd() override;
 	virtual void StopLaunchCharacter() override;
 	virtual void RestartSkill() override;
-
-public:
 	
 
+	void NextSprint();
+	void TempCameraOnOff(bool _value);
+	void SprintJumpStart();
+	void FinishSprint();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mNormalAttackShake;
 
-	bool mIsGaugeEnd = false;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		class ATemporaryfCameraActor* mTempCamera;
+	class ATemporaryfCameraActor* mTempCamera;
+
+
+private:
+	// true: 게이지 차징이 끝난 상태, 목표 지점으로 빠르게 이동해야 함.
+	// false: 디폴트 값.
+	bool	mIsGaugeEnd;
+	FVector	mSprintDirection;
+
+
 };

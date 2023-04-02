@@ -9,6 +9,7 @@
 #include "PlayerAnimInstance.h"
 #include "AGPlayerController.h"
 #include "../Basic/TemporaryfCameraActor.h"
+#include "../Skill/SprintSkil.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -48,9 +49,13 @@ AWarriorCharacter::AWarriorCharacter()
 
 
 	
-
-
+	//-----------------------------------------
+	// 기타 멤버변수 초기화.
+	//-----------------------------------------
 	mIsGaugeEnd = false;
+	mSprintCount = 0;
+	mSprintDirection = FVector(0.f, 0.f, 0.f);
+	isSprint = false;
 }
 
 void AWarriorCharacter::BeginPlay()
@@ -84,44 +89,120 @@ void AWarriorCharacter::BeginPlay()
 	//---------------------------
 	// Skill 정보 세팅.
 	//---------------------------
-	FSkillInfo skillInfo;
+
+	// 1. TELEPORT
+	FSkillInfo skillInfo{};
 	skillInfo.slotNumber = 0;
 	skillInfo.skillType = SKILL_TYPE::TELEPORT;
 	skillInfo.minDamage = 100;
 	skillInfo.maxDamage = 200;
 
-	ATeleportSkill* skillProjectile = NewObject<ATeleportSkill>(this,
+	ATeleportSkill* skillActor = NewObject<ATeleportSkill>(this,
 		ATeleportSkill::StaticClass());
-	skillInfo.skillActor = Cast<ASkillActor>(skillProjectile);
+	skillInfo.skillActor = Cast<ASkillActor>(skillActor);
 
 	//SkillProjectile->mOnSkillEnd.AddDynamic(this,
 	//	&AKnightCharacter::Skill1End);
 
 	mSkillInfoArray.Add(skillInfo);
+
+
+	// 2. TELEPORT
+	FSkillInfo skillInfo2{};
+	skillInfo2.slotNumber = 1;
+	skillInfo2.skillType = SKILL_TYPE::SPRINT;
+	skillInfo2.minDamage = 300;
+	skillInfo2.maxDamage = 700;
+
+	ASprintSkil* skillActor2 = NewObject<ASprintSkil>(this,
+		ASprintSkil::StaticClass());
+	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
+
+	mSkillInfoArray.Add(skillInfo2);
+
 }
 
 void AWarriorCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (mAnimInst->GetCurSkillType() == SKILL_TYPE::TELEPORT && mIsGaugeEnd)
+	switch (mAnimInst->GetCurSkillType())
 	{
-		FVector pos = GetActorLocation();
-		FVector dest = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
-		FVector direction = dest - pos;
-
-		float distance = direction.Length() + GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.f;
-		direction = direction.GetSafeNormal();
-
-		SetActorLocation(pos + direction * DeltaTime * 1000.f);
-		if (FVector::Distance(pos, dest) <= 100.f)
+	case SKILL_TYPE::TELEPORT:
+	{
+		if (mIsGaugeEnd)
 		{
-			mIsGaugeEnd = false;
+			FVector pos = GetActorLocation();
+			FVector dest = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
+			
+			// 목표 지점으로 회전.
+			FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+				dest);
 
-			StopLaunchCharacter();
-			PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
+			FRotator rotator = GetActorRotation();
+
+			rotator = FMath::RInterpTo(rotator, targetRot, DeltaTime, 1000.f);
+
+			SetActorRotation(rotator);
+
+			// 이동.
+			CustomTimeDilation = 3.f;
+			FVector direction = (dest - pos).GetSafeNormal();
+
+			SetActorLocation(pos + direction * DeltaTime * 1000.f);
+
+			if (FVector::Distance(pos, dest) <= 100.f)
+			{
+				CustomTimeDilation = 1.f;
+				mIsGaugeEnd = false;
+
+				StopLaunchCharacter();
+				PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
+			}
 		}
 	}
+	break;
+
+
+	case SKILL_TYPE::SPRINT:
+	{
+		if (mSprintCount == 0 && !isSprint)
+			mSprintDirection = FVector(1.f, 1.f, 0.f);
+
+		else if (mSprintCount == 1 && !isSprint)
+			mSprintDirection = FVector(-1.f, 0.f, 0.f);
+
+		else if (mSprintCount == 2 && !isSprint)
+			mSprintDirection = FVector(1.f, -1.f, 0.f);
+
+		else if (mSprintCount == 3 && !isSprint)
+			mSprintDirection = FVector(-1.f, 0.f, 0.f);
+
+		if (mSprintCount <= 3 && !isSprint)
+		{
+			isSprint = true;
+			GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+
+			// 목표 지점으로 회전.
+			FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+				GetActorLocation() + mSprintDirection * dist);
+
+			FRotator rotator = GetActorRotation();
+
+			rotator = FMath::RInterpTo(rotator, targetRot, DeltaTime, 1000.f);
+
+			SetActorRotation(rotator);
+
+			// 이동.
+			LaunchCharacter(mSprintDirection * dist, true, true);
+			GetWorldTimerManager().SetTimer(timerHandle, this, &AWarriorCharacter::NextSprint, 0.2f, false);
+		}
+	}
+	break;
+
+
+	}
+
 }
 
 void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -144,7 +225,7 @@ void AWarriorCharacter::NormalAttackCheck()
 
 void AWarriorCharacter::Skill1()
 {
-	SKILL_TYPE	skillType;
+	SKILL_TYPE	skillType = SKILL_TYPE::SKILL_TYPE_END;
 	int32	count = mSkillInfoArray.Num();
 
 	for (int32 i = 0; i < count; ++i)
@@ -164,6 +245,24 @@ void AWarriorCharacter::Skill1()
 
 void AWarriorCharacter::Skill2()
 {
+	SKILL_TYPE	skillType = SKILL_TYPE::SKILL_TYPE_END;
+	int32	count = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		if (mSkillInfoArray[i].slotNumber == 1)
+		{
+			skillType = mSkillInfoArray[i].skillType;
+			break;
+		}
+	}
+
+	if (skillType == SKILL_TYPE::SKILL_TYPE_END)
+		return;
+
+	mAnimInst->UseSkill(skillType);
+	UseSkill(skillType);
+
 }
 
 void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
@@ -186,7 +285,7 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	switch (mAnimInst->GetCurSkillType())
+	switch (_skillType)
 	{
 	case SKILL_TYPE::TELEPORT:
 	{
@@ -195,6 +294,21 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 				GetActorLocation() + GetActorForwardVector() * 100.f,
 				GetActorRotation(),
 				SpawnParam);
+	}
+
+	case SKILL_TYPE::SPRINT:
+	{
+		GetCharacterMovement()->AirControl = 0.2f;
+		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		CustomTimeDilation = 2.f;
+
+		//ASprintSkil* Skill =
+		//	GetWorld()->SpawnActor<ASprintSkil>(
+		//		GetActorLocation() + GetActorForwardVector() * 100.f,
+		//		GetActorRotation(),
+		//		SpawnParam);
+
+		//TempCameraOnOff(true);
 	}
 	break;
 	}
@@ -230,7 +344,7 @@ void AWarriorCharacter::GaugeEnd()
 		GetWorld()->GetFirstPlayerController()->ClientStopCameraShake(mGaugeShake);
 
 		// 1. mSpringArm 비활성화.
-		mSpringArm->SetActive(false);
+		
 
 		// 2. 카메라 액터 스폰.
 		FActorSpawnParameters	SpawnParam;
@@ -240,11 +354,14 @@ void AWarriorCharacter::GaugeEnd()
 		mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
 			ATemporaryfCameraActor::StaticClass(), SpawnParam);
 
-		GetWorld()->GetFirstPlayerController()->SetViewTarget(mTempCamera);
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 0.7f);
+		//mTempCamera->SetCamera(mCamera);
+		mTempCamera->SetSpringArm(mSpringArm);
 
-		//mTempCamera->SetRatio(mCamera->AspectRatio);
-		mTempCamera->GetCameraComponent()->SetAspectRatio(mCamera->AspectRatio);
+		mTempCamera->SetRatio(mCamera->AspectRatio);
+		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
 
+		mSpringArm->SetActive(false);
 		FVector pos = GetActorLocation();
 		pos.X -= GetActorForwardVector().X * 400.f;
 		pos.Z += 200.f;
@@ -257,8 +374,6 @@ void AWarriorCharacter::GaugeEnd()
 
 void AWarriorCharacter::StopLaunchCharacter()
 {
-	PrintViewport(10.f, FColor::Red, TEXT("StopLaunchCharacter()"));
-
 	switch (mAnimInst->GetCurSkillType())
 	{
 	case SKILL_TYPE::TELEPORT:
@@ -268,6 +383,8 @@ void AWarriorCharacter::StopLaunchCharacter()
 		// 0.5초 동안 잠시 멈춰있다가 다시 애니메이션을 재생한다.
 		//---------------------
 
+		
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(this, 0.7f);
 		mTempCamera->Destroy();
 		mSpringArm->SetActive(true);
 
@@ -276,7 +393,6 @@ void AWarriorCharacter::StopLaunchCharacter()
 		//mSpringArm->bEnableCameraRotationLag = false;
 		//mSpringArm->CameraLagSpeed = 5.f;
 
-		PrintViewport(10.f, FColor::Red, TEXT("StopLaunchCharacter()"));
 		mAnimInst->GaugeEnd();
 		GetWorldTimerManager().SetTimer(timerHandle, this, &APlayerCharacter::RestartSkill, 0.2f, false);
 	}
@@ -307,4 +423,93 @@ void AWarriorCharacter::RestartSkill()
 	break;
 	}
 	
+}
+
+void AWarriorCharacter::NextSprint()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	++mSprintCount;
+	
+
+	// 마지막 점프 공격.
+	if (mSprintCount == 5)
+	{
+		PrintViewport(10.f, FColor::Black, TEXT("NextSprint() last"));
+		mAnimInst->ReplaySprintMontage();
+	}
+
+	// 이동 공격.
+	else if (mSprintCount < 5)
+		mAnimInst->ResumSprintAttackMontage();
+
+	// 스킬 끝.
+	else
+	{
+		PrintViewport(10.f, FColor::Black, TEXT("NextSprint() end"));
+		GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+		isSprint = false;
+		mSprintCount = 0;
+		CustomTimeDilation = 1.f;
+		mAnimInst->SetIsPlayerMotion(PLAYER_MOTION::IDLE);
+	}
+}
+
+void AWarriorCharacter::TempCameraOnOff(bool _value)
+{
+	// on.
+	if (_value)
+	{
+
+		FActorSpawnParameters	SpawnParam;
+		SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+
+		mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
+			ATemporaryfCameraActor::StaticClass(), SpawnParam);
+
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 2.f);
+		//mTempCamera->SetCamera(mCamera);
+		mTempCamera->SetSpringArm(mSpringArm);
+
+		mTempCamera->SetRatio(mCamera->AspectRatio);
+		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
+
+		mSpringArm->SetActive(false);
+		FVector pos = GetActorLocation();
+		pos.X -= GetActorForwardVector().X * 400.f;
+		pos.Z += 300.f;
+
+		mTempCamera->SetActorLocation(pos);
+		mTempCamera->SetActorRotation(FRotator(-20.f, 0.f, 0.f));
+	}
+
+	// off.
+	else
+	{
+		mTempCamera->Destroy();
+		mSpringArm->SetActive(true);
+	}
+}
+
+void AWarriorCharacter::SprintJumpStart()
+{
+	if (mAnimInst->GetCurSkillType() == SKILL_TYPE::SPRINT)
+	{
+		PrintViewport(1.f, FColor::Red, TEXT("Last"));
+
+		isSprint = true;
+		//GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		mSprintDirection = FVector(0.f, 0.f, 1.f);
+
+		LaunchCharacter(mSprintDirection * dist, true, true);
+	}
+}
+
+void AWarriorCharacter::FinishSprint()
+{
+	CustomTimeDilation = 1.f;
+	isSprint = false;
+	mSprintCount = 0;
+	GetCharacterMovement()->GravityScale = 1.f;
+	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 }

@@ -92,6 +92,12 @@ public:
 	UFUNCTION()
 		void AnimNotify_TeleportEff();
 
+	UFUNCTION()
+		void AnimNotify_ArriveSprintPoint();
+
+	UFUNCTION()
+		void AnimNotify_ResetSpeed();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
@@ -105,6 +111,8 @@ public:
 	void SetIsLandStart(bool _value) { mIsLandStart = _value; }
 	void SetIsPlayerMotion(PLAYER_MOTION _value) { mPlayerState = _value; }
 
+
+public:
 	void ChangePlayMode();
 	void Evade(DIRECTION _direction);
 	void JumpStart();
@@ -115,7 +123,8 @@ public:
 	void UseSkill(SKILL_TYPE _skillType);
 	void GaugeEnd();
 	void RestartSkill();
-
+	void ResumSprintAttackMontage();
+	void ReplaySprintMontage();
 
 protected:
 	PLAYE_MODE		mCurPlayMode;
@@ -204,4 +213,6 @@ protected:
 	//--------------------------
 	SKILL_TYPE	mCurSkillType;
 	int mCurSkillPlayingIndex;
+
+	int mSprintCount;
 };

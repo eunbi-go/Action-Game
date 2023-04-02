@@ -6,4 +6,8 @@
 ATemporaryfCameraActor::ATemporaryfCameraActor()
 {
 	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TempororyCamera"));
+	mSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+
+	//SetRootComponent(mSpringArm);
+	//mCamera->SetupAttachment(mSpringArm);
 }

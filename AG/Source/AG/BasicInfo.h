@@ -17,6 +17,7 @@
 
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
+#include "Kismet/KismetMathLibrary.h"
 
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
@@ -140,7 +141,7 @@ public:
 UENUM(BlueprintType)
 enum class SKILL_TYPE : uint8
 {
-	TELEPORT, SKILL_TYPE_END
+	TELEPORT, SPRINT, SKILL_TYPE_END
 };
 
 

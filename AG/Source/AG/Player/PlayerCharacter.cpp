@@ -99,6 +99,7 @@ APlayerCharacter::APlayerCharacter()
 	mIsDelay = false;
 	mTeleportGauge = 0.f;
 	mTargetPosition = FVector(0.f, 0.f, 0.f);
+	mSprintCount = 0;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -110,7 +111,7 @@ void APlayerCharacter::BeginPlay()
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
 
 
-
+	mCamera->SetAspectRatio(1.777778);
 
 	//---------------------------
 	// Dash Niagara.
@@ -165,6 +166,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetActorLocation().Z >= 690.f)
+	{
+		//PrintViewport(5.f, FColor::Red, TEXT("Finish Fly"));
+	}
 
 
 	//---------------------------
@@ -172,9 +177,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 	//---------------------------
 	if (mAnimInst->GetPlayerMotion() == PLAYER_MOTION::NORMAL_ATTACK || mAnimInst->GetPlayerMotion() == PLAYER_MOTION::SKILL)
 	{
-		FVector cameraForwardVector = mCamera->GetForwardVector().GetSafeNormal2D();
-		FRotator targetRot = FRotationMatrix::MakeFromX(cameraForwardVector).Rotator();
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRot, DeltaTime, 10.0f));
+		if (mAnimInst->GetCurSkillType() != SKILL_TYPE::SPRINT)
+		{
+			FVector cameraForwardVector = mCamera->GetForwardVector().GetSafeNormal2D();
+			FRotator targetRot = FRotationMatrix::MakeFromX(cameraForwardVector).Rotator();
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRot, DeltaTime, 10.0f));
+		}
 	}
 
 
@@ -236,6 +244,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill1"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Skill1Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill2"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Skill2Key);
 	/*PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("GaugeEnd"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::GaugeEnd);*/
 
@@ -442,6 +452,43 @@ void APlayerCharacter::NormalAttackKey()
 void APlayerCharacter::Skill1Key()
 {
 	Skill1();
+}
+
+void APlayerCharacter::Skill2Key()
+{
+	/*FVector velocity = FVector(0.f, 0.f, 0.f);
+	if (mSprintCount == 0)
+	{
+		velocity = FVector(1.f, 1.f, 0.f);
+		LaunchCharacter(velocity * 4000.f, true, true);
+		mSprintCount++;
+	}
+	else if (mSprintCount == 1)
+	{
+		velocity = FVector(-1.f, 0.f, 0.f);
+		LaunchCharacter(velocity * 8000.f, true, true);
+		mSprintCount++;
+	}
+	else if (mSprintCount == 2)
+	{
+		velocity = FVector(1.f, -1.f, 0.f);
+		LaunchCharacter(velocity * 8000.f, true, true);
+		mSprintCount++;
+	}
+	else if (mSprintCount == 3)
+	{
+		velocity = FVector(-1.f, 0.f, 0.f);
+		LaunchCharacter(velocity * 8000.f, true, true);
+		mSprintCount++;
+	}
+	else if (mSprintCount == 4)
+	{
+		velocity = FVector(0.f, 0.f, 1.f);
+		LaunchCharacter(velocity * 800.f, true, true);
+		mSprintCount = 0;
+	}*/
+
+	Skill2();
 }
 
 void APlayerCharacter::GaugeEnd()
