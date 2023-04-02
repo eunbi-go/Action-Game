@@ -30,6 +30,7 @@ public:
 	virtual void NormalAttackCheck();
 	virtual void Skill1();
 	virtual void Skill2();
+	virtual void Skill3();
 
 	virtual void UseSkill(SKILL_TYPE _skillType);
 	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex);
@@ -79,6 +80,7 @@ public:
 	void NormalAttackKey();
 	void Skill1Key();
 	void Skill2Key();
+	void Skill3Key();
 
 
 

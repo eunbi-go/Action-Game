@@ -98,6 +98,9 @@ public:
 	UFUNCTION()
 		void AnimNotify_ResetSpeed();
 
+	UFUNCTION()
+		void AnimNotify_Continuous();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
@@ -125,6 +128,7 @@ public:
 	void RestartSkill();
 	void ResumSprintAttackMontage();
 	void ReplaySprintMontage();
+	void StopContinuousSkill();
 
 protected:
 	PLAYE_MODE		mCurPlayMode;
@@ -215,4 +219,7 @@ protected:
 	int mCurSkillPlayingIndex;
 
 	int mSprintCount;
+
+	int mContinuousCount;
+	bool mIsEndContinuous;
 };

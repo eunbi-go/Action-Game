@@ -246,6 +246,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::Skill1Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill2"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Skill2Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill3"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Skill3Key);
 	/*PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("GaugeEnd"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::GaugeEnd);*/
 
@@ -262,6 +264,10 @@ void APlayerCharacter::Skill1()
 }
 
 void APlayerCharacter::Skill2()
+{
+}
+
+void APlayerCharacter::Skill3()
 {
 }
 
@@ -456,39 +462,12 @@ void APlayerCharacter::Skill1Key()
 
 void APlayerCharacter::Skill2Key()
 {
-	/*FVector velocity = FVector(0.f, 0.f, 0.f);
-	if (mSprintCount == 0)
-	{
-		velocity = FVector(1.f, 1.f, 0.f);
-		LaunchCharacter(velocity * 4000.f, true, true);
-		mSprintCount++;
-	}
-	else if (mSprintCount == 1)
-	{
-		velocity = FVector(-1.f, 0.f, 0.f);
-		LaunchCharacter(velocity * 8000.f, true, true);
-		mSprintCount++;
-	}
-	else if (mSprintCount == 2)
-	{
-		velocity = FVector(1.f, -1.f, 0.f);
-		LaunchCharacter(velocity * 8000.f, true, true);
-		mSprintCount++;
-	}
-	else if (mSprintCount == 3)
-	{
-		velocity = FVector(-1.f, 0.f, 0.f);
-		LaunchCharacter(velocity * 8000.f, true, true);
-		mSprintCount++;
-	}
-	else if (mSprintCount == 4)
-	{
-		velocity = FVector(0.f, 0.f, 1.f);
-		LaunchCharacter(velocity * 800.f, true, true);
-		mSprintCount = 0;
-	}*/
-
 	Skill2();
+}
+
+void APlayerCharacter::Skill3Key()
+{
+	Skill3();
 }
 
 void APlayerCharacter::GaugeEnd()

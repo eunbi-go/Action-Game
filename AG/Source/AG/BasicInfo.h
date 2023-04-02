@@ -141,7 +141,7 @@ public:
 UENUM(BlueprintType)
 enum class SKILL_TYPE : uint8
 {
-	TELEPORT, SPRINT, SKILL_TYPE_END
+	TELEPORT, SPRINT, CONTINUOUS, SKILL_TYPE_END
 };
 
 

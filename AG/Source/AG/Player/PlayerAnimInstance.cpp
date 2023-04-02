@@ -46,6 +46,9 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 		mTel = cameraShake3.Class;
 
 	mSprintCount = 0;
+	mContinuousCount = 0;
+
+	mIsEndContinuous = false;
 }
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -268,7 +271,7 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 	}
 
-	if (mCurSkillType == SKILL_TYPE::SPRINT)
+	else if (mCurSkillType == SKILL_TYPE::SPRINT)
 	{
 		mPlayerState = PLAYER_MOTION::SKILL;
 		
@@ -302,6 +305,23 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 			Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.5f);
 			
 			Cast<AWarriorCharacter>(playerCharacter)->SprintJumpStart();
+		}
+	}
+
+	else if (mCurSkillType == SKILL_TYPE::CONTINUOUS)
+	{
+		if (!mIsEndContinuous)
+		{
+			Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.0f);
+			Montage_Play(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
+			
+		}
+		else
+		{
+			mContinuousCount = 0;
+			mIsEndContinuous = false;
+			mPlayerState = PLAYER_MOTION::IDLE;
+			mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 		}
 	}
 }
@@ -393,6 +413,16 @@ void UPlayerAnimInstance::AnimNotify_ResetSpeed()
 		Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
 	}
 
+}
+
+void UPlayerAnimInstance::AnimNotify_Continuous()
+{
+	mContinuousCount++;
+
+	if (!mIsEndContinuous)
+	{
+		Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.47);
+	}
 }
 
 
@@ -530,6 +560,10 @@ void UPlayerAnimInstance::UseSkill(SKILL_TYPE _skillType)
 
 			if (!Montage_IsPlaying(mSkillMontageArray[i].Montage))
 			{
+				if (mCurSkillType == SKILL_TYPE::CONTINUOUS)
+				{
+					//Montage_SetPlayRate(mSkillMontageArray[i].Montage, 5.5f);
+				}
 				Montage_SetPosition(mSkillMontageArray[i].Montage, 0.f);
 				Montage_Play(mSkillMontageArray[i].Montage);
 
@@ -580,4 +614,9 @@ void UPlayerAnimInstance::ReplaySprintMontage()
 
 	Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
 	
+}
+
+void UPlayerAnimInstance::StopContinuousSkill()
+{
+	mIsEndContinuous = true;
 }

@@ -56,6 +56,8 @@ AWarriorCharacter::AWarriorCharacter()
 	mSprintCount = 0;
 	mSprintDirection = FVector(0.f, 0.f, 0.f);
 	isSprint = false;
+
+	mContinuousTime = 0.f;
 }
 
 void AWarriorCharacter::BeginPlay()
@@ -119,6 +121,19 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
 
 	mSkillInfoArray.Add(skillInfo2);
+
+	// 3. CONTINUOUS
+	FSkillInfo skillInfo3{};
+	skillInfo3.slotNumber = 2;
+	skillInfo3.skillType = SKILL_TYPE::CONTINUOUS;
+	skillInfo3.minDamage = 300;
+	skillInfo3.maxDamage = 700;
+
+	ASprintSkil* skillActor3 = NewObject<ASprintSkil>(this,
+		ASprintSkil::StaticClass());
+	skillInfo3.skillActor = Cast<ASkillActor>(skillActor3);
+
+	mSkillInfoArray.Add(skillInfo3);
 
 }
 
@@ -201,6 +216,27 @@ void AWarriorCharacter::Tick(float DeltaTime)
 	break;
 
 
+	case SKILL_TYPE::CONTINUOUS:
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+
+		if (GetActorLocation().Z >= 600.f)
+		{
+			GetCharacterMovement()->StopMovementImmediately();
+			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+		}
+
+		mContinuousTime += DeltaTime;
+
+		if (mContinuousTime >= 3.f)
+		{
+			mContinuousTime = 0.f;
+			mAnimInst->StopContinuousSkill();
+		}
+	}
+	break;
+
+
 	}
 
 }
@@ -265,6 +301,27 @@ void AWarriorCharacter::Skill2()
 
 }
 
+void AWarriorCharacter::Skill3()
+{
+	SKILL_TYPE	skillType = SKILL_TYPE::SKILL_TYPE_END;
+	int32	count = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		if (mSkillInfoArray[i].slotNumber == 2)
+		{
+			skillType = mSkillInfoArray[i].skillType;
+			break;
+		}
+	}
+
+	if (skillType == SKILL_TYPE::SKILL_TYPE_END)
+		return;
+
+	mAnimInst->UseSkill(skillType);
+	UseSkill(skillType);
+}
+
 void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 {
 	int32	count = mSkillInfoArray.Num();
@@ -295,6 +352,7 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 				GetActorRotation(),
 				SpawnParam);
 	}
+	break;
 
 	case SKILL_TYPE::SPRINT:
 	{
@@ -309,6 +367,15 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 		//		SpawnParam);
 
 		//TempCameraOnOff(true);
+	}
+	break;
+
+	case SKILL_TYPE::CONTINUOUS:
+	{
+		//GetCharacterMovement()->AirControl = 0.2f;
+		//GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+
+		//LaunchCharacter(FVector(0.f, 0.f, 1.f) * 4000.f, true, true);
 	}
 	break;
 	}
