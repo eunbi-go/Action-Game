@@ -58,6 +58,7 @@ public:
 	void FinishSprint();
 	void StartSlashCameraShake();
 	void SpawnFresnel();
+	void ResetFresnel();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

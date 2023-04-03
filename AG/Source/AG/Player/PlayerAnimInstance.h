@@ -125,6 +125,9 @@ public:
 	UFUNCTION()
 		void AnimNotify_TarilOff();
 
+	UFUNCTION()
+		void AnimNotify_NormalCS();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
@@ -235,6 +238,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mTel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mNormalCS;
 
 	//--------------------------
 	// Skill

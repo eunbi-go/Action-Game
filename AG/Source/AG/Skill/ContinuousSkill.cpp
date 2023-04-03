@@ -13,7 +13,7 @@ AContinuousSkill::AContinuousSkill()
 void AContinuousSkill::BeginPlay()
 {
 	Super::BeginPlay();
-	mNiagara->SetRelativeScale3D(FVector(0.005f, 0.005f, 0.005f));
+	mNiagara->SetRelativeScale3D(FVector(0.001f, 0.001f, 0.001f));
 }
 
 void AContinuousSkill::Tick(float DeltaTime)

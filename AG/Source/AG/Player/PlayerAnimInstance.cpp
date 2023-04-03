@@ -49,6 +49,11 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	if (cameraShake3.Succeeded())
 		mTel = cameraShake3.Class;
 
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack_C'"));
+
+	if (cameraShake.Succeeded())
+		mNormalCS = cameraShake.Class;
+
 	mSprintCount = 0;
 	mContinuousCount = 0;
 
@@ -267,13 +272,14 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 	if (IsValid(playerCharacter))
 	{
 		playerCharacter->SetWeaponTrailOnOff(false);
-		playerCharacter->EndSkill(mCurSkillType);
+		
 	}
 
 	if (mCurSkillType == SKILL_TYPE::TELEPORT)
 	{
 		mPlayerState = PLAYER_MOTION::IDLE;
 		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+		playerCharacter->EndSkill(mCurSkillType);
 	}
 
 	else if (mCurSkillType == SKILL_TYPE::SPRINT)
@@ -293,6 +299,7 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 			mSprintCount = 0;
 			mPlayerState = PLAYER_MOTION::IDLE;
 			mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+			playerCharacter->EndSkill(mCurSkillType);
 		}
 		else if (mSprintCount < 4)
 		{
@@ -327,6 +334,7 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 			mIsEndContinuous = false;
 			mPlayerState = PLAYER_MOTION::IDLE;
 			mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+			playerCharacter->EndSkill(mCurSkillType);
 		}
 	}
 
@@ -334,6 +342,7 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 	{
 		mPlayerState = PLAYER_MOTION::IDLE;
 		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+		playerCharacter->EndSkill(mCurSkillType);
 	}
 }
 
@@ -403,6 +412,8 @@ void UPlayerAnimInstance::AnimNotify_TeleportEff()
 				SpawnParam);
 
 		Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
+	
+		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
 	}
 }
 
@@ -443,8 +454,7 @@ void UPlayerAnimInstance::AnimNotify_EffectSpawn()
 	if (IsValid(playerCharacter))
 	{
 		playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
-
-		
+		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
 	}
 }
 
@@ -456,11 +466,13 @@ void UPlayerAnimInstance::AnimNotify_ContinuousEff()
 	{
 		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
 	}
+
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
 }
 
 void UPlayerAnimInstance::AnimNotify_SlowStop()
 {
-	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.8f);
 }
 
 void UPlayerAnimInstance::AnimNotify_SlashEff()
@@ -511,6 +523,11 @@ void UPlayerAnimInstance::AnimNotify_TarilOff()
 	{
 		playerCharacter->SetWeaponTrailOnOff(false);
 	}
+}
+
+void UPlayerAnimInstance::AnimNotify_NormalCS()
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
 }
 
 
@@ -652,8 +669,10 @@ void UPlayerAnimInstance::UseSkill(SKILL_TYPE _skillType)
 			{
 				if (mCurSkillType == SKILL_TYPE::SLASH)
 				{
-					Montage_SetPlayRate(mSkillMontageArray[i].Montage, 0.5f);
+					Montage_SetPlayRate(mSkillMontageArray[i].Montage, 0.3f);
 				}
+				else
+					Montage_SetPlayRate(mSkillMontageArray[i].Montage, 1.f);
 				Montage_SetPosition(mSkillMontageArray[i].Montage, 0.f);
 				Montage_Play(mSkillMontageArray[i].Montage);
 

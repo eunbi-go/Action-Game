@@ -11,7 +11,6 @@ ASprintSkil::ASprintSkil()
 void ASprintSkil::BeginPlay()
 {
 	Super::BeginPlay();
-	SetActorScale3D(FVector(1.f, 1.f, 2.f));
 }
 
 void ASprintSkil::EndPlay(const EEndPlayReason::Type EndPlayReason)

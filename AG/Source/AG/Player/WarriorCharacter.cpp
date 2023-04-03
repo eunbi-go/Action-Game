@@ -158,7 +158,8 @@ void AWarriorCharacter::BeginPlay()
 		ASprintSkil::StaticClass());
 	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
 
-	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3'"));
+	//skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3'"));
+	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_1.NS_AOE_Attack_1'"));
 	skillActor2->GetNiagara()->SetActive(true);
 	skillActor2->SetTarget(this);
 
@@ -420,7 +421,7 @@ void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 	{
 		if (mSkillInfoArray[i].skillType == _skillType)
 		{
-			SpawnSkill(_skillType, i);
+			//SpawnSkill(_skillType, i);
 			ApplySkill(_skillType);
 			break;
 		}
@@ -448,9 +449,14 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 
 	case SKILL_TYPE::SPRINT:
 	{
-		GetCharacterMovement()->AirControl = 0.2f;
-		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		CustomTimeDilation = 2.f;
+		FVector pos = GetActorLocation();
+		pos.Z = 30.f;
+
+		ASprintSkil* Skill =
+			GetWorld()->SpawnActor<ASprintSkil>(
+				pos,
+				GetActorRotation(),
+				SpawnParam);
 	}
 	break;
 
@@ -472,9 +478,6 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	{
 
 		FVector pos = GetActorLocation() + GetActorForwardVector() * 500.f;
-		//pos.Z = 30.f;
-		//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
-		//	FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X));
 
 		ASlashSkill* Skill =
 			GetWorld()->SpawnActor<ASlashSkill>(
@@ -506,22 +509,11 @@ void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
 
 	case SKILL_TYPE::CONTINUOUS:
 	{
-		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mContinuousShake);
+		//GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mContinuousShake);
 	}
 
 	case SKILL_TYPE::SLASH:
 	{
-
-		//FVector pos = GetActorLocation() + GetActorForwardVector() * 100.f;
-		//pos.Z = 30.f;
-		//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
-		//	FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X));
-
-		//ASlashSkill* Skill =
-		//	GetWorld()->SpawnActor<ASlashSkill>(
-		//		pos,
-		//		FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X).Rotation(),
-		//		SpawnParam);
 	}
 	break;
 	}
@@ -532,13 +524,19 @@ void AWarriorCharacter::EndSkill(SKILL_TYPE _skillType)
 	switch (_skillType)
 	{
 	case SKILL_TYPE::TELEPORT:
+		mIsGaugeEnd = false;
 		Cast<AAGPlayerController>(GetController())->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
 		break;
 
 	case SKILL_TYPE::SPRINT:
+		//GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+		//isSprint = false;
+		//mSprintCount = 0;
+		//CustomTimeDilation = 1.f;
 		break;
 
 	case SKILL_TYPE::CONTINUOUS:
+		mContinuousTime = 0.f;
 		break;
 
 	case SKILL_TYPE::SLASH:
@@ -764,6 +762,8 @@ void AWarriorCharacter::FinishSprint()
 	mSprintCount = 0;
 	GetCharacterMovement()->GravityScale = 1.f;
 	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+
+	ResetFresnel();
 }
 
 void AWarriorCharacter::StartSlashCameraShake()
@@ -801,4 +801,13 @@ void AWarriorCharacter::SpawnFresnel()
 		mFresnelTime = 0.f;
 		mFresnelEnable = false;
 	}
+}
+
+void AWarriorCharacter::ResetFresnel()
+{
+	mFresnelEnable = false;
+	mFresnelTime = 0.f;
+	mFresnelTimeEnd = 5.f;
+	mFresnelCreateTime = 0.f;
+	mFresnelCreateTimeEnd = 0.4f;
 }
