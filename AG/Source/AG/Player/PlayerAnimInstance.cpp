@@ -6,6 +6,9 @@
 #include "PlayerCharacter.h"
 #include "../Particle/ParticleCascade.h"
 #include "WarriorCharacter.h"
+#include "../Particle/ParticleNiagara.h"
+#include "../Skill/SprintSkil.h"
+#include "../Skill/ContinuousSkill.h"
 
 UPlayerAnimInstance::UPlayerAnimInstance()
 {
@@ -324,6 +327,12 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 			mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 		}
 	}
+
+	else if (mCurSkillType == SKILL_TYPE::SLASH)
+	{
+		mPlayerState = PLAYER_MOTION::IDLE;
+		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+	}
 }
 
 void UPlayerAnimInstance::AnimNotify_StartGauge()
@@ -424,6 +433,64 @@ void UPlayerAnimInstance::AnimNotify_Continuous()
 		Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.47);
 	}
 }
+
+void UPlayerAnimInstance::AnimNotify_EffectSpawn()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
+
+		
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_ContinuousEff()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_SlowStop()
+{
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
+}
+
+void UPlayerAnimInstance::AnimNotify_SlashEff()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SpawnSkill(SKILL_TYPE::SLASH, mCurSkillPlayingIndex);
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_SlashCS()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_ConEff()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
+	}
+}
+
 
 
 void UPlayerAnimInstance::ChangePlayMode()
@@ -558,11 +625,12 @@ void UPlayerAnimInstance::UseSkill(SKILL_TYPE _skillType)
 			mCurSkillType = _skillType;
 			mPlayerState = PLAYER_MOTION::SKILL;
 
+
 			if (!Montage_IsPlaying(mSkillMontageArray[i].Montage))
 			{
-				if (mCurSkillType == SKILL_TYPE::CONTINUOUS)
+				if (mCurSkillType == SKILL_TYPE::SLASH)
 				{
-					//Montage_SetPlayRate(mSkillMontageArray[i].Montage, 5.5f);
+					Montage_SetPlayRate(mSkillMontageArray[i].Montage, 0.5f);
 				}
 				Montage_SetPosition(mSkillMontageArray[i].Montage, 0.f);
 				Montage_Play(mSkillMontageArray[i].Montage);
@@ -619,4 +687,6 @@ void UPlayerAnimInstance::ReplaySprintMontage()
 void UPlayerAnimInstance::StopContinuousSkill()
 {
 	mIsEndContinuous = true;
+	mPlayerState = PLAYER_MOTION::IDLE;
+	mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 }

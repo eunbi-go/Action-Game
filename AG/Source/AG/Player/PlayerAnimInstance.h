@@ -101,6 +101,24 @@ public:
 	UFUNCTION()
 		void AnimNotify_Continuous();
 
+	UFUNCTION()
+		void AnimNotify_EffectSpawn();
+
+	UFUNCTION()
+		void AnimNotify_ContinuousEff();
+
+	UFUNCTION()
+		void AnimNotify_SlowStop();
+
+	UFUNCTION()
+		void AnimNotify_SlashEff();
+
+	UFUNCTION()
+		void AnimNotify_SlashCS();
+
+	UFUNCTION()
+		void AnimNotify_ConEff();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }

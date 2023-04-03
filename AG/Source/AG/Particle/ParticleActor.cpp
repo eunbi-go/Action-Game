@@ -8,7 +8,9 @@ AParticleActor::AParticleActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	mAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
 
+	SetRootComponent(mAudio);
 }
 
 // Called when the game starts or when spawned
@@ -54,9 +56,9 @@ void AParticleActor::SetParticle(UParticleSystem* _particle)
 {
 }
 
-//void AParticleActor::SetParticle(UNiagaraSystem* _particle)
-//{
-//}
+void AParticleActor::SetParticle(UNiagaraSystem* _particle)
+{
+}
 
 void AParticleActor::SetParticle(const FString& _path)
 {

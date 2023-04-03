@@ -112,6 +112,7 @@ void APlayerCharacter::BeginPlay()
 
 
 	mCamera->SetAspectRatio(1.777778);
+	mCamera->bConstrainAspectRatio = true;
 
 	//---------------------------
 	// Dash Niagara.
@@ -217,7 +218,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 
-	
 
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveForward"), this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MoveHorizontal"), this, &APlayerCharacter::MoveHorizontal);
@@ -225,6 +225,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("MouseRotateZ"), this, &APlayerCharacter::MouseRotateZ);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("Dash"), this, &APlayerCharacter::Dash);
 	PlayerInputComponent->BindAxis<APlayerCharacter>(TEXT("Gauge"), this, &APlayerCharacter::Gauge);
+
 
 
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("ChangePlayMode"), EInputEvent::IE_Pressed,
@@ -248,11 +249,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::Skill2Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill3"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Skill3Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill4"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Skill4Key);
 	/*PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("GaugeEnd"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::GaugeEnd);*/
 
 
-	
+
 }
 
 void APlayerCharacter::NormalAttackCheck()
@@ -268,6 +271,10 @@ void APlayerCharacter::Skill2()
 }
 
 void APlayerCharacter::Skill3()
+{
+}
+
+void APlayerCharacter::Skill4()
 {
 }
 
@@ -335,17 +342,19 @@ void APlayerCharacter::MoveHorizontal(float _scale)
 
 void APlayerCharacter::MouseRotateY(float _scale)
 {
-	if (_scale == 0.f)
-		return;
+	//if (_scale == 0.f)
+	//	return;
+
+	//PrintViewport(5.f, FColor::Blue, TEXT("MouseRotateY"));
 
 	AddControllerPitchInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::MouseRotateZ(float _scale)
 {
-	if (_scale == 0.f)
-		return;
-
+	//if (_scale == 0.f)
+	//	return;
+	//PrintViewport(5.f, FColor::Blue, TEXT("MouseRotateZ"));
 	AddControllerYawInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 
@@ -468,6 +477,11 @@ void APlayerCharacter::Skill2Key()
 void APlayerCharacter::Skill3Key()
 {
 	Skill3();
+}
+
+void APlayerCharacter::Skill4Key()
+{
+	Skill4();
 }
 
 void APlayerCharacter::GaugeEnd()

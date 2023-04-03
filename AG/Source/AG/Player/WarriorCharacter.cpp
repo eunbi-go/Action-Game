@@ -10,6 +10,9 @@
 #include "AGPlayerController.h"
 #include "../Basic/TemporaryfCameraActor.h"
 #include "../Skill/SprintSkil.h"
+#include "../Skill/SlashSkill.h"
+#include "../Particle/ParticleNiagara.h"
+#include "../Skill/ContinuousSkill.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -47,6 +50,18 @@ AWarriorCharacter::AWarriorCharacter()
 		mNormalAttackShake = cameraShake.Class;
 
 
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake2(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Gontinuous.CS_Gontinuous_C'"));
+
+	if (cameraShake2.Succeeded())
+		mContinuousShake = cameraShake2.Class;
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake3(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Slash.CS_Slash_C'"));
+
+	if (cameraShake3.Succeeded())
+		mSlashShake = cameraShake3.Class;
+
+
 
 	
 	//-----------------------------------------
@@ -58,6 +73,18 @@ AWarriorCharacter::AWarriorCharacter()
 	isSprint = false;
 
 	mContinuousTime = 0.f;
+}
+
+void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, const FHitResult& Hit)
+{
+	PrintViewport(10.f, FColor::Blue, TEXT("Skill1End"));
+	SkillActor->Destroy();
+}
+
+void AWarriorCharacter::Skill3End(ASkillActor* SkillActor, const FHitResult& Hit)
+{
+	PrintViewport(10.f, FColor::Blue, TEXT("Skill3End"));
+	SkillActor->Destroy();
 }
 
 void AWarriorCharacter::BeginPlay()
@@ -103,13 +130,14 @@ void AWarriorCharacter::BeginPlay()
 		ATeleportSkill::StaticClass());
 	skillInfo.skillActor = Cast<ASkillActor>(skillActor);
 
-	//SkillProjectile->mOnSkillEnd.AddDynamic(this,
-	//	&AKnightCharacter::Skill1End);
+	
+
+	skillActor->mOnSkillEnd.AddDynamic(this, &AWarriorCharacter::Skill1End);
 
 	mSkillInfoArray.Add(skillInfo);
 
 
-	// 2. TELEPORT
+	// 2. SPRINT
 	FSkillInfo skillInfo2{};
 	skillInfo2.slotNumber = 1;
 	skillInfo2.skillType = SKILL_TYPE::SPRINT;
@@ -120,6 +148,10 @@ void AWarriorCharacter::BeginPlay()
 		ASprintSkil::StaticClass());
 	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
 
+	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3'"));
+	skillActor2->GetNiagara()->SetActive(true);
+	skillActor2->SetTarget(this);
+
 	mSkillInfoArray.Add(skillInfo2);
 
 	// 3. CONTINUOUS
@@ -129,11 +161,31 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo3.minDamage = 300;
 	skillInfo3.maxDamage = 700;
 
-	ASprintSkil* skillActor3 = NewObject<ASprintSkil>(this,
-		ASprintSkil::StaticClass());
+	AContinuousSkill* skillActor3 = NewObject<AContinuousSkill>(this,
+		AContinuousSkill::StaticClass());
 	skillInfo3.skillActor = Cast<ASkillActor>(skillActor3);
 
+	skillActor3->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SlashStrike.NS_SlashStrike'"));
+	skillActor3->mOnSkillEnd.AddDynamic(this, &AWarriorCharacter::Skill3End);
+
 	mSkillInfoArray.Add(skillInfo3);
+
+	// 4. SLASH
+	FSkillInfo skillInfo4{};
+	skillInfo4.slotNumber = 3;
+	skillInfo4.skillType = SKILL_TYPE::SLASH;
+	skillInfo4.minDamage = 300;
+	skillInfo4.maxDamage = 700;
+
+	ASlashSkill* skillActor4 = NewObject<ASlashSkill>(this,
+		ASlashSkill::StaticClass());
+	skillInfo4.skillActor = Cast<ASkillActor>(skillActor4);
+
+	skillActor4->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SwordsAttack.NS_SwordsAttack'"));
+	skillActor4->GetNiagara()->SetActive(true);
+	
+
+	mSkillInfoArray.Add(skillInfo4);
 
 }
 
@@ -172,7 +224,7 @@ void AWarriorCharacter::Tick(float DeltaTime)
 				mIsGaugeEnd = false;
 
 				StopLaunchCharacter();
-				PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
+				//PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
 			}
 		}
 	}
@@ -210,7 +262,7 @@ void AWarriorCharacter::Tick(float DeltaTime)
 
 			// 이동.
 			LaunchCharacter(mSprintDirection * dist, true, true);
-			GetWorldTimerManager().SetTimer(timerHandle, this, &AWarriorCharacter::NextSprint, 0.2f, false);
+			GetWorldTimerManager().SetTimer(timerHandle, this, &AWarriorCharacter::NextSprint, 0.4f, false);
 		}
 	}
 	break;
@@ -232,6 +284,7 @@ void AWarriorCharacter::Tick(float DeltaTime)
 		{
 			mContinuousTime = 0.f;
 			mAnimInst->StopContinuousSkill();
+			GetWorld()->GetFirstPlayerController()->ClientStopCameraShake(mContinuousShake);
 		}
 	}
 	break;
@@ -277,6 +330,7 @@ void AWarriorCharacter::Skill1()
 		return;
 
 	mAnimInst->UseSkill(skillType);
+	UseSkill(skillType);
 }
 
 void AWarriorCharacter::Skill2()
@@ -322,6 +376,27 @@ void AWarriorCharacter::Skill3()
 	UseSkill(skillType);
 }
 
+void AWarriorCharacter::Skill4()
+{
+	SKILL_TYPE	skillType = SKILL_TYPE::SKILL_TYPE_END;
+	int32	count = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		if (mSkillInfoArray[i].slotNumber == 3)
+		{
+			skillType = mSkillInfoArray[i].skillType;
+			break;
+		}
+	}
+
+	if (skillType == SKILL_TYPE::SKILL_TYPE_END)
+		return;
+
+	mAnimInst->UseSkill(skillType);
+	UseSkill(skillType);
+}
+
 void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 {
 	int32	count = mSkillInfoArray.Num();
@@ -331,6 +406,7 @@ void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 		if (mSkillInfoArray[i].skillType == _skillType)
 		{
 			SpawnSkill(_skillType, i);
+			ApplySkill(_skillType);
 			break;
 		}
 	}
@@ -341,6 +417,7 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	float rand = (float)FMath::FRandRange((float)30.f, (float)50.f);
 
 	switch (_skillType)
 	{
@@ -359,23 +436,77 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 		GetCharacterMovement()->AirControl = 0.2f;
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		CustomTimeDilation = 2.f;
-
-		//ASprintSkil* Skill =
-		//	GetWorld()->SpawnActor<ASprintSkil>(
-		//		GetActorLocation() + GetActorForwardVector() * 100.f,
-		//		GetActorRotation(),
-		//		SpawnParam);
-
-		//TempCameraOnOff(true);
 	}
 	break;
 
 	case SKILL_TYPE::CONTINUOUS:
 	{
-		//GetCharacterMovement()->AirControl = 0.2f;
-		//GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		FVector pos = GetActorLocation();
 
-		//LaunchCharacter(FVector(0.f, 0.f, 1.f) * 4000.f, true, true);
+		FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(pos,
+			pos + GetActorForwardVector() * 100.f);
+
+		AContinuousSkill* Skill =
+			GetWorld()->SpawnActor<AContinuousSkill>(
+				pos,
+				GetActorRotation(),
+				SpawnParam);
+	}
+
+	case SKILL_TYPE::SLASH:
+	{
+
+		FVector pos = GetActorLocation() + GetActorForwardVector() * 500.f;
+		//pos.Z = 30.f;
+		//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+		//	FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X));
+
+		ASlashSkill* Skill =
+			GetWorld()->SpawnActor<ASlashSkill>(
+				pos,
+				GetActorRotation(),
+				SpawnParam);
+	}
+	break;
+	}
+}
+
+void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
+{
+	switch (_skillType)
+	{
+	case SKILL_TYPE::TELEPORT:
+	{
+
+	}
+	break;
+
+	case SKILL_TYPE::SPRINT:
+	{
+		GetCharacterMovement()->AirControl = 0.2f;
+		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		CustomTimeDilation = 2.f;
+	}
+	break;
+
+	case SKILL_TYPE::CONTINUOUS:
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mContinuousShake);
+	}
+
+	case SKILL_TYPE::SLASH:
+	{
+
+		//FVector pos = GetActorLocation() + GetActorForwardVector() * 100.f;
+		//pos.Z = 30.f;
+		//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+		//	FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X));
+
+		//ASlashSkill* Skill =
+		//	GetWorld()->SpawnActor<ASlashSkill>(
+		//		pos,
+		//		FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X).Rotation(),
+		//		SpawnParam);
 	}
 	break;
 	}
@@ -407,7 +538,9 @@ void AWarriorCharacter::GaugeEnd()
 		//---------------------
 
 		mIsGaugeEnd = true;
-
+		//mSpringArm->bEnableCameraLag = true;
+		//mSpringArm->bEnableCameraRotationLag = true;
+		//mSpringArm->CameraLagSpeed = 0.5f;
 		GetWorld()->GetFirstPlayerController()->ClientStopCameraShake(mGaugeShake);
 
 		// 1. mSpringArm 비활성화.
@@ -426,14 +559,24 @@ void AWarriorCharacter::GaugeEnd()
 		mTempCamera->SetSpringArm(mSpringArm);
 
 		mTempCamera->SetRatio(mCamera->AspectRatio);
+		mTempCamera->GetCamera()->bConstrainAspectRatio = true;
 		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
 
+		FVector target = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
+		// 목표 지점으로 회전.
+		FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+			target);
+
+		FRotator rotator = GetActorRotation();
+
 		mSpringArm->SetActive(false);
+
 		FVector pos = GetActorLocation();
-		pos.X -= GetActorForwardVector().X * 400.f;
+		
 		pos.Z += 200.f;
 
 		mTempCamera->SetActorLocation(pos);
+		mTempCamera->SetActorRotation(targetRot);
 	}
 	break;
 	}
@@ -541,6 +684,7 @@ void AWarriorCharacter::TempCameraOnOff(bool _value)
 		mTempCamera->SetRatio(mCamera->AspectRatio);
 		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
 
+
 		mSpringArm->SetActive(false);
 		FVector pos = GetActorLocation();
 		pos.X -= GetActorForwardVector().X * 400.f;
@@ -579,4 +723,9 @@ void AWarriorCharacter::FinishSprint()
 	mSprintCount = 0;
 	GetCharacterMovement()->GravityScale = 1.f;
 	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+}
+
+void AWarriorCharacter::StartSlashCameraShake()
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mSlashShake);
 }

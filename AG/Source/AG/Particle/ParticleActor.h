@@ -28,7 +28,7 @@ public:
 
 public:
 	virtual void SetParticle(UParticleSystem* _particle);
-	//virtual void SetParticle(UNiagaraSystem* _particle);
+	virtual void SetParticle(UNiagaraSystem* _particle);
 	virtual void SetParticle(const FString& _path);
 
 

@@ -24,4 +24,11 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
+
+
+public:
+	void SetTarget(class APlayerCharacter* _target) { mTarget = _target; }
+
+protected:
+	class APlayerCharacter* mTarget;
 };

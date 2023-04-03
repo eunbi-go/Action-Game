@@ -11,7 +11,7 @@ class AG_API ASkillActor : public AActor
 {
 	GENERATED_BODY()
 	
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillEnd, ASkillActor*, SkillActor, const FHitResult&, Hit);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillEnd, ASkillActor*, SkillActor, const FHitResult&, Hit);
 
 public:	
 	ASkillActor();
@@ -24,8 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	//UPROPERTY(BlueprintAssignable)
-	//FOnSkillEnd	mOnSkillEnd;
+	UPROPERTY(BlueprintAssignable)
+	FOnSkillEnd	mOnSkillEnd;
 
 
 
@@ -40,13 +40,16 @@ public:
 	void SetCollisionProfile(const FName& _profile);
 
 
+public:
+	UNiagaraComponent* GetNiagara() { return mNiagara; }
+
 
 public:
-	//template <typename T>
-	//void AddSkillEndDelegate(T* Obj, void (T::* Func)(ASkillActor*))
-	//{
-	//	mOnSkillEnd.AddDynamic(Obj, Func);
-	//}
+	template <typename T>
+	void AddSkillEndDelegate(T* Obj, void (T::* Func)(ASkillActor*))
+	{
+		mOnSkillEnd.AddDynamic(Obj, Func);
+	}
 
 
 

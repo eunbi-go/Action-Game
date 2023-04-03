@@ -10,6 +10,8 @@ ATeleportSkill::ATeleportSkill()
 void ATeleportSkill::BeginPlay()
 {
 	Super::BeginPlay();
+
+	mNiagara->SetActive(true);
 }
 
 void ATeleportSkill::Tick(float DeltaTime)

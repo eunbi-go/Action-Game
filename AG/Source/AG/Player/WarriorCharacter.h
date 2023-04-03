@@ -16,6 +16,14 @@ class AG_API AWarriorCharacter : public APlayerCharacter
 public:
 	AWarriorCharacter();
 
+
+public:
+	UFUNCTION()
+		void Skill1End(class ASkillActor* SkillActor, const FHitResult& Hit);
+	UFUNCTION()
+		void Skill3End(class ASkillActor* SkillActor, const FHitResult& Hit);
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,9 +39,11 @@ public:
 	virtual void Skill1();
 	virtual void Skill2();
 	virtual void Skill3();
+	virtual void Skill4();
 
 	virtual void UseSkill(SKILL_TYPE _skillType) override;
 	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex) override;
+	void ApplySkill(SKILL_TYPE _skillType);
 	
 	virtual void Gauge(float _scale) override;
 	virtual void GaugeEnd() override;
@@ -45,10 +55,17 @@ public:
 	void TempCameraOnOff(bool _value);
 	void SprintJumpStart();
 	void FinishSprint();
+	void StartSlashCameraShake();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mNormalAttackShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mContinuousShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mSlashShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	class ATemporaryfCameraActor* mTempCamera;
