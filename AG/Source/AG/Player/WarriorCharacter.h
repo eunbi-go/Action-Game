@@ -21,6 +21,8 @@ public:
 	UFUNCTION()
 		void Skill1End(class ASkillActor* SkillActor, const FHitResult& Hit);
 	UFUNCTION()
+		void Skill1End2(class ASkillActor* SkillActor, UParticleSystemComponent* comp);
+	UFUNCTION()
 		void Skill3End(class ASkillActor* SkillActor, const FHitResult& Hit);
 
 

@@ -402,16 +402,18 @@ void UPlayerAnimInstance::AnimNotify_TeleportEff()
 
 	if (IsValid(playerCharacter))
 	{
-		FVector playerPosition = playerCharacter->GetActorLocation();
-		playerPosition += playerCharacter->GetActorForwardVector() * 200.f;
-		playerPosition.Z = 30.f;
-		AParticleCascade* Particle =
-			GetWorld()->SpawnActor<AParticleCascade>(
-				playerPosition,
-				playerCharacter->GetActorRotation(),
-				SpawnParam);
+		playerCharacter->SpawnSkill(mCurSkillType, mCurSkillPlayingIndex);
 
-		Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
+		//FVector playerPosition = playerCharacter->GetActorLocation();
+		//playerPosition += playerCharacter->GetActorForwardVector() * 200.f;
+		//playerPosition.Z = 30.f;
+		//AParticleCascade* Particle =
+		//	GetWorld()->SpawnActor<AParticleCascade>(
+		//		playerPosition,
+		//		playerCharacter->GetActorRotation(),
+		//		SpawnParam);
+
+		//Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
 	
 		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
 	}

@@ -24,5 +24,5 @@ public:
 
 public:
 	UFUNCTION()
-	void CollisionProjectile(const FHitResult& Hit);
+	void Finish(UParticleSystemComponent* comp);
 };

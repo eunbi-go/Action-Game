@@ -12,6 +12,7 @@ class AG_API ASkillActor : public AActor
 	GENERATED_BODY()
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillEnd, ASkillActor*, SkillActor, const FHitResult&, Hit);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPaticleFinished, ASkillActor*, skillActor, UParticleSystemComponent*, comp);
 
 public:	
 	ASkillActor();
@@ -26,6 +27,9 @@ public:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnSkillEnd	mOnSkillEnd;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnPaticleFinished	mOnPaticleEnd;
 
 
 

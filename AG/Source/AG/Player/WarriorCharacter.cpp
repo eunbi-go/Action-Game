@@ -87,7 +87,13 @@ AWarriorCharacter::AWarriorCharacter()
 
 void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, const FHitResult& Hit)
 {
-	PrintViewport(10.f, FColor::Blue, TEXT("Skill1End"));
+	PrintViewport(10.f, FColor::Yellow, TEXT("Skill1End"));
+	SkillActor->Destroy();
+}
+
+void AWarriorCharacter::Skill1End2(ASkillActor* SkillActor, UParticleSystemComponent* comp)
+{
+	PrintViewport(10.f, FColor::Yellow, TEXT("Skill1End"));
 	SkillActor->Destroy();
 }
 
@@ -139,10 +145,9 @@ void AWarriorCharacter::BeginPlay()
 	ATeleportSkill* skillActor = NewObject<ATeleportSkill>(this,
 		ATeleportSkill::StaticClass());
 	skillInfo.skillActor = Cast<ASkillActor>(skillActor);
-
 	
-
-	skillActor->mOnSkillEnd.AddDynamic(this, &AWarriorCharacter::Skill1End);
+	skillActor->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
+	skillActor->mOnPaticleEnd.AddDynamic(this, &AWarriorCharacter::Skill1End2);
 
 	mSkillInfoArray.Add(skillInfo);
 

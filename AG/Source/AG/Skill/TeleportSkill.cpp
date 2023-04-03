@@ -2,7 +2,6 @@
 
 
 #include "TeleportSkill.h"
-
 ATeleportSkill::ATeleportSkill()
 {
 }
@@ -11,6 +10,8 @@ void ATeleportSkill::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//mParticle->OnParticleDeath.AddDynamic(this, &ATeleportSkill::Finish);
+	mParticle->OnSystemFinished.AddDynamic(this, &ATeleportSkill::Finish);
 	mNiagara->SetActive(true);
 }
 
@@ -19,7 +20,8 @@ void ATeleportSkill::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ATeleportSkill::CollisionProjectile(const FHitResult& Hit)
+void ATeleportSkill::Finish(UParticleSystemComponent* comp)
 {
-	//mOnSkillEnd.Broadcast(this, Hit);
+	PrintViewport(10.f, FColor::Yellow, TEXT("ATeleportSkill::Finish"));
+	mOnPaticleEnd.Broadcast(this, comp);
 }
