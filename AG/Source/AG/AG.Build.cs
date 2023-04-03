@@ -15,7 +15,8 @@ public class AG : ModuleRules
 			"InputCore", 
 			"Niagara",
             "AIModule",
-            "GameplayTasks"
+            "GameplayTasks",
+            "UMG"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

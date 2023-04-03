@@ -16,4 +16,17 @@ class AG_API AAGGameModeBase : public AGameModeBase
 	
 public:
 	AAGGameModeBase();
+
+public:
+	virtual void BeginPlay()	override;
+	virtual void PostLogin(APlayerController* NewPlayer);
+	virtual void Tick(float DeltaTime)	override;
+
+public:
+	class UMainWidget* GetMainWidget() { return mMainWidget; }
+
+
+private:
+	TSubclassOf<UUserWidget>	mMainWidgetClass;
+	class UMainWidget*			mMainWidget;
 };
