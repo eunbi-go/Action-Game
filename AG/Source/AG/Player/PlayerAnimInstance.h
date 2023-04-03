@@ -119,6 +119,12 @@ public:
 	UFUNCTION()
 		void AnimNotify_ConEff();
 
+	UFUNCTION()
+		void AnimNotify_TarilOn();
+
+	UFUNCTION()
+		void AnimNotify_TarilOff();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }

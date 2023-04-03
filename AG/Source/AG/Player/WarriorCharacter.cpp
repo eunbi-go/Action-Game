@@ -663,7 +663,7 @@ void AWarriorCharacter::RestartSkill()
 
 		mAnimInst->RestartSkill();
 		mWeapon->IsGaugeOn(false);
-		mWeapon->SetTrailOnOff(true);
+		//mWeapon->SetTrailOnOff(true);
 
 		//mCamera->SetActive(true);
 		mSpringArm->CameraLagSpeed = 8.f;

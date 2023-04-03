@@ -493,6 +493,26 @@ void UPlayerAnimInstance::AnimNotify_ConEff()
 	}
 }
 
+void UPlayerAnimInstance::AnimNotify_TarilOn()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SetWeaponTrailOnOff(true);
+	}
+}
+
+void UPlayerAnimInstance::AnimNotify_TarilOff()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		playerCharacter->SetWeaponTrailOnOff(false);
+	}
+}
+
 
 
 void UPlayerAnimInstance::ChangePlayMode()

@@ -328,6 +328,8 @@ void APlayerCharacter::ClickDestination()
 		playerController->SpawnDecalOnMousePick();
 }
 
+
+
 void APlayerCharacter::MoveForward(float _scale)
 {
 	if (_scale == 0.f)
@@ -462,7 +464,7 @@ void APlayerCharacter::NormalAttackKey()
 	{
 		// 일반 공격 몽타주 재생 시작.
 		mAnimInst->NormalAttack();
-		mWeapon->SetTrailOnOff(true);
+		//mWeapon->SetTrailOnOff(true);
 	}
 }	
 
