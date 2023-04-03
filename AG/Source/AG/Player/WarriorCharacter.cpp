@@ -477,7 +477,7 @@ void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
 	{
 	case SKILL_TYPE::TELEPORT:
 	{
-
+		Cast<AAGPlayerController>(GetController())->SetInputModeType(INPUT_MODE_TYPE::GAME_UI);
 	}
 	break;
 
@@ -509,6 +509,25 @@ void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
 		//		SpawnParam);
 	}
 	break;
+	}
+}
+
+void AWarriorCharacter::EndSkill(SKILL_TYPE _skillType)
+{
+	switch (_skillType)
+	{
+	case SKILL_TYPE::TELEPORT:
+		Cast<AAGPlayerController>(GetController())->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
+		break;
+
+	case SKILL_TYPE::SPRINT:
+		break;
+
+	case SKILL_TYPE::CONTINUOUS:
+		break;
+
+	case SKILL_TYPE::SLASH:
+		break;
 	}
 }
 
@@ -554,7 +573,7 @@ void AWarriorCharacter::GaugeEnd()
 		mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
 			ATemporaryfCameraActor::StaticClass(), SpawnParam);
 
-		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 0.7f);
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 0.8f);
 		//mTempCamera->SetCamera(mCamera);
 		mTempCamera->SetSpringArm(mSpringArm);
 
@@ -573,9 +592,14 @@ void AWarriorCharacter::GaugeEnd()
 
 		FVector pos = GetActorLocation();
 		
-		pos.Z += 200.f;
+		//pos.Z += 200.f;
 
-		mTempCamera->SetActorLocation(pos);
+		target.Z += 300.f;
+		target += GetActorForwardVector() * 700.f;
+		targetRot = UKismetMathLibrary::FindLookAtRotation(target,
+			pos);
+
+		mTempCamera->SetActorLocation(target);
 		mTempCamera->SetActorRotation(targetRot);
 	}
 	break;

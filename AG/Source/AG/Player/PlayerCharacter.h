@@ -32,6 +32,7 @@ public:
 	virtual void Skill2();
 	virtual void Skill3();
 	virtual void Skill4();
+	virtual void EndSkill(SKILL_TYPE _skillType);
 
 	virtual void UseSkill(SKILL_TYPE _skillType);
 	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex);

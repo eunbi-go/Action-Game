@@ -210,7 +210,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 
 
-	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z));
+	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), GetControlRotation().Roll, GetControlRotation().Pitch, GetControlRotation().Yaw));
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -278,6 +278,10 @@ void APlayerCharacter::Skill4()
 {
 }
 
+void APlayerCharacter::EndSkill(SKILL_TYPE _skillType)
+{
+}
+
 void APlayerCharacter::UseSkill(SKILL_TYPE _skillType)
 {
 }
@@ -342,19 +346,17 @@ void APlayerCharacter::MoveHorizontal(float _scale)
 
 void APlayerCharacter::MouseRotateY(float _scale)
 {
-	//if (_scale == 0.f)
-	//	return;
-
-	//PrintViewport(5.f, FColor::Blue, TEXT("MouseRotateY"));
+	if (_scale == 0.f)
+		return;
 
 	AddControllerPitchInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 
 void APlayerCharacter::MouseRotateZ(float _scale)
 {
-	//if (_scale == 0.f)
-	//	return;
-	//PrintViewport(5.f, FColor::Blue, TEXT("MouseRotateZ"));
+	if (_scale == 0.f)
+		return;
+
 	AddControllerYawInput(_scale * 90.f * GetWorld()->GetDeltaSeconds());
 }
 

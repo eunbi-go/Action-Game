@@ -44,7 +44,8 @@ public:
 	virtual void UseSkill(SKILL_TYPE _skillType) override;
 	virtual void SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex) override;
 	void ApplySkill(SKILL_TYPE _skillType);
-	
+	virtual void EndSkill(SKILL_TYPE _skillType) override;
+
 	virtual void Gauge(float _scale) override;
 	virtual void GaugeEnd() override;
 	virtual void StopLaunchCharacter() override;

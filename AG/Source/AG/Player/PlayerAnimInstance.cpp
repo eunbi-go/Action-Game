@@ -9,6 +9,7 @@
 #include "../Particle/ParticleNiagara.h"
 #include "../Skill/SprintSkil.h"
 #include "../Skill/ContinuousSkill.h"
+#include "AGPlayerController.h"
 
 UPlayerAnimInstance::UPlayerAnimInstance()
 {
@@ -266,6 +267,7 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 	if (IsValid(playerCharacter))
 	{
 		playerCharacter->SetWeaponTrailOnOff(false);
+		playerCharacter->EndSkill(mCurSkillType);
 	}
 
 	if (mCurSkillType == SKILL_TYPE::TELEPORT)

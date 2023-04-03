@@ -17,7 +17,8 @@ void AAGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameAndUI	Mode;
+	FInputModeGameOnly	Mode;
+	//FInputModeGameAndUI	Mode;
 	SetInputMode(Mode);
 
 	mMousePick = GetWorld()->SpawnActor<ADecal>(FVector::ZeroVector,
@@ -45,17 +46,6 @@ void AAGPlayerController::OnUnPossess()
 void AAGPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
-	//FHitResult	result;
-	//bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
-	//	false, result);
-
-	//if (Hit)
-	//{
-	//		mPickActor = result.GetActor();
-	//		mMousePick->SetActorLocation(result.ImpactPoint);
-	//}
 }
 
 void AAGPlayerController::SpawnDecalOnMousePick()
@@ -85,5 +75,25 @@ void AAGPlayerController::SpawnDecalOnMousePick()
 			Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
 			Decal->SetLifeSpan(5.f);
 			Decal->SetDecalVisibility(true);
+	}
+}
+
+void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
+{
+	switch (_type)
+	{
+	case INPUT_MODE_TYPE::GAME_ONLY:
+	{
+		FInputModeGameOnly	Mode;
+		SetInputMode(Mode);
+	}
+	break;
+
+	case INPUT_MODE_TYPE::GAME_UI:
+	{
+		FInputModeGameAndUI	Mode;
+		SetInputMode(Mode);
+	}
+	break;
 	}
 }

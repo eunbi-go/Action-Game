@@ -41,6 +41,9 @@ public:
 	FVector GetPickingPosition() { return mPickingPosition; }
 
 
+public:
+	void SetInputModeType(INPUT_MODE_TYPE _type);
+
 
 protected:
 	// TWeakPtr은 참조카운팅을 안한다.

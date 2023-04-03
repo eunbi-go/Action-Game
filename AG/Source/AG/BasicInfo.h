@@ -169,6 +169,14 @@ public:
 
 
 
+UENUM(BlueprintType)
+enum class INPUT_MODE_TYPE : uint8
+{
+	GAME_ONLY, GAME_UI, INPUT_MODE_TYPE_END
+};
+
+
+
 DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);
 
 // 로그 사용을 위해 매크로 생성: 함수이름[줄번호]
