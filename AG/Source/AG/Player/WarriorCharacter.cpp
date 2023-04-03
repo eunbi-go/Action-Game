@@ -13,6 +13,7 @@
 #include "../Skill/SlashSkill.h"
 #include "../Particle/ParticleNiagara.h"
 #include "../Skill/ContinuousSkill.h"
+#include "../Skill/FresnelActor.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -22,7 +23,10 @@ AWarriorCharacter::AWarriorCharacter()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>    characterAsset(TEXT("SkeletalMesh'/Game/Assets/Character/Valkyrie/Mesh/SK_Valkyrie.SK_Valkyrie'"));
 
 	if (characterAsset.Succeeded())
+	{
 		GetMesh()->SetSkeletalMesh(characterAsset.Object);
+		mGhostMesh = characterAsset.Object;
+	}
 
 	GetMesh()->SetRelativeLocation(FVector(0.0, 0.0, -90.0));
 	GetMesh()->SetRelativeRotation(FRotator(0.0, -90.0, 0.0));
@@ -73,6 +77,12 @@ AWarriorCharacter::AWarriorCharacter()
 	isSprint = false;
 
 	mContinuousTime = 0.f;
+
+	mFresnelEnable = false;
+	mFresnelTime = 0.f;
+	mFresnelTimeEnd = 5.f;
+	mFresnelCreateTime = 0.f;
+	mFresnelCreateTimeEnd = 0.4f;
 }
 
 void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, const FHitResult& Hit)
@@ -248,6 +258,7 @@ void AWarriorCharacter::Tick(float DeltaTime)
 		if (mSprintCount <= 3 && !isSprint)
 		{
 			isSprint = true;
+			mFresnelEnable = true;
 			GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 
 			// 목표 지점으로 회전.
@@ -259,11 +270,15 @@ void AWarriorCharacter::Tick(float DeltaTime)
 			rotator = FMath::RInterpTo(rotator, targetRot, DeltaTime, 1000.f);
 
 			SetActorRotation(rotator);
+			
 
 			// 이동.
 			LaunchCharacter(mSprintDirection * dist, true, true);
 			GetWorldTimerManager().SetTimer(timerHandle, this, &AWarriorCharacter::NextSprint, 0.4f, false);
 		}
+
+		if (mFresnelEnable)
+			SpawnFresnel();
 	}
 	break;
 
@@ -733,8 +748,10 @@ void AWarriorCharacter::SprintJumpStart()
 		PrintViewport(1.f, FColor::Red, TEXT("Last"));
 
 		isSprint = true;
-		//GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		mSprintDirection = FVector(0.f, 0.f, 1.f);
+
+		SpawnFresnel();
+		mFresnelCreateTimeEnd = 0.07f;
 
 		LaunchCharacter(mSprintDirection * dist, true, true);
 	}
@@ -752,4 +769,36 @@ void AWarriorCharacter::FinishSprint()
 void AWarriorCharacter::StartSlashCameraShake()
 {
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mSlashShake);
+}
+
+void AWarriorCharacter::SpawnFresnel()
+{
+	mFresnelTime += GetWorld()->DeltaTimeSeconds;
+	mFresnelCreateTime += GetWorld()->DeltaTimeSeconds;
+
+	if (mFresnelCreateTime >= mFresnelCreateTimeEnd)
+	{
+		mFresnelCreateTime -= mFresnelCreateTimeEnd;
+
+		// 잔상 생성
+		FActorSpawnParameters	SpawnParam;
+		//SpawnParam.Template = mHitActor;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AFresnelActor* Ghost =
+			GetWorld()->SpawnActor<AFresnelActor>(
+				GetMesh()->GetComponentLocation(),
+				GetMesh()->GetComponentRotation(),
+				SpawnParam);
+
+		Ghost->SetMesh(mGhostMesh);
+		Ghost->CopyPoseFromSkeletalComp(GetMesh());
+	}
+
+	if (mFresnelTime >= mFresnelTimeEnd)
+	{
+		mFresnelTime = 0.f;
+		mFresnelEnable = false;
+	}
 }

@@ -57,6 +57,7 @@ public:
 	void SprintJumpStart();
 	void FinishSprint();
 	void StartSlashCameraShake();
+	void SpawnFresnel();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
@@ -71,6 +72,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	class ATemporaryfCameraActor* mTempCamera;
 
+	USkeletalMesh* mGhostMesh;
+
 
 private:
 	// true: 게이지 차징이 끝난 상태, 목표 지점으로 빠르게 이동해야 함.
@@ -79,4 +82,11 @@ private:
 	FVector	mSprintDirection;
 
 	float	mContinuousTime;
+
+	bool	mFresnelEnable;
+	float	mFresnelTime;
+	float	mFresnelTimeEnd;
+	
+	float	mFresnelCreateTime;
+	float	mFresnelCreateTimeEnd;
 };
