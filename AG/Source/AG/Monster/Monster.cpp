@@ -4,17 +4,25 @@
 #include "Monster.h"
 
 #include "../AGGameInstance.h"
+#include "MonsterSpawnPoint.h"
+
 
 AMonster::AMonster()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	//-------------------
+	// 충돌 세팅
+	//-------------------
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+	GetCapsuleComponent()->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
+
+	// 데미지 수신 가능.
 	SetCanBeDamaged(true);
 }
 
@@ -46,7 +54,7 @@ void AMonster::BeginPlay()
 		GetCharacterMovement()->MaxWalkSpeed = mInfo.movingWalkSpeed;
 
 		GetMesh()->SetSkeletalMesh(info->mesh);
-		GetMesh()->SetAnimInstanceClass(info->animClass);
+		//GetMesh()->SetAnimInstanceClass(info->animClass);
 	}
 
 	//mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
@@ -91,7 +99,11 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	if (mInfo.hp <= 0)
 	{
-		Destroy();
+		// 다시 충돌되지 않도록.
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		mSpawnPoint->RemoveMonster(this);
+		//Destroy();
 	}
 
 	return damage;

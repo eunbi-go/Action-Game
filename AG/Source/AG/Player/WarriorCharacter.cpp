@@ -68,13 +68,13 @@ AWarriorCharacter::AWarriorCharacter()
 
 
 	//-----------------------------------------
-	// CameraShake ÁöÁ¤.
+	// HitActor.
 	//-----------------------------------------
 	mHitActor = CreateDefaultSubobject<AParticleNiagara>(TEXT("HitParticle"));
 
 	AParticleNiagara* particle = Cast<AParticleNiagara>(mHitActor);
 	particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
-	
+	particle->SetActorScale3D(FVector(3.f, 3.f, 3.f));
 	 
 	 
 	 

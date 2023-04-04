@@ -7,11 +7,13 @@ AKhaimera::AKhaimera()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(100.f);
+	GetCapsuleComponent()->SetCapsuleRadius(25.f);
+
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
-	GetCapsuleComponent()->SetCapsuleHalfHeight(120.f);
-	GetCapsuleComponent()->SetCapsuleRadius(30.f);
+	
 	
 
 	mMonsterTableRowName = TEXT("Khaimera");
