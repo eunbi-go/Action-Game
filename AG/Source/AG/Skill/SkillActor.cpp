@@ -43,6 +43,8 @@ void ASkillActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	mOnSkillEnd.Clear();
+	mOnPaticleEnd.Clear();
+	mOnNiagaraEnd.Clear();
 }
 
 // Called every frame

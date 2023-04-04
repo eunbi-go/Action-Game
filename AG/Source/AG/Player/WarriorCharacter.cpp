@@ -67,7 +67,17 @@ AWarriorCharacter::AWarriorCharacter()
 
 
 
+	//-----------------------------------------
+	// CameraShake 지정.
+	//-----------------------------------------
+	mHitActor = CreateDefaultSubobject<AParticleNiagara>(TEXT("HitParticle"));
+
+	AParticleNiagara* particle = Cast<AParticleNiagara>(mHitActor);
+	particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
 	
+	 
+	 
+	 
 	//-----------------------------------------
 	// 기타 멤버변수 초기화.
 	//-----------------------------------------
@@ -331,6 +341,58 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AWarriorCharacter::NormalAttackCheck()
 {
+	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 30.f;
+	FVector endPosition = startPosition + GetActorForwardVector() * mInfo.attackDistance;
+
+	FCollisionQueryParams	param(NAME_None, false, this);
+
+	TArray<FHitResult>	collisionResult;
+	bool IsCollision = GetWorld()->SweepMultiByChannel(
+		collisionResult, startPosition,
+		endPosition, FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel4,
+		FCollisionShape::MakeSphere(50.f),
+		param);
+
+
+#if ENABLE_DRAW_DEBUG
+	
+	// CollisionEnable 가 true이면 Red, false이면 Green을 저장한다.
+	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+
+	// FRotationMatrix::MakeFromZ(GetActorForwardVector()) : 앞쪽을
+	// 바라보는 회전행렬을 만들어서 .ToQuat() 함수를 이용하여 회전행렬을
+	// 회전값으로 변환해준다.
+	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+		mInfo.attackDistance / 2.f,
+		50.f,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+		DrawColor, false, 0.5f);
+
+#endif
+
+
+	if (IsCollision)
+	{
+		int32	Count = collisionResult.Num();
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			AParticleNiagara* Particle =
+				GetWorld()->SpawnActor<AParticleNiagara>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
+		}
+	}
+
+
+
 	if (mAnimInst->GetNormalAttackIndex() == 3)
 	{
 		return;

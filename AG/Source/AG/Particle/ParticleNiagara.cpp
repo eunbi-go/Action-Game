@@ -33,5 +33,6 @@ void AParticleNiagara::SetParticle(const FString& _path)
 
 void AParticleNiagara::ParticleFinish(UNiagaraComponent* _particle)
 {
+	PrintViewport(10.f, FColor::Yellow, TEXT("AParticleNiagara::ParticleFinish()"));
 	Destroy();
 }

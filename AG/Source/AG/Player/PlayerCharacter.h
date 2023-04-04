@@ -105,6 +105,8 @@ protected:
 	UPROPERTY()
 	FTimerHandle timerHandle;
 
+	AActor* mHitActor;
+
 
 protected:
 	class AWeaponActor* mWeapon;

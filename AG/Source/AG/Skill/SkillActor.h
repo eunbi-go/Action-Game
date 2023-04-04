@@ -30,10 +30,10 @@ public:
 	FOnSkillEnd	mOnSkillEnd;
 
 	UPROPERTY(BlueprintAssignable)
-		FOnPaticleFinished	mOnPaticleEnd;
+	FOnPaticleFinished	mOnPaticleEnd;
 
 	UPROPERTY(BlueprintAssignable)
-		FOnNiagaraFinished	mOnNiagaraEnd;
+	FOnNiagaraFinished	mOnNiagaraEnd;
 
 
 

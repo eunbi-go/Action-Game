@@ -53,6 +53,9 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 
 

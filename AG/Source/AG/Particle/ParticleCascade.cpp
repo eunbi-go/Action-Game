@@ -33,5 +33,6 @@ void AParticleCascade::SetParticle(const FString& _path)
 
 void AParticleCascade::ParticleFinish(UParticleSystemComponent* _particle)
 {
+	PrintViewport(10.f, FColor::Yellow, TEXT("AParticleCascade::ParticleFinish()"));
 	Destroy();
 }

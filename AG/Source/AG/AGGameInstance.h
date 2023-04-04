@@ -25,10 +25,12 @@ public:
 
 public:
 	const FPlayerTableInfo* FindPlayerTable(const FName& _name);
+	const FMonsterTableInfo* FindMonsterTable(const FName& _name);
 
 
 
 
 private:
 	UDataTable* mPlayerInfoTable;
+	UDataTable* mMonsterInfoTable;
 };
