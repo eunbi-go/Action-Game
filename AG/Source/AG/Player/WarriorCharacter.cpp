@@ -85,23 +85,30 @@ AWarriorCharacter::AWarriorCharacter()
 	mFresnelCreateTimeEnd = 0.4f;
 }
 
-void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, const FHitResult& Hit)
+void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, UParticleSystemComponent* comp)
 {
 	PrintViewport(10.f, FColor::Yellow, TEXT("Skill1End"));
 	SkillActor->Destroy();
 }
 
-void AWarriorCharacter::Skill1End2(ASkillActor* SkillActor, UParticleSystemComponent* comp)
+void AWarriorCharacter::Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp)
 {
-	PrintViewport(10.f, FColor::Yellow, TEXT("Skill1End"));
+	PrintViewport(10.f, FColor::Yellow, TEXT("Skill2EndWithNiagara"));
 	SkillActor->Destroy();
 }
 
-void AWarriorCharacter::Skill3End(ASkillActor* SkillActor, const FHitResult& Hit)
+void AWarriorCharacter::Skill3EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
 {
-	PrintViewport(10.f, FColor::Blue, TEXT("Skill3End"));
+	PrintViewport(10.f, FColor::Yellow, TEXT("Skill3EndWithNiagara"));
 	SkillActor->Destroy();
 }
+
+void AWarriorCharacter::Skill4EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
+{
+	PrintViewport(10.f, FColor::Yellow, TEXT("Skill4EndWithNiagara"));
+	SkillActor->Destroy();
+}
+
 
 void AWarriorCharacter::BeginPlay()
 {
@@ -147,7 +154,7 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo.skillActor = Cast<ASkillActor>(skillActor);
 	
 	skillActor->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
-	skillActor->mOnPaticleEnd.AddDynamic(this, &AWarriorCharacter::Skill1End2);
+	skillActor->mOnPaticleEnd.AddDynamic(this, &AWarriorCharacter::Skill1End);
 
 	mSkillInfoArray.Add(skillInfo);
 
@@ -165,6 +172,7 @@ void AWarriorCharacter::BeginPlay()
 
 	//skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3'"));
 	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_1.NS_AOE_Attack_1'"));
+	skillActor2->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill2EndWithNiagara);
 	skillActor2->GetNiagara()->SetActive(true);
 	skillActor2->SetTarget(this);
 
@@ -182,8 +190,7 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo3.skillActor = Cast<ASkillActor>(skillActor3);
 
 	skillActor3->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SlashStrike.NS_SlashStrike'"));
-	skillActor3->mOnSkillEnd.AddDynamic(this, &AWarriorCharacter::Skill3End);
-
+	skillActor3->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill3EndWithNiagara);
 	mSkillInfoArray.Add(skillInfo3);
 
 	// 4. SLASH
@@ -198,6 +205,7 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo4.skillActor = Cast<ASkillActor>(skillActor4);
 
 	skillActor4->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SwordsAttack.NS_SwordsAttack'"));
+	skillActor4->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill4EndWithNiagara);
 	skillActor4->GetNiagara()->SetActive(true);
 	
 

@@ -13,7 +13,9 @@ AContinuousSkill::AContinuousSkill()
 void AContinuousSkill::BeginPlay()
 {
 	Super::BeginPlay();
+
 	mNiagara->SetRelativeScale3D(FVector(0.001f, 0.001f, 0.001f));
+	mNiagara->OnSystemFinished.AddDynamic(this, &AContinuousSkill::Finish);
 }
 
 void AContinuousSkill::Tick(float DeltaTime)
@@ -21,6 +23,8 @@ void AContinuousSkill::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AContinuousSkill::CollisionProjectile(const FHitResult& Hit)
+void AContinuousSkill::Finish(UNiagaraComponent* comp)
 {
+	PrintViewport(10.f, FColor::Yellow, TEXT("AContinuousSkill::Finish"));
+	mOnNiagaraEnd.Broadcast(this, comp);
 }

@@ -27,6 +27,10 @@ public:
 
 
 public:
+	UFUNCTION()
+	void Finish(UNiagaraComponent* comp);
+
+public:
 	void SetTarget(class APlayerCharacter* _target) { mTarget = _target; }
 
 protected:

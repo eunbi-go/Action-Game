@@ -6,30 +6,22 @@
 
 ASlashSkill::ASlashSkill()
 {
-	mLeftNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara1"));
-	//AParticleNiagara* niagara2 = CreateDefaultSubobject<AParticleNiagara>(TEXT("Niagara2"));
-	mLeftNiagara->SetupAttachment(mRoot);
-
-	
 }
 
 void ASlashSkill::BeginPlay()
 {
-	//mNiagara->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	UNiagaraSystem* particle = LoadObject<UNiagaraSystem>(nullptr, TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LavaRocksAttack_Single.NS_LavaRocksAttack_Single'"));
-	mLeftNiagara->SetAsset(particle);
-	mLeftNiagara->SetRelativeRotation(FRotator(0.f, 180.f, 0.f));
-	mLeftNiagara->SetActive(false);
+	Super::BeginPlay();
+
+	mNiagara->OnSystemFinished.AddDynamic(this, &ASlashSkill::Finish);
 }
 
 void ASlashSkill::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 }
 
-void ASlashSkill::CollisionProjectile(const FHitResult& Hit)
+void ASlashSkill::Finish(UNiagaraComponent* comp)
 {
-}
-
-void ASlashSkill::SpawnNiagara()
-{
+	PrintViewport(10.f, FColor::Yellow, TEXT("ASlashSkill::Finish"));
+	mOnNiagaraEnd.Broadcast(this, comp);
 }

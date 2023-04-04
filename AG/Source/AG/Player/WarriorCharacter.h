@@ -19,12 +19,16 @@ public:
 
 public:
 	UFUNCTION()
-		void Skill1End(class ASkillActor* SkillActor, const FHitResult& Hit);
+	void Skill1End(class ASkillActor* SkillActor, UParticleSystemComponent* comp);
+	
 	UFUNCTION()
-		void Skill1End2(class ASkillActor* SkillActor, UParticleSystemComponent* comp);
-	UFUNCTION()
-		void Skill3End(class ASkillActor* SkillActor, const FHitResult& Hit);
+	void Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
+	UFUNCTION()
+	void Skill3EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
+
+	UFUNCTION()
+	void Skill4EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
 protected:
 	virtual void BeginPlay() override;

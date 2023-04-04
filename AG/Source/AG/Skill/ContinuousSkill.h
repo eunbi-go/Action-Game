@@ -22,13 +22,15 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UFUNCTION()
+	void Finish(UNiagaraComponent* comp);
+
 
 public:
 	void SetNiagaraOnOff(bool _value) { mIsNiagaraActive = _value; }
 	void Remove() { mNiagara->GetAsset()->FinishDestroy(); }
-	UFUNCTION()
-		void CollisionProjectile(const FHitResult& Hit);
-
+	
 protected:
 	bool mIsNiagaraActive;
 

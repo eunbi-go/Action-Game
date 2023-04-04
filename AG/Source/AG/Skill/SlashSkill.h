@@ -24,15 +24,5 @@ public:
 
 public:
 	UFUNCTION()
-	void CollisionProjectile(const FHitResult& Hit);
-
-	
-public:
-	void SpawnNiagara();
-	
-	UNiagaraComponent* GetLeftNiagara() { return mLeftNiagara; }
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		UNiagaraComponent* mLeftNiagara;
+	void Finish(UNiagaraComponent* comp);
 };
