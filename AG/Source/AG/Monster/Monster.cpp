@@ -14,6 +14,8 @@ AMonster::AMonster()
 
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+
+	SetCanBeDamaged(true);
 }
 
 void AMonster::BeginPlay()
@@ -70,5 +72,28 @@ void AMonster::PossessedBy(AController* NewController)
 void AMonster::UnPossessed()
 {
 	Super::UnPossessed();
+}
+
+float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	damage -= mInfo.defensePoint;
+
+	if (damage <= 1)
+		damage = 1;
+	
+
+	mInfo.hp -= damage;
+
+	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("hp: %d, damage: %d"), mInfo.hp, damage));
+
+
+	if (mInfo.hp <= 0)
+	{
+		Destroy();
+	}
+
+	return damage;
 }
 

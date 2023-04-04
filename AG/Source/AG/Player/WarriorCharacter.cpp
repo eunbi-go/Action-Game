@@ -383,11 +383,19 @@ void AWarriorCharacter::NormalAttackCheck()
 			SpawnParam.SpawnCollisionHandlingOverride =
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+			// 나이아가라 렌더링.
 			AParticleNiagara* Particle =
 				GetWorld()->SpawnActor<AParticleNiagara>(
 					collisionResult[i].ImpactPoint,
 					collisionResult[i].ImpactNormal.Rotation(),
 					SpawnParam);
+
+			// 데미지 계산.
+			collisionResult[i].GetActor()->TakeDamage(
+				(float)mInfo.attackPoint,
+				FDamageEvent(),
+				GetController(),
+				this);
 		}
 	}
 

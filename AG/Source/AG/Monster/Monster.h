@@ -24,6 +24,10 @@ public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FMonsterInfo	mInfo;
