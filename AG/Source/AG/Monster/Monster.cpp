@@ -5,7 +5,7 @@
 
 #include "../AGGameInstance.h"
 #include "MonsterSpawnPoint.h"
-
+#include "MonsterAnimInstance.h"
 
 AMonster::AMonster()
 {
@@ -54,10 +54,10 @@ void AMonster::BeginPlay()
 		GetCharacterMovement()->MaxWalkSpeed = mInfo.movingWalkSpeed;
 
 		GetMesh()->SetSkeletalMesh(info->mesh);
-		//GetMesh()->SetAnimInstanceClass(info->animClass);
+		GetMesh()->SetAnimInstanceClass(info->animClass);
 	}
 
-	//mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void AMonster::Tick(float DeltaTime)
@@ -88,7 +88,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	damage -= mInfo.defensePoint;
 
-	if (damage <= 1)
+	if (damage < 1)
 		damage = 1;
 	
 
@@ -102,8 +102,9 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		// 다시 충돌되지 않도록.
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+		mAnimInst->SetMonsterMotion(MONSTER_MOTION::DEATH);
+
 		mSpawnPoint->RemoveMonster(this);
-		//Destroy();
 	}
 
 	return damage;

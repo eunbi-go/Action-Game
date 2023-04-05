@@ -42,4 +42,6 @@ protected:
 
 	// 자신이 스폰된 스폰 포인트.
 	class AMonsterSpawnPoint* mSpawnPoint;
+
+	class UMonsterAnimInstance* mAnimInst;
 };

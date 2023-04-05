@@ -3,7 +3,7 @@
 
 #include "MonsterSpawnPoint.h"
 #include "Monster.h"
-
+#include "Khaimera.h"
 AMonsterSpawnPoint::AMonsterSpawnPoint()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,6 +16,9 @@ AMonsterSpawnPoint::AMonsterSpawnPoint()
 	mSpawnCheckTime = 0.f;
 	mSpawnTime = 3.f;
 	mSpawnCount = 1;
+
+	mSpawnClass = AKhaimera::StaticClass();
+
 }
 
 void AMonsterSpawnPoint::BeginPlay()

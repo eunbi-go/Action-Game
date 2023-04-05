@@ -347,6 +347,7 @@ void AWarriorCharacter::NormalAttackCheck()
 	FCollisionQueryParams	param(NAME_None, false, this);
 
 	TArray<FHitResult>	collisionResult;
+
 	bool IsCollision = GetWorld()->SweepMultiByChannel(
 		collisionResult, startPosition,
 		endPosition, FQuat::Identity,
