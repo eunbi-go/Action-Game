@@ -32,8 +32,7 @@ public:
 
 
 public:
-	float GetCapsuleHalf() { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
-
+	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
 
 
 
