@@ -33,7 +33,7 @@ public:
 
 public:
 	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
-
+	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
 
 
 protected:

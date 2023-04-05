@@ -23,7 +23,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	//---------------
-	// Monster 의 traceDistance 를 구해서 범위 안에 타겟이 있는지 체크한다.
+	// MonsterAIController, Monster, MonsterInfo 를 얻어온다.
 	//---------------
 
 	// 몬스터들은 하나의 BT 를 공유해서 사용한다.
@@ -44,7 +44,10 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	const FMonsterInfo& monsterInfo = monster->GetMonsterInfo();
 
 
-	// 충돌체크.
+
+	//---------------
+	// monsterInfo.traceDistance 안에 객체가 있는지 확인한다.
+	//---------------
 	TArray<FOverlapResult>	resultArray;
 	FCollisionQueryParams	param(NAME_None, false, monster);
 
@@ -56,7 +59,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 						FCollisionShape::MakeSphere(monsterInfo.traceDistance),
 						param);
 
-#if ENABLE_DRAW_DEBUG // 디버깅용 충돌 도형 출력.
+#if ENABLE_DRAW_DEBUG 
 	FColor drawColor = isCollision ? FColor::Red : FColor::Green;
 
 	DrawDebugSphere(GetWorld(), monster->GetActorLocation(),	// 원의 중심.
@@ -67,6 +70,11 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		0.3f);													// 0.3초동안 있다가 사라짐.
 #endif
 
+
+
+	//---------------
+	// 충돌한 객체가 있다면 BB의 Target 으로 값을 넘겨준다.
+	//---------------
 	if (isCollision)
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	
