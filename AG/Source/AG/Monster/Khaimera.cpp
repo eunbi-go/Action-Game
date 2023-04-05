@@ -15,7 +15,6 @@ AKhaimera::AKhaimera()
 
 	
 	
-
 	mMonsterTableRowName = TEXT("Khaimera");
 }
 

@@ -27,16 +27,14 @@ void AMonsterSpawnPoint::BeginPlay()
 	
 	if (IsValid(mSpawnClass))
 	{
-
 		mSpawnCount = mSpawnCount < 1 ? 1 : mSpawnCount;
 
 
-		// 시작할 때 한 마리는 무조건 스폰시킴.
 		FActorSpawnParameters spawnParam;
 		spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-		// Type: AMonster. 부모 타입으로 Up Cast.
-		// 실제 생성되는 것은 mSpawnClass에 들어있는 것.
+		FVector pos = GetActorLocation();
+
 		AMonster* monster = GetWorld()->SpawnActor<AMonster>(mSpawnClass,
 			GetActorLocation(),
 			GetActorRotation(),

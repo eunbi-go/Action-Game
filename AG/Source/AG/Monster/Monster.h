@@ -31,6 +31,9 @@ public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
 
 
+public:
+	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
+	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
 
 
 protected:

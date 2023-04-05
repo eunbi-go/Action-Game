@@ -6,13 +6,15 @@
 #include "../AGGameInstance.h"
 #include "MonsterSpawnPoint.h"
 #include "MonsterAnimInstance.h"
+#include "MonsterAIController.h"
+
 
 AMonster::AMonster()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	//-------------------
-	// 충돌 세팅
+	// 충돌 세팅.
 	//-------------------
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -24,6 +26,13 @@ AMonster::AMonster()
 
 	// 데미지 수신 가능.
 	SetCanBeDamaged(true);
+
+
+	//-------------------
+	// AI Controller 지정.
+	//-------------------
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = AMonsterAIController::StaticClass();
 }
 
 void AMonster::BeginPlay()
@@ -72,9 +81,22 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+// 이 함수는 MonsterAIController 보다 먼저 호출된다.
 void AMonster::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	//------------------
+	// Monster 용 AIController를 설정하고, 그에 맞는 BB, BT 도 함께 지정한다.
+	//------------------
+
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(NewController);
+
+	if (IsValid(aiController))
+	{
+		aiController->SetBehaviorTree(TEXT("BehaviorTree'/Game/Blueprints/Monster/AI/BT_Monster.BT_Monster'"));
+		aiController->SetBlackboard(TEXT("BlackboardData'/Game/Blueprints/Monster/AI/BB_Monster.BB_Monster'"));
+	}
 }
 
 void AMonster::UnPossessed()
@@ -106,6 +128,8 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 		mSpawnPoint->RemoveMonster(this);
 	}
+	else
+		mAnimInst->Hit();
 
 	return damage;
 }
