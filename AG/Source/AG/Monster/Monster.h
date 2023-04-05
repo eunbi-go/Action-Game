@@ -29,12 +29,12 @@ public:
 
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
-
+	void SetIsAttackEnd(bool _value) { mIsAttackEnd = _value; }
 
 public:
 	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
 	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
-
+	bool GetIsAttackEnd() { return mIsAttackEnd; }
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -47,4 +47,9 @@ protected:
 	class AMonsterSpawnPoint* mSpawnPoint;
 
 	class UMonsterAnimInstance* mAnimInst;
+
+
+protected:
+	// 몬스터의 현재 공격이 끝났는가.
+	bool	mIsAttackEnd;
 };

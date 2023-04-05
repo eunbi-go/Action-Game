@@ -33,6 +33,8 @@ AMonster::AMonster()
 	//-------------------
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = AMonsterAIController::StaticClass();
+
+	mIsAttackEnd = false;
 }
 
 void AMonster::BeginPlay()
@@ -72,7 +74,6 @@ void AMonster::BeginPlay()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -124,7 +125,15 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		// 다시 충돌되지 않도록.
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		mAnimInst->SetMonsterMotion(MONSTER_MOTION::DEATH);
+		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
+
+
+		// 동작되고 있던 로직을 멈춘다.
+		AAIController* ai = Cast<AAIController>(GetController());
+
+		if (IsValid(ai))
+			ai->BrainComponent->StopLogic(TEXT("Death"));
+
 
 		mSpawnPoint->RemoveMonster(this);
 	}

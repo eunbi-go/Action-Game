@@ -3,6 +3,9 @@
 
 #include "MonsterAnimInstance.h"
 
+#include "Monster.h"
+
+
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
 	mMonsterMotionType = MONSTER_MOTION::IDLE;
@@ -28,6 +31,18 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 void UMonsterAnimInstance::AnimNotify_HitEnd()
 {
 	mHitAdditive = 0.f;
+}
+
+void UMonsterAnimInstance::AnimNotify_Attack()
+{
+}
+
+void UMonsterAnimInstance::AnimNotify_AttackEnd()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+		monster->SetIsAttackEnd(true);
 }
 
 void UMonsterAnimInstance::Hit()
