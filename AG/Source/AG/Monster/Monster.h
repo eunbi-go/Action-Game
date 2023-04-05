@@ -31,6 +31,8 @@ public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
 
 
+public:
+	float GetCapsuleHalf() { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
 
 
 protected:
@@ -41,5 +43,7 @@ protected:
 	FName			mMonsterTableRowName;
 
 	// 자신이 스폰된 스폰 포인트.
-	class AMonsterSpawnPoint* mSpawnPoint;
+	class AMonsterSpawnPoint*	mSpawnPoint;
+
+	class UMonsterAnimInstance* mAnimInst;
 };
