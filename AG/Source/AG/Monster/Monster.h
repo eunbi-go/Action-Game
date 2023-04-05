@@ -35,6 +35,8 @@ public:
 	float GetCapsuleHalf() { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
 
 
+
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FMonsterInfo	mInfo;
