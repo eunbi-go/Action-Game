@@ -147,3 +147,28 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	return damage;
 }
 
+void AMonster::GoNextPatrolPoint()
+{
+	mPatrolIndex++;
+
+	// 마지막 순찰 지점까지 다 돌았다.
+	if (mPatrolIndex == mPatrolPointPositionArray.Num())
+	{
+		switch (mPatrolDirection)
+		{
+		case PATROL_END_DIRECTION::FORWARD:
+			mPatrolIndex = 0;
+			PrintViewport(3.f, FColor::Blue, TEXT("arrive"));
+			break;
+
+		case PATROL_END_DIRECTION::BACK:
+			mPatrolIndex = -1;
+			mPatrolIndex = mPatrolPointPositionArray.Num() - 2;
+			break;
+		}
+	}
+
+	else if (mPatrolIndex < 0)
+		mPatrolIndex = 1;
+}
+

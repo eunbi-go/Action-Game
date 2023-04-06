@@ -28,6 +28,10 @@ public:
 
 
 public:
+	void GoNextPatrolPoint();
+
+
+public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
 	void SetIsAttackEnd(bool _value) { mIsAttackEnd = _value; }
 	void SetPatrolPointPosition(const TArray<FVector>& _array) { mPatrolPointPositionArray = _array; }
@@ -40,6 +44,9 @@ public:
 	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
 	bool GetIsAttackEnd() { return mIsAttackEnd; }
 	float GetPatrolWaitTime() { return mPatrolWaitTime; }
+	bool GetIsPatrolEnable() { return mPatrolPointPositionArray.Num() >= 2; }
+	const FVector& GetPatrolPosition() { return mPatrolPointPositionArray[mPatrolIndex]; }
+	int GetPatrolIndex() { return mPatrolIndex; }
 
 
 protected:

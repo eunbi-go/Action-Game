@@ -1,25 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTTask_PatrolWait.h"
+#include "BTTask_Patrol.h"
 
 #include "../MonsterAIController.h"
 #include "../Monster.h"
 #include "../MonsterAnimInstance.h"
 
 
-UBTTask_PatrolWait::UBTTask_PatrolWait()
+UBTTask_Patrol::UBTTask_Patrol()
 {
-	NodeName = TEXT("PatrolWait");
+	NodeName = TEXT("Patrol");
 
 	bNotifyTick = true;
 	bNotifyTaskFinished = true;
-
-	mWaitTime = 2.f;
-	mProgressTime = 0.f;
 }
 
-EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -49,25 +46,36 @@ EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& Owne
 
 
 	//---------------
-	// Target 이 있으면 종료시킨다. 타겟 추적을 시작해야 한다.
+	// Target 이 있거나 몬스터가 순찰할 수 없는 상태이면 종료시킨다.
 	//---------------
-	if (IsValid(target))
+	if (IsValid(target) || !monster->GetIsPatrolEnable())
 		return EBTNodeResult::Succeeded;
 
-	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-	controller->StopMovement();
-	mProgressTime = 0.f;
+	
+
+	//---------------
+	// 몬스터 순찰을 시작한다.
+	//---------------
+	
+	const FMonsterInfo& info = monster->GetMonsterInfo();
+
+	monster->GetCharacterMovement()->MaxWalkSpeed = info.movingWalkSpeed;
+	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::PATROL);
+
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller,
+		monster->GetPatrolPosition());
+
 
 	return EBTNodeResult::InProgress;
 }
 
-EBTNodeResult::Type UBTTask_PatrolWait::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Patrol::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type result = Super::AbortTask(OwnerComp, NodeMemory);
 	return result;
 }
 
-void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -102,7 +110,7 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
+
 	if (IsValid(target))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -110,19 +118,27 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	}
 
 	//---------------
-	// Target 이 없으면 patrolWaitTime 을 증가시키고, 시간이 다 됐으면 종료.
+	// 몬스터가 Patrol Point 에 도착했는지 확인한다.
+	// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
 	//---------------
-	monster->SetPatrolWaitTime(DeltaSeconds);
 
-	if (monster->GetPatrolWaitTime() >= mWaitTime)
+	FVector monsterPosition = monster->GetActorLocation();
+	FVector targetPosition = monster->GetPatrolPosition();
+	monsterPosition.Z = targetPosition.Z = 0.f;
+
+	float distance = FVector::Distance(monsterPosition, targetPosition);
+	distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+	if (distance <= 10.f)
 	{
-		monster->ClearPatrolWaitTime();
-		PrintViewport(3.f, FColor::Yellow, TEXT("Wait Finish"));
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		controller->StopMovement();
+		monster->GoNextPatrolPoint();
+
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
 
-void UBTTask_PatrolWait::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+void UBTTask_Patrol::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
