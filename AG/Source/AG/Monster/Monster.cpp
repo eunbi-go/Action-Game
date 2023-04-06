@@ -39,6 +39,11 @@ AMonster::AMonster()
 	mPatrolIndex = 1;
 	mPatrolWaitTime = 0.f;
 	mPatrolProgressTime = 0.f;
+	mPatrolIndexAddValue = 1;
+
+	mIsPatrolEnable = false;
+	
+	mPatrolCurrDistance = 0.f;
 }
 
 void AMonster::BeginPlay()
@@ -78,6 +83,22 @@ void AMonster::BeginPlay()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (mIsPatrolEnable)
+	{
+		mPatrolCurrDistance += (GetCharacterMovement()->MaxWalkSpeed * DeltaTime * mPatrolIndexAddValue);
+
+		if (GetIsPatrolPointArrive())
+		{
+			if (mPatrolIndexAddValue == 1)
+				mPatrolCurrDistance = mPatrolIndex * mPatrolCellDistance;
+
+			else
+				mPatrolCurrDistance = mPatrolIndex * mPatrolCellDistance;
+
+			mIsPatrolEnable = false;
+		}
+	}
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -149,26 +170,101 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 void AMonster::GoNextPatrolPoint()
 {
-	mPatrolIndex++;
+	mPatrolIndex += mPatrolIndexAddValue;
 
-	// 마지막 순찰 지점까지 다 돌았다.
-	if (mPatrolIndex == mPatrolPointPositionArray.Num())
+	if (mPatrolType == PATROL_TYPE::POINT)
 	{
-		switch (mPatrolDirection)
+		// 마지막 순찰 지점까지 다 돌았다.
+		if (mPatrolIndex == mPatrolPointPositionArray.Num())
 		{
-		case PATROL_END_DIRECTION::FORWARD:
-			mPatrolIndex = 0;
-			PrintViewport(3.f, FColor::Blue, TEXT("arrive"));
-			break;
+			switch (mPatrolDirection)
+			{
+			case PATROL_END_DIRECTION::FORWARD:
+				mPatrolIndex = 0;
+				break;
 
-		case PATROL_END_DIRECTION::BACK:
-			mPatrolIndex = -1;
-			mPatrolIndex = mPatrolPointPositionArray.Num() - 2;
-			break;
+			case PATROL_END_DIRECTION::BACK:
+				mPatrolIndexAddValue = -1;
+				mPatrolIndex = mPatrolPointPositionArray.Num() - 2;
+				break;
+			}
+		}
+
+		else if (mPatrolIndex < 0)
+		{
+			mPatrolIndexAddValue = 1;
+			mPatrolIndex = 1;
 		}
 	}
 
-	else if (mPatrolIndex < 0)
-		mPatrolIndex = 1;
+
+	else if (mPatrolType == PATROL_TYPE::SPLINE)
+	{
+		if (mPatrolIndex == mPatrolSplineCount + 1)
+		{
+			switch (mPatrolDirection)
+			{
+			case PATROL_END_DIRECTION::FORWARD:
+				mPatrolIndex = 1;
+				mPatrolCurrDistance -= mPatrolSplineLength;
+				break;
+
+			case PATROL_END_DIRECTION::BACK:
+				mPatrolCurrDistance = mPatrolSplineLength - 100.f 
+					- GetCapsuleComponent()->GetScaledCapsuleRadius();
+				mPatrolIndexAddValue = -1;
+				mPatrolIndex = mPatrolSplineCount - 1;
+				break;
+			}
+		}
+
+		else if (mPatrolIndex < 0)
+		{
+			mPatrolCurrDistance = 100.f + GetCapsuleComponent()->GetScaledCapsuleRadius();
+			mPatrolIndex = 1;
+			mPatrolIndexAddValue = 1;
+		}
+	}
+	
+}
+
+FVector AMonster::GetPatrolPosition() const
+{
+	switch (mPatrolType)
+	{
+	case PATROL_TYPE::POINT:
+		return mPatrolPointPositionArray[mPatrolIndex];
+
+	case PATROL_TYPE::SPLINE:
+		return mSpawnPoint->GetSplinePosition(mPatrolCurrDistance);
+	}
+
+	return FVector::ZeroVector;
+}
+
+FVector AMonster::GetPatrolPointPosition() const
+{
+	switch (mPatrolType)
+	{
+	case PATROL_TYPE::POINT:
+		return mPatrolPointPositionArray[mPatrolIndex];
+
+	case PATROL_TYPE::SPLINE:
+		return mSpawnPoint->GetSplinePosition(mPatrolIndex * mPatrolCellDistance);
+	}
+
+	return FVector::ZeroVector;
+}
+
+bool AMonster::GetIsPatrolPointArrive()
+{
+	float distance = 10.f + GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+	// 크거나 같으면 도착.
+
+	if (mPatrolIndexAddValue == 1)
+		return mPatrolIndex * mPatrolCellDistance - distance <= mPatrolCurrDistance;
+
+	return mPatrolIndex * mPatrolCellDistance + distance >= mPatrolCurrDistance;
 }
 

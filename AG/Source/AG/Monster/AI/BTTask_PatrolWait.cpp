@@ -54,6 +54,8 @@ EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& Owne
 	if (IsValid(target))
 		return EBTNodeResult::Succeeded;
 
+	
+
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 	controller->StopMovement();
 	mProgressTime = 0.f;
@@ -105,7 +107,7 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	
 	if (IsValid(target))
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 

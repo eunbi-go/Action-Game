@@ -48,7 +48,7 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//---------------
 	// Target 이 있거나 몬스터가 순찰할 수 없는 상태이면 종료시킨다.
 	//---------------
-	if (IsValid(target) || !monster->GetIsPatrolEnable())
+	if (IsValid(target) /*|| !monster->GetPatrolEnable()*/)
 		return EBTNodeResult::Succeeded;
 
 	
@@ -56,11 +56,14 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//---------------
 	// 몬스터 순찰을 시작한다.
 	//---------------
-	
 	const FMonsterInfo& info = monster->GetMonsterInfo();
+
+	PrintViewport(3.f, FColor::Orange, TEXT("Patrol Start"));
 
 	monster->GetCharacterMovement()->MaxWalkSpeed = info.movingWalkSpeed;
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::PATROL);
+
+	monster->SetIsPatrolEnable(true);
 
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller,
 		monster->GetPatrolPosition());
@@ -113,28 +116,65 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	if (IsValid(target))
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		monster->SetIsPatrolEnable(false);
+
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 
-	//---------------
-	// 몬스터가 Patrol Point 에 도착했는지 확인한다.
-	// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
-	//---------------
 
-	FVector monsterPosition = monster->GetActorLocation();
-	FVector targetPosition = monster->GetPatrolPosition();
-	monsterPosition.Z = targetPosition.Z = 0.f;
 
-	float distance = FVector::Distance(monsterPosition, targetPosition);
-	distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-	if (distance <= 10.f)
+	if (monster->GetPatrolType() == PATROL_TYPE::SPLINE)
 	{
-		controller->StopMovement();
-		monster->GoNextPatrolPoint();
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(
+			controller,
+			monster->GetPatrolPosition());
 
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		FVector	MonsterLoc = monster->GetActorLocation();
+
+		MonsterLoc = MonsterLoc -
+			FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+		// 두 위치 사이의 거리를 구해준다.
+		float	Distance = FVector::Distance(MonsterLoc, monster->GetPatrolPointPosition());
+
+		Distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+		if (Distance <= 10.f)
+		{
+			PrintViewport(2.f, FColor::Red, TEXT("next"));
+
+			monster->SetIsPatrolEnable(false);
+			controller->StopMovement();
+			monster->GoNextPatrolPoint();
+
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	}
+
+
+
+	else if (monster->GetPatrolType() == PATROL_TYPE::POINT)
+	{
+		//---------------
+		// 몬스터가 Patrol Point 에 도착했는지 확인한다.
+		// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
+		//---------------
+
+		FVector monsterPosition = monster->GetActorLocation();
+		FVector targetPosition = monster->GetPatrolPosition();
+		monsterPosition.Z = targetPosition.Z = 0.f;
+
+		float distance = FVector::Distance(monsterPosition, targetPosition);
+		distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+		if (distance <= 10.f)
+		{
+			controller->StopMovement();
+			monster->GoNextPatrolPoint();
+
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
 	}
 }
 

@@ -20,6 +20,8 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include "Components/SplineComponent.h"
+
 #include "Kismet/KismetMathLibrary.h"
 
 #include "UObject/NoExportTypes.h"
@@ -255,6 +257,13 @@ UENUM(BlueprintType)
 enum class PATROL_END_DIRECTION : uint8
 {
 	FORWARD, BACK, END
+};
+
+
+UENUM(BlueprintType)
+enum class PATROL_TYPE : uint8
+{
+	POINT, SPLINE, END
 };
 
 
