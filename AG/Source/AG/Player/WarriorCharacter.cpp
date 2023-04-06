@@ -341,7 +341,7 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AWarriorCharacter::NormalAttackCheck()
 {
-	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 30.f;
+	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
 	FVector endPosition = startPosition + GetActorForwardVector() * mInfo.attackDistance;
 
 	FCollisionQueryParams	param(NAME_None, false, this);
@@ -352,7 +352,7 @@ void AWarriorCharacter::NormalAttackCheck()
 		collisionResult, startPosition,
 		endPosition, FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeSphere(50.f),
+		FCollisionShape::MakeSphere(100.f),
 		param);
 
 
@@ -366,7 +366,7 @@ void AWarriorCharacter::NormalAttackCheck()
 	// 회전값으로 변환해준다.
 	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
 		mInfo.attackDistance / 2.f,
-		50.f,
+		100.f,
 		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
 		DrawColor, false, 0.5f);
 

@@ -8,7 +8,7 @@ AKhaimera::AKhaimera()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(100.f);
-	GetCapsuleComponent()->SetCapsuleRadius(25.f);
+	GetCapsuleComponent()->SetCapsuleRadius(30.f);
 
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));

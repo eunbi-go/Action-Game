@@ -50,7 +50,6 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//---------------
 	if (!IsValid(target))
 	{
-		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 
 		return EBTNodeResult::Failed;
@@ -142,11 +141,15 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// - 공격을 한다. 하지만 이때, 몬스터가 Target 을 바라보도록 한다.
 		else
 		{
+			monster->SetTargetPos(target->GetActorLocation());
+			controller->StopMovement();
+			monster->SetRot(true);
+			monster->SetTargetPos(targetPosition);
 			FVector direction = targetPosition - monsterPosition;
 			direction.Z = 0.f;
 			direction.Normalize();
 
-			monster->SetActorRotation(FRotator(0.f, direction.Rotation().Yaw, 0.f));
+			//monster->SetActorRotation(FRotator(0.f, direction.Rotation().Yaw, 0.f));
 		}
 
 		monster->SetIsAttackEnd(false);

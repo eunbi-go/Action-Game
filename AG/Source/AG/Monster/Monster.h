@@ -47,6 +47,9 @@ public:
 	void SetPatrolCellDistance(float _value) { mPatrolCellDistance = _value; }
 	void SetPatrolSplineCount(int _value) { mPatrolSplineCount = _value; }
 
+	void SetRot(bool _vale) { mIsRot = _vale; }
+	void SetTargetRot(FRotator _rot) { targetRot = _rot; }
+	void SetTargetPos(FVector _vec) { targetPos = _vec; }
 public:
 	const FMonsterInfo&			GetMonsterInfo() const { return mInfo; }
 	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
@@ -104,4 +107,8 @@ protected:
 	float	mPatrolCellDistance;
 	// 현재까지 이동한 거리.
 	float	mPatrolCurrDistance;
+
+	bool mIsRot;
+	FRotator targetRot;
+	FVector targetPos;
 };

@@ -47,7 +47,8 @@ public:
 public:
 	void SetMonsterMotionType(MONSTER_MOTION _motion) { mMonsterMotionType = _motion; }
 
-
+public:
+	MONSTER_MOTION GetMonsterMotionType() { return mMonsterMotionType; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

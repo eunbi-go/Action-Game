@@ -1,22 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTTask_TargetTrace.h"
+#include "BTTask_RotateToTarget.h"
 
 #include "../MonsterAIController.h"
 #include "../Monster.h"
 #include "../MonsterAnimInstance.h"
 
 
-UBTTask_TargetTrace::UBTTask_TargetTrace()
+UBTTask_RotateToTarget::UBTTask_RotateToTarget()
 {
-	NodeName = TEXT("TargetTrace");
+	NodeName = TEXT("RotateToTarget");
 
 	bNotifyTick = true;
 	bNotifyTaskFinished = true;
 }
 
-EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -42,7 +42,7 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
+
 
 
 	//---------------
@@ -57,14 +57,7 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 
 	// else.
-	monster->SetRot(true);
-	monster->SetTargetPos(target->GetActorLocation());
-
-
-
-	//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
-	controller->MoveToActor(target);
-	
+	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
 
@@ -73,22 +66,19 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	FVector direction = targetPosition - monsterPosition;
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	//monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
-
-	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
-
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
 	// 몬스터가 타겟에 도착할 때까지 이 Task를 빠져나가지 못하게 한다.
 	return EBTNodeResult::InProgress;
 }
 
-EBTNodeResult::Type UBTTask_TargetTrace::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_RotateToTarget::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type result = Super::AbortTask(OwnerComp, NodeMemory);
 	return result;
 }
 
-void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -125,7 +115,7 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	}
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
+
 
 
 	//---------------
@@ -142,27 +132,40 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		return;
 	}
 
-	monster->SetTargetPos(target->GetActorLocation());
-
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
 
-	float distance = (monsterPosition - targetPosition).Size();
-
 	FVector direction = targetPosition - monsterPosition;
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+	
+	FRotator src = monster->GetActorRotation().GetNormalized();
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, DeltaSeconds, 10.f));
+	monster->SetActorRotation(FMath::RInterpTo(src, rot, DeltaSeconds, 10.f));
+	
+	// 회전각 구하기.
+	direction = targetPosition - monsterPosition;
+	direction.Z = 0.f;
+	direction.Normalize();
 
-	if (distance <= monsterInfo.attackDistance)
+	float innerProduct = FVector::DotProduct(monster->GetActorForwardVector(), direction);
+	float degree = UKismetMathLibrary::DegAcos(innerProduct);
+
+	FVector outProduct = FVector::CrossProduct(monster->GetActorForwardVector(), direction);
+	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+	float returnDegree = sign * degree;
+
+	
+	PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)returnDegree)));
+	
+	if ((float)FMath::Abs((float)returnDegree) < 10.f)
 	{
-		controller->StopMovement();
-
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 }
 
-void UBTTask_TargetTrace::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+void UBTTask_RotateToTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }

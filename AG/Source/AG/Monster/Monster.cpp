@@ -44,6 +44,8 @@ AMonster::AMonster()
 	mIsPatrolEnable = false;
 	
 	mPatrolCurrDistance = 0.f;
+
+	mIsRot = false;
 }
 
 void AMonster::BeginPlay()
@@ -83,6 +85,15 @@ void AMonster::BeginPlay()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+	if (mIsRot)
+	{
+		FVector direction = targetPos - GetActorLocation();
+		FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+	}
 
 	//-----------------------------
 	// 순찰 상태일 경우, 이동양을 구한다.
