@@ -37,8 +37,7 @@ AMonsterSpawnPoint::AMonsterSpawnPoint()
 		mDivideMesh = DivideMesh.Object;
 
 	mPatrolType = PATROL_TYPE::SPLINE;
-
-	mSpawnClass = AKhaimera::StaticClass();
+	//mSpawnClass = AKhaimera::StaticClass();
 }
 
 void AMonsterSpawnPoint::OnConstruction(const FTransform& Transform)
@@ -70,7 +69,7 @@ void AMonsterSpawnPoint::BeginPlay()
 
 
 	//--------------
-	// Monster를 스폰시킨다.
+	// 생성할 몬스터 클래스가 있을 경우, Monster를 스폰시킨다.
 	//--------------
 	if (IsValid(mSpawnClass))
 	{
@@ -114,13 +113,11 @@ void AMonsterSpawnPoint::Tick(float DeltaTime)
 		{
 			mSpawnCheckTime -= mSpawnCheckTime;
 
-
+			
 			// 몬스터 스폰.
 			FActorSpawnParameters spawnParam;
 			spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-			// Type: AMonster. 부모 타입으로 Up Cast.
-			// 실제 생성되는 것은 mSpawnClass에 들어있는 것.
 			AMonster* monster = GetWorld()->SpawnActor<AMonster>(mSpawnClass,
 				GetActorLocation(),
 				GetActorRotation(),
@@ -247,6 +244,9 @@ void AMonsterSpawnPoint::ComputeSpline()
 
 			else
 			{
+				if (mMeshArray.Num() == 0)
+					PrintViewport(5.f, FColor::Green, TEXT("meshArray size zero"));
+
 				// 여기서 오류남.
 				mMeshArray[i]->SetRelativeLocation(localPosition);
 				mMeshArray[i]->SetWorldRotation(rotation);

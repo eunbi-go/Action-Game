@@ -84,6 +84,10 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//-----------------------------
+	// 순찰 상태일 경우, 이동양을 구한다.
+	//-----------------------------
+
 	if (mIsPatrolEnable)
 	{
 		mPatrolCurrDistance += (GetCharacterMovement()->MaxWalkSpeed * DeltaTime * mPatrolIndexAddValue);
@@ -170,6 +174,10 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 void AMonster::GoNextPatrolPoint()
 {
+	//-----------------------------
+	// 다음 순찰 인덱스를 결정한다.
+	//-----------------------------
+
 	mPatrolIndex += mPatrolIndexAddValue;
 
 	if (mPatrolType == PATROL_TYPE::POINT)
@@ -180,10 +188,12 @@ void AMonster::GoNextPatrolPoint()
 			switch (mPatrolDirection)
 			{
 			case PATROL_END_DIRECTION::FORWARD:
+				// 다시 처음부터 시작.
 				mPatrolIndex = 0;
 				break;
 
 			case PATROL_END_DIRECTION::BACK:
+				// 마지막부터 역순으로 시작.
 				mPatrolIndexAddValue = -1;
 				mPatrolIndex = mPatrolPointPositionArray.Num() - 2;
 				break;
@@ -200,18 +210,20 @@ void AMonster::GoNextPatrolPoint()
 
 	else if (mPatrolType == PATROL_TYPE::SPLINE)
 	{
+		// 마지막 순찰 지점까지 다 돌았다.
 		if (mPatrolIndex == mPatrolSplineCount + 1)
 		{
 			switch (mPatrolDirection)
 			{
 			case PATROL_END_DIRECTION::FORWARD:
+				// 다시 처음부터 시작한다.
 				mPatrolIndex = 1;
 				mPatrolCurrDistance -= mPatrolSplineLength;
 				break;
 
 			case PATROL_END_DIRECTION::BACK:
-				mPatrolCurrDistance = mPatrolSplineLength - 100.f 
-					- GetCapsuleComponent()->GetScaledCapsuleRadius();
+				// 현재 위치에서 역순으로 돌아간다.
+				mPatrolCurrDistance = mPatrolSplineLength - 100.f - GetCapsuleComponent()->GetScaledCapsuleRadius();
 				mPatrolIndexAddValue = -1;
 				mPatrolIndex = mPatrolSplineCount - 1;
 				break;
@@ -230,6 +242,10 @@ void AMonster::GoNextPatrolPoint()
 
 FVector AMonster::GetPatrolPosition() const
 {
+	//-----------------------------
+	// 순찰해야 하는 위치를 반환한다.
+	//-----------------------------
+
 	switch (mPatrolType)
 	{
 	case PATROL_TYPE::POINT:
@@ -244,6 +260,10 @@ FVector AMonster::GetPatrolPosition() const
 
 FVector AMonster::GetPatrolPointPosition() const
 {
+	//-----------------------------
+	// 순찰해야 하는 위치를 반환한다.
+	//-----------------------------
+
 	switch (mPatrolType)
 	{
 	case PATROL_TYPE::POINT:
@@ -258,9 +278,12 @@ FVector AMonster::GetPatrolPointPosition() const
 
 bool AMonster::GetIsPatrolPointArrive()
 {
-	float distance = 10.f + GetCapsuleComponent()->GetScaledCapsuleRadius();
+	//-----------------------------
+	// 현재 인덱스까지의 스플라인 길이와 현재까지 이동한 거리를 비교해서 
+	// CP 까지 도착했는지 판단한다.
+	//-----------------------------
 
-	// 크거나 같으면 도착.
+	float distance = 10.f + GetCapsuleComponent()->GetScaledCapsuleRadius();
 
 	if (mPatrolIndexAddValue == 1)
 		return mPatrolIndex * mPatrolCellDistance - distance <= mPatrolCurrDistance;

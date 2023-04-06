@@ -48,20 +48,23 @@ public:
 	void SetPatrolSplineCount(int _value) { mPatrolSplineCount = _value; }
 
 public:
-	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
+	const FMonsterInfo&			GetMonsterInfo() const { return mInfo; }
 	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
-	bool GetIsAttackEnd() { return mIsAttackEnd; }
+	bool						GetIsAttackEnd() { return mIsAttackEnd; }
 
-	float GetPatrolWaitTime() { return mPatrolWaitTime; }
-	bool GetPatrolEnable() { return mPatrolPointPositionArray.Num() >= 2; }
+	float	GetPatrolWaitTime() { return mPatrolWaitTime; }
+	bool	GetPatrolEnable() { return mPatrolPointPositionArray.Num() >= 2; }
 
 	FVector GetPatrolPosition() const;
 	FVector GetPatrolPointPosition() const;
-	bool GetIsPatrolPointArrive();
+	bool	GetIsPatrolPointArrive();
 
-	int GetPatrolIndex() { return mPatrolIndex; }
+	int		GetPatrolIndex() { return mPatrolIndex; }
 	PATROL_TYPE GetPatrolType() { return mPatrolType; }
-	bool GetIsPatrolEnable() { return mIsPatrolEnable; }
+	bool	GetIsPatrolEnable() { return mIsPatrolEnable; }
+
+
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

@@ -54,9 +54,11 @@ EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& Owne
 	if (IsValid(target))
 		return EBTNodeResult::Succeeded;
 
-	
+	const FMonsterInfo& info = monster->GetMonsterInfo();
 
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
+	monster->GetCharacterMovement()->MaxWalkSpeed = info.movingRunSpeed;
+
 	controller->StopMovement();
 	mProgressTime = 0.f;
 
@@ -119,7 +121,8 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	if (monster->GetPatrolWaitTime() >= mWaitTime)
 	{
 		monster->ClearPatrolWaitTime();
-		PrintViewport(3.f, FColor::Yellow, TEXT("Wait Finish"));
+		//PrintViewport(3.f, FColor::Yellow, TEXT("Wait Finish"));
+
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 }

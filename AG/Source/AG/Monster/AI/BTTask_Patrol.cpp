@@ -124,8 +124,17 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 
 
+	//---------------
+	// PatrolType (SPLINE / POINT) 에 따라 다음 Patro Point 를 구한다.
+	//---------------
+
 	if (monster->GetPatrolType() == PATROL_TYPE::SPLINE)
 	{
+		//---------------
+		// 몬스터가 Patrol Point 에 도착했는지 확인한다.
+		// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
+		//---------------
+
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(
 			controller,
 			monster->GetPatrolPosition());
@@ -135,14 +144,13 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		MonsterLoc = MonsterLoc -
 			FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
-		// 두 위치 사이의 거리를 구해준다.
 		float	Distance = FVector::Distance(MonsterLoc, monster->GetPatrolPointPosition());
 
 		Distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-		if (Distance <= 10.f)
+		if (Distance <= 20.f)
 		{
-			PrintViewport(2.f, FColor::Red, TEXT("next"));
+			//PrintViewport(5.f, FColor::Red, FString::Printf(TEXT("%d to next"), monster->GetPatrolIndex()));
 
 			monster->SetIsPatrolEnable(false);
 			controller->StopMovement();
