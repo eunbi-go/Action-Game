@@ -2,8 +2,12 @@
 
 
 #include "MonsterSpawnPoint.h"
+
 #include "Monster.h"
 #include "Khaimera.h"
+#include "AI/MonsterPatrolPoint.h"
+
+
 AMonsterSpawnPoint::AMonsterSpawnPoint()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -25,6 +29,23 @@ void AMonsterSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//--------------
+	// PatrolPoint 위치를 추가한다.
+	//--------------
+	mPatrolPointPositionArray.Add(GetActorLocation());
+
+	int32 count = mPatrolPointArray.Num();
+
+	for (int32 i = 0; i < count; ++i)
+	{
+		mPatrolPointPositionArray.Add(mPatrolPointArray[i]->GetActorLocation());
+	}
+
+
+
+	//--------------
+	// Monster를 스폰시킨다.
+	//--------------
 	if (IsValid(mSpawnClass))
 	{
 		mSpawnCount = mSpawnCount < 1 ? 1 : mSpawnCount;
@@ -41,6 +62,8 @@ void AMonsterSpawnPoint::BeginPlay()
 			spawnParam);
 
 		monster->SetSpawnPoint(this);
+		monster->SetPatrolPointPosition(mPatrolPointPositionArray);
+		monster->SetPatrolDirection(mPatrolDirection);
 
 		mMonstersArray.Add(monster);
 	}
@@ -74,6 +97,8 @@ void AMonsterSpawnPoint::Tick(float DeltaTime)
 				spawnParam);
 
 			monster->SetSpawnPoint(this);
+			monster->SetPatrolPointPosition(mPatrolPointPositionArray);
+			monster->SetPatrolDirection(mPatrolDirection);
 
 			mMonstersArray.Add(monster);
 			

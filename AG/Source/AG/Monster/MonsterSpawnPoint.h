@@ -36,23 +36,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AMonster>	mSpawnClass;
 
-
 	// 몬스터를 다시 스폰시키기 위한 시간.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mSpawnTime;
-
 
 	// 이 스폰 포인트에서 몇 마리까지 생성할 수 있는가.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mSpawnCount;
 
-
 	// 이 스폰 포인트에서 생성된 몬스터들을 저장.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<class AMonster*>	mMonstersArray;
 
-
 	// 시간 체크용.
 	float	mSpawnCheckTime;
 
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<class AMonsterPatrolPoint*>	mPatrolPointArray;
+
+	TArray<FVector>	mPatrolPointPositionArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	PATROL_END_DIRECTION	mPatrolDirection;
 };

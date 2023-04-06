@@ -35,6 +35,10 @@ AMonster::AMonster()
 	AIControllerClass = AMonsterAIController::StaticClass();
 
 	mIsAttackEnd = false;
+	
+	mPatrolIndex = 1;
+	mPatrolWaitTime = 0.f;
+	mPatrolProgressTime = 0.f;
 }
 
 void AMonster::BeginPlay()

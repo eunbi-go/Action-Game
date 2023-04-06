@@ -30,11 +30,17 @@ public:
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
 	void SetIsAttackEnd(bool _value) { mIsAttackEnd = _value; }
+	void SetPatrolPointPosition(const TArray<FVector>& _array) { mPatrolPointPositionArray = _array; }
+	void SetPatrolDirection(PATROL_END_DIRECTION _direction) { mPatrolDirection = _direction; }
+	void ClearPatrolWaitTime() { mPatrolWaitTime = 0.f; }
+	void SetPatrolWaitTime(float _value) { mPatrolWaitTime += _value; }
 
 public:
 	const FMonsterInfo& GetMonsterInfo() const { return mInfo; }
 	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
 	bool GetIsAttackEnd() { return mIsAttackEnd; }
+	float GetPatrolWaitTime() { return mPatrolWaitTime; }
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -52,4 +58,16 @@ protected:
 protected:
 	// 몬스터의 현재 공격이 끝났는가.
 	bool	mIsAttackEnd;
+
+
+protected:
+	TArray<FVector>	mPatrolPointPositionArray;
+
+	PATROL_END_DIRECTION	mPatrolDirection;
+
+	int32	mPatrolIndex;
+
+	float	mPatrolWaitTime;
+
+	float	mPatrolProgressTime;
 };

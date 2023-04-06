@@ -251,6 +251,13 @@ enum class INPUT_MODE_TYPE : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class PATROL_END_DIRECTION : uint8
+{
+	FORWARD, BACK, END
+};
+
+
 
 DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);
 
