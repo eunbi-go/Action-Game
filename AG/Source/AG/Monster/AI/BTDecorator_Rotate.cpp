@@ -39,22 +39,23 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 
 
 	//---------------
+	// 몬스터가 Target 을 향해 회전한다.
 	//---------------
 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-
-	//monster->SetRot(true);
-	monster->SetTargetPos(targetPosition);
-
-	float distance = (monsterPosition - targetPosition).Size();
-
 	FVector direction = targetPosition - monsterPosition;
-	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 2.f));
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	// 회전각 구하기.
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
+
+
+
+
+	//---------------
+	// 몬스터와 Target 사이의 각도를 구해 일정 각도 이상이라면 return true-> 자식 노드 실행.
+	//---------------
 	direction = targetPosition - monsterPosition;
 	direction.Z = 0.f;
 	direction.Normalize();
@@ -65,15 +66,9 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 	FVector outProduct = FVector::CrossProduct(monster->GetActorForwardVector(), direction);
 	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
 
-	float returnDegree = sign * degree;
-
-	bool returnValue = false;
-
-	if ((float)FMath::Abs((float)returnDegree) < 190.f)
-	{
-		returnValue = true;
-		
-	}
-
-	return returnValue;
+	float angle = sign * degree;
+	
+	//PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)angle)));
+	
+	return (float)FMath::Abs((float)angle) > 10.f;
 }

@@ -46,7 +46,7 @@ EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& 
 
 
 	//---------------
-	// Target 이 없으면 Idle, 있으면 Target 을 쫓아간다.
+	// Target 이 없으면 Idle.
 	//---------------
 	if (!IsValid(target))
 	{
@@ -56,19 +56,23 @@ EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-	// else.
+
+
+	//---------------
+	// Target 이 있으면 Target 을 향해 회전한다.
+	//---------------
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
+
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-
-	float distance = (monsterPosition - targetPosition).Size();
-
 	FVector direction = targetPosition - monsterPosition;
-	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	// 몬스터가 타겟에 도착할 때까지 이 Task를 빠져나가지 못하게 한다.
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
+
+
+
 	return EBTNodeResult::InProgress;
 }
 
@@ -89,7 +93,6 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	if (!IsValid(controller))
 	{
-		// FinishLatentTask(): Task를 강제로 종료시킨다.
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -119,7 +122,7 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 
 	//---------------
-	// Target 이 없으면 Idle/Task 종료, 있으면 Target 을 쫓아간다.
+	// Target 이 없으면 Idle/Task 종료.
 	//---------------
 	if (!IsValid(target))
 	{
@@ -132,17 +135,24 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 		return;
 	}
 
+
+
+	//---------------
+	// Target 이 있으면 Target 을 향해 회전한 후,
+	//---------------
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-
 	FVector direction = targetPosition - monsterPosition;
+
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-	
 	FRotator src = monster->GetActorRotation().GetNormalized();
 
 	monster->SetActorRotation(FMath::RInterpTo(src, rot, DeltaSeconds, 10.f));
 	
-	// 회전각 구하기.
+
+	//---------------
+	// Target 과의 각도가 일정 각도 이하가 되면 Target을 향해 바라보는 회전을 끝냈다고 판단 / Task 종료.
+	//---------------
 	direction = targetPosition - monsterPosition;
 	direction.Z = 0.f;
 	direction.Normalize();
@@ -153,14 +163,13 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	FVector outProduct = FVector::CrossProduct(monster->GetActorForwardVector(), direction);
 	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
 
-	float returnDegree = sign * degree;
+	float angle = sign * degree;
 
 	
-	PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)returnDegree)));
+	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)angle)));
 	
-	if ((float)FMath::Abs((float)returnDegree) < 10.f)
+	if ((float)FMath::Abs((float)angle) < 10.f)
 	{
-		
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 }

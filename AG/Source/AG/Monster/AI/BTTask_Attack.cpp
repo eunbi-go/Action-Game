@@ -138,18 +138,15 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		if (distance >= monsterInfo.attackDistance)
 			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
-		// - 공격을 한다. 하지만 이때, 몬스터가 Target 을 바라보도록 한다.
+		// - 공격을 한다. 하지만 이때, 몬스터가 이동을 멈추고, Target 을 바라보도록 한다.
 		else
 		{
-			monster->SetTargetPos(target->GetActorLocation());
 			controller->StopMovement();
-			monster->SetRot(true);
-			monster->SetTargetPos(targetPosition);
-			FVector direction = targetPosition - monsterPosition;
-			direction.Z = 0.f;
-			direction.Normalize();
 
-			//monster->SetActorRotation(FRotator(0.f, direction.Rotation().Yaw, 0.f));
+			FVector direction = targetPosition - monsterPosition;
+			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 		}
 
 		monster->SetIsAttackEnd(false);

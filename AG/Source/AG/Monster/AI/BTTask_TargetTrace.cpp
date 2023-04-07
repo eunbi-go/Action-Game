@@ -46,7 +46,7 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 
 
 	//---------------
-	// Target 이 없으면 Idle, 있으면 Target 을 쫓아간다.
+	// Target 이 없으면 Idle/Task 종료, 있으면 Target 을 향해 회전한 후, 쫓아간다.
 	//---------------
 	if (!IsValid(target))
 	{
@@ -56,24 +56,25 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Failed;
 	}
 
-	// else.
-	monster->SetRot(true);
-	monster->SetTargetPos(target->GetActorLocation());
 
-
+	//---------------
+	// 있으면 Target 을 향해 회전한 후, 쫓아간다.
+	//---------------
 
 	//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
 	controller->MoveToActor(target);
-	
+
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-
-	float distance = (monsterPosition - targetPosition).Size();
-
 	FVector direction = targetPosition - monsterPosition;
-	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	//monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
+
+
+	
+
 
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
 
@@ -99,7 +100,6 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	if (!IsValid(controller))
 	{
-		// FinishLatentTask(): Task를 강제로 종료시킨다.
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -129,7 +129,7 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 
 	//---------------
-	// Target 이 없으면 Idle/Task 종료, 있으면 Target 을 쫓아간다.
+	// Target 이 없으면 Idle/Task 종료.
 	//---------------
 	if (!IsValid(target))
 	{
@@ -142,8 +142,10 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		return;
 	}
 
-	monster->SetTargetPos(target->GetActorLocation());
 
+	//---------------
+	// 있으면 Target 을 향해 회전한 후, 쫓아간다.
+	//---------------
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
 
@@ -153,6 +155,7 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, DeltaSeconds, 10.f));
+
 
 	if (distance <= monsterInfo.attackDistance)
 	{
