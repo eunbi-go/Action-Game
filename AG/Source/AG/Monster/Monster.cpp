@@ -168,7 +168,51 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		mSpawnPoint->RemoveMonster(this);
 	}
 	else
-		mAnimInst->Hit();
+	{
+		//---------------------
+		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
+		//---------------------
+
+		FVector targetPosition = DamageCauser->GetActorLocation();
+		FVector position = GetActorLocation();
+		FVector direction = targetPosition - position;
+
+		direction.Z = 0.f;
+		direction.Normalize();
+
+		float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+		float degree = UKismetMathLibrary::DegAcos(innerProduct);
+
+		FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+		float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+		float angle = sign * degree;
+		FString angleString = TEXT("");
+
+		// 오른쪽.
+		if (angle >= 0.f)
+		{
+			if (degree >= 50.f && angle <= 130.f)
+				angleString = TEXT("Right");
+			else if (degree < 50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		// 왼쪽
+		else if (angle < 0.f)
+		{
+			if (degree <= -50.f && angle >= -130.f)
+				angleString = TEXT("Left");
+			else if (degree > -50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		mAnimInst->SetHitDirection(angleString);
+	}
 
 	return damage;
 }

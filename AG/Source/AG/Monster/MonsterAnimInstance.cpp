@@ -11,6 +11,8 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 	mMonsterMotionType = MONSTER_MOTION::IDLE;
 
 	mHitAdditive = 0.f;
+	mHitMontageIndex = 0;
+	mHitDirection = TEXT("");
 }
 
 void UMonsterAnimInstance::NativeInitializeAnimation()
@@ -47,14 +49,39 @@ void UMonsterAnimInstance::AnimNotify_AttackEnd()
 
 void UMonsterAnimInstance::Hit()
 {
-	if (!IsValid(mHitMontage))
+	if (!IsValid(mHitMontageArray[mHitMontageIndex]))
 		return;
 
 	mHitAdditive = 1.f;
 
-	if (!Montage_IsPlaying(mHitMontage))
+	if (!Montage_IsPlaying(mHitMontageArray[mHitMontageIndex]))
 	{
-		Montage_SetPosition(mHitMontage, 0.f);
-		Montage_Play(mHitMontage);
+		Montage_SetPosition(mHitMontageArray[mHitMontageIndex], 0.f);
+		Montage_Play(mHitMontageArray[mHitMontageIndex]);
 	}
+}
+
+void UMonsterAnimInstance::SetHitDirection(FString _value)
+{
+	mHitDirection = _value;
+
+	if (_value == TEXT("Front"))
+	{
+		mHitMontageIndex = 0;
+	}
+	else if (_value == TEXT("Back"))
+	{
+		mHitMontageIndex = 1;
+	}
+	else if (_value == TEXT("Left"))
+	{
+		mHitMontageIndex = 2;
+	}
+	else if (_value == TEXT("Right"))
+	{
+		mHitMontageIndex = 3;
+	}
+
+	Hit();
+	//PrintViewport(2.f, FColor::Blue, mHitDirection);
 }

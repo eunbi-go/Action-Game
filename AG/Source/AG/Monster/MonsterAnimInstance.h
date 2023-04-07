@@ -42,6 +42,7 @@ public:
 
 public:
 	void Hit();
+	void SetHitDirection(FString _value);
 
 	
 public:
@@ -55,8 +56,12 @@ protected:
 	MONSTER_MOTION	mMonsterMotionType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UAnimMontage*	mHitMontage;
+	TArray<UAnimMontage*>	mHitMontageArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mHitAdditive;
+
+	// front, back, left, right.
+	int32		mHitMontageIndex;
+	FString		mHitDirection;
 };
