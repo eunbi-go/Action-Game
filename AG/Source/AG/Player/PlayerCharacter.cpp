@@ -9,6 +9,9 @@
 #include "../AGGameInstance.h"
 #include "../Basic/WeaponActor.h"
 #include "AGPlayerController.h"
+#include "CharacterStatComponent.h"
+#include "../AGGameModeBase.h"
+#include "../Widget/MainWidget.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -21,6 +24,7 @@ APlayerCharacter::APlayerCharacter()
 	mSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	mDash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DashEffect"));
+	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
 
 	mDash->SetupAttachment(GetMesh());
 	mSpringArm->SetupAttachment(GetMesh());
@@ -164,8 +168,13 @@ void APlayerCharacter::BeginPlay()
 		GetMesh()->SetSkeletalMesh(info->mesh);
 		GetMesh()->SetAnimInstanceClass(info->playerAnimClass);
 	}
-
+	
 	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	
+
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	UMainWidget* MainHUD = GameMode->GetMainWidget();
+	MainHUD->SetCharacterStat(mStat);
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -273,12 +282,9 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		damage = 1;
 
 
-	mInfo.hp -= damage;
-
-	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("player: hp: %d, damage: %d"), mInfo.hp, damage));
-
-
-	if (mInfo.hp <= 0)
+	//mInfo.hp -= damage;
+	
+	if (mInfo.hp - damage <= 0)
 	{
 		// 다시 충돌되지 않도록.
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -297,6 +303,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
+		mStat->SetHp(mStat->GetHp() - damage);
+
 		//---------------------
 		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
 		//---------------------

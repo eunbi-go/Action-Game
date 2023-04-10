@@ -25,9 +25,16 @@ public:
 
 
 public:
+	void SetCharacterStat(class UCharacterStatComponent* _characterStat);
+	
+	void UpdateHp();
+
+
+public:
 	void SetHp(float _ratio);
 	void SetMp(float _ratio);
 
 private:
 	UPlayerInfoWidget*	mPlayerInfo;
+	TWeakObjectPtr<class UCharacterStatComponent> mCurrentStat;
 };

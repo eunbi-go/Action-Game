@@ -81,6 +81,11 @@ void AMonster::BeginPlay()
 	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
+void AMonster::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

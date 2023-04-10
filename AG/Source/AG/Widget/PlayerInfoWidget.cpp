@@ -19,9 +19,14 @@ void UPlayerInfoWidget::NativeConstruct()
 
 	mHpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("Hp_Bar"))));
 	mMpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("Mp_Bar"))));
+
+	mHpTargetRatio = 1.f;
+	mHpRatio = 1.f;
 }
 
 void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 {
 	Super::NativeTick(_geo, _deltaTime);
+
+	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _deltaTime, 5.f));
 }

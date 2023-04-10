@@ -43,6 +43,7 @@ void AAGGameModeBase::BeginPlay()
 void AAGGameModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+
 }
 
 void AAGGameModeBase::Tick(float DeltaTime)

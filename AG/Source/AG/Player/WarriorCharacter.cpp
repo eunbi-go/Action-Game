@@ -14,6 +14,7 @@
 #include "../Particle/ParticleNiagara.h"
 #include "../Skill/ContinuousSkill.h"
 #include "../Skill/FresnelActor.h"
+#include "CharacterStatComponent.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -392,7 +393,7 @@ void AWarriorCharacter::NormalAttackCheck()
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
-				(float)mInfo.attackPoint,
+				(float)mStat->GetAttack(),
 				FDamageEvent(),
 				GetController(),
 				this);

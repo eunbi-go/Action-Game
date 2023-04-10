@@ -16,8 +16,10 @@ class AG_API UPlayerInfoWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+
 public:
 	void SetHp(float _ratio);
+	void SetHpRatio(float _ratio) { mHpTargetRatio = _ratio; }
 	void SetMp(float _ratio);
 
 public:
@@ -28,4 +30,7 @@ public:
 private:
 	UProgressBar*	mHpBar;
 	UProgressBar*	mMpBar;
+
+	float			mHpTargetRatio;
+	float			mHpRatio;
 };

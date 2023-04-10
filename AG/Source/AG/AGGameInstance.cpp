@@ -35,6 +35,11 @@ const FPlayerTableInfo* UAGGameInstance::FindPlayerTable(const FName& _name)
 	return mPlayerInfoTable->FindRow<FPlayerTableInfo>(_name, TEXT(""));
 }
 
+FPlayerTableInfo* UAGGameInstance::FindPlayerTables(const FName& _name)
+{
+	return mPlayerInfoTable->FindRow<FPlayerTableInfo>(_name, TEXT(""));
+}
+
 const FMonsterTableInfo* UAGGameInstance::FindMonsterTable(const FName& _name)
 {
 	return mMonsterInfoTable->FindRow<FMonsterTableInfo>(_name, TEXT(""));
