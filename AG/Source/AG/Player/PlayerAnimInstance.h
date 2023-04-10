@@ -196,6 +196,9 @@ protected:
 	float	mPlayModeValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mSpeedValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	float	mHitAdditive;
 	
 
 

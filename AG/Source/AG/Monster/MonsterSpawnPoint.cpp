@@ -31,7 +31,7 @@ AMonsterSpawnPoint::AMonsterSpawnPoint()
 	mPreDivideCount = 0;
 	mPreLength = 0.f;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>	DivideMesh(TEXT("StaticMesh'/Game/Assets/ParagonGreystone/FX/Meshes/Heroes/Greystone/Skins/Novaborn/SM_ParticleCube.SM_ParticleCube'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>	DivideMesh(TEXT("StaticMesh'/Game/Assets/SwordAnimationPack/Demo/ThirdPerson/Meshes/Ramp_StaticMesh.Ramp_StaticMesh'"));
 
 	if (DivideMesh.Succeeded())
 		mDivideMesh = DivideMesh.Object;

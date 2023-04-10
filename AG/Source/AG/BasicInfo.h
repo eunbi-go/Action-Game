@@ -24,6 +24,8 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
+#include <Components\WidgetComponent.h>
+
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
 

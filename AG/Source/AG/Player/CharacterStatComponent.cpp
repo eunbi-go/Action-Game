@@ -54,7 +54,7 @@ void UCharacterStatComponent::SetHp(float _hp)
 	mCurrentHp = _hp;
 	mHpChange.Broadcast();
 
-	PrintViewport(3.f, FColor::Red, FString::Printf(TEXT("mCurrentHp: %f, max: %f, ratio: %f"), mCurrentHp, mCurrentData->maxHp, GetHpRatio()));
+	//PrintViewport(3.f, FColor::Red, FString::Printf(TEXT("mCurrentHp: %f, max: %f, ratio: %f"), mCurrentHp, mCurrentData->maxHp, GetHpRatio()));
 	
 	if (mCurrentHp < 0.f)
 	{

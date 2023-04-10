@@ -84,6 +84,12 @@ protected:
 
 	AActor* mHitActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UWidgetComponent* mWidgetComopnent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		class UCharacterStatComponent* mStat;
+
 protected:
 	// 몬스터의 현재 공격이 끝났는가.
 	bool	mIsAttackEnd;

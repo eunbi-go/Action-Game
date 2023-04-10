@@ -7,6 +7,8 @@
 #include "MonsterSpawnPoint.h"
 #include "MonsterAnimInstance.h"
 #include "MonsterAIController.h"
+#include "../Widget/MonsterHpWidget.h"
+#include "../Player/CharacterStatComponent.h"
 
 
 AMonster::AMonster()
@@ -27,6 +29,22 @@ AMonster::AMonster()
 	// 데미지 수신 가능.
 	SetCanBeDamaged(true);
 
+
+
+	mWidgetComopnent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetCom"));
+	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
+
+	mWidgetComopnent->SetupAttachment(GetMesh());
+
+	mWidgetComopnent->SetRelativeLocation(FVector(0.0f, 0.0f, 200.f));
+	mWidgetComopnent->SetWidgetSpace(EWidgetSpace::Screen);
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> ui(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Monster.UI_Monster_C'"));
+	if (ui.Succeeded())
+	{
+		mWidgetComopnent->SetWidgetClass(ui.Class);
+		mWidgetComopnent->SetDrawSize(FVector2D(130.0f, 50.f));
+	}
 
 	//-------------------
 	// AI Controller 지정.
@@ -79,6 +97,13 @@ void AMonster::BeginPlay()
 	}
 
 	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
+
+
+	UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+	if (IsValid(HPWidget))
+	{
+		HPWidget->SetTargetRatio(1.f);
+	}
 }
 
 void AMonster::PostInitializeComponents()
@@ -152,8 +177,15 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	mInfo.hp -= damage;
 
-	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("hp: %d, damage: %d"), mInfo.hp, damage));
+	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
 
+	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
+
+	UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+	if (IsValid(HPWidget))
+	{
+		HPWidget->SetTargetRatio((float)mInfo.hp / mInfo.maxHp);
+	}
 
 	if (mInfo.hp <= 0)
 	{
@@ -174,6 +206,9 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	}
 	else
 	{
+
+
+
 		//---------------------
 		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
 		//---------------------

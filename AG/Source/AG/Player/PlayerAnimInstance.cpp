@@ -537,6 +537,7 @@ void UPlayerAnimInstance::AnimNotify_NormalCS()
 
 void UPlayerAnimInstance::AnimNotify_HitEnd()
 {
+	PrintViewport(1.f, FColor::Green, TEXT("hitend"));
 	mPlayerState = PLAYER_MOTION::IDLE;
 }
 
@@ -636,7 +637,9 @@ void UPlayerAnimInstance::NormalAttack()
 {
 	// 공격 못하는 상태일 경우 리턴.
 	if (!mIsNormalAttackEnable)
+	{
 		return;
+	}
 
 	// 이제 공격 시작할거니까 이 공격 끝날때까지 공격 못함.
 	mIsNormalAttackEnable = false;
@@ -713,7 +716,7 @@ void UPlayerAnimInstance::ResumSprintAttackMontage()
 
 	if (mSprintCount < 5)
 	{
-		//PrintViewport(1.f, FColor::Green, TEXT("ResumSprintAttackMontage()"));
+		//PrintViewport(1.f, FColor::Green, TEXT("ResumSSprintAttackMontage()"));
 		Montage_SetPosition(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.13f);
 	}
 	else if (mSprintCount == 5)

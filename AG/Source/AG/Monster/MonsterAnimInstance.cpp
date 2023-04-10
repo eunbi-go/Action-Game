@@ -26,17 +26,6 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (mMonsterMotionType == MONSTER_MOTION::ATTACK)
-	{
-		//if (!Montage_IsPlaying(mAttackMontage))
-		//{
-		//	Montage_SetPosition(mAttackMontage, 0.f);
-		//	Montage_Play(mAttackMontage);
-		//	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
-		//	if (IsValid(monster))
-		//		monster->SetIsAttackEnd(false);
-		//}
-	}
 }
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
@@ -62,7 +51,7 @@ void UMonsterAnimInstance::AnimNotify_Attack()
 void UMonsterAnimInstance::AnimNotify_AttackEnd()
 {
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
-	mMonsterMotionType = MONSTER_MOTION::IDLE;
+	//mMonsterMotionType = MONSTER_MOTION::IDLE;
 	if (IsValid(monster))
 		monster->SetIsAttackEnd(true);
 }
