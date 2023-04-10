@@ -106,7 +106,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
+	
 
 
 	//---------------
@@ -123,6 +123,13 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
+	if (monsterAnimInst->GetIsHit())
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+		return;
+	}
+
 
 	//---------------
 	// Target 이 존재하면 공격이 끝났는지 체크한 후, 계속 공격할지 결정한다.
@@ -133,6 +140,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		FVector targetPosition = target->GetActorLocation();
 
 		float distance = (monsterPosition - targetPosition).Size();
+
 
 		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
 		if (distance >= monsterInfo.attackDistance)

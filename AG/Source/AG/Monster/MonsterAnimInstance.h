@@ -40,6 +40,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
 
+	UFUNCTION()
+		void AnimNotify_AttackCheck();
+
 public:
 	void Hit();
 	void SetHitDirection(FString _value);
@@ -50,6 +53,9 @@ public:
 
 public:
 	MONSTER_MOTION GetMonsterMotionType() { return mMonsterMotionType; }
+	bool GetIsHit() { return mIsHit; }
+
+
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -64,4 +70,6 @@ protected:
 	// front, back, left, right.
 	int32		mHitMontageIndex;
 	FString		mHitDirection;
+
+	bool		mIsHit;
 };

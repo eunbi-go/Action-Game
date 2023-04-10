@@ -3,18 +3,18 @@
 #pragma once
 
 #include "Monster.h"
-#include "Khaimera.generated.h"
+#include "Wraith.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AG_API AKhaimera : public AMonster
+class AG_API AWraith : public AMonster
 {
 	GENERATED_BODY()
 	
 public:
-	AKhaimera();
+	AWraith();
 
 protected:
 	virtual void BeginPlay() override;

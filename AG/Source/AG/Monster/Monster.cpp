@@ -147,7 +147,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	mInfo.hp -= damage;
 
-	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("hp: %d, damage: %d"), mInfo.hp, damage));
+	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("hp: %d, damage: %d"), mInfo.hp, damage));
 
 
 	if (mInfo.hp <= 0)
@@ -215,6 +215,10 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	}
 
 	return damage;
+}
+
+void AMonster::NormalAttackCheck()
+{
 }
 
 void AMonster::GoNextPatrolPoint()

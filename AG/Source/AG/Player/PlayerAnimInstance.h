@@ -17,7 +17,7 @@ enum class PLAYE_MODE : uint8
 UENUM(BlueprintType)
 enum class PLAYER_MOTION : uint8
 {
-	IDLE, MOVE, JUMP, NORMAL_ATTACK, SKILL, PLAYER_STATE_END
+	IDLE, MOVE, JUMP, NORMAL_ATTACK, SKILL, HIT, PLAYER_STATE_END
 };
 
 UENUM(BlueprintType)
@@ -128,6 +128,9 @@ public:
 	UFUNCTION()
 		void AnimNotify_NormalCS();
 
+	UFUNCTION()
+		void AnimNotify_HitEnd();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
@@ -156,6 +159,8 @@ public:
 	void ResumSprintAttackMontage();
 	void ReplaySprintMontage();
 	void StopContinuousSkill();
+	void SetHitDirection(FString _value);
+	void Hit();
 
 protected:
 	PLAYE_MODE		mCurPlayMode;
@@ -178,6 +183,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<FSkillAnimationInfo>	mSkillMontageArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*>	mHitMontageArray;
 
 	UPROPERTY()
 	FTimerHandle timerHandle;
@@ -252,4 +260,6 @@ protected:
 
 	int mContinuousCount;
 	bool mIsEndContinuous;
+
+	int32 mHitMontageIndex;
 };

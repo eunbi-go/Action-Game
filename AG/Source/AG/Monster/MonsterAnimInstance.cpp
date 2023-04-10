@@ -13,6 +13,8 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 	mHitAdditive = 0.f;
 	mHitMontageIndex = 0;
 	mHitDirection = TEXT("");
+
+	mIsHit = false;
 }
 
 void UMonsterAnimInstance::NativeInitializeAnimation()
@@ -33,6 +35,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 void UMonsterAnimInstance::AnimNotify_HitEnd()
 {
 	mHitAdditive = 0.f;
+	mIsHit = false;
 }
 
 void UMonsterAnimInstance::AnimNotify_Attack()
@@ -47,6 +50,14 @@ void UMonsterAnimInstance::AnimNotify_AttackEnd()
 		monster->SetIsAttackEnd(true);
 }
 
+void UMonsterAnimInstance::AnimNotify_AttackCheck()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+		monster->NormalAttackCheck();
+}
+
 void UMonsterAnimInstance::Hit()
 {
 	if (!IsValid(mHitMontageArray[mHitMontageIndex]))
@@ -56,6 +67,7 @@ void UMonsterAnimInstance::Hit()
 
 	if (!Montage_IsPlaying(mHitMontageArray[mHitMontageIndex]))
 	{
+		PrintViewport(10.f, FColor::Purple, TEXT("hitttttttt"));
 		Montage_SetPosition(mHitMontageArray[mHitMontageIndex], 0.f);
 		Montage_Play(mHitMontageArray[mHitMontageIndex]);
 	}
@@ -64,6 +76,7 @@ void UMonsterAnimInstance::Hit()
 void UMonsterAnimInstance::SetHitDirection(FString _value)
 {
 	mHitDirection = _value;
+	mIsHit = true;
 
 	if (_value == TEXT("Front"))
 	{
