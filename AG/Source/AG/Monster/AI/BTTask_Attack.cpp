@@ -57,7 +57,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	// else.
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::ATTACK);
-
+	//monsterAnimInst->Attack();
 
 	// 몬스터가 타겟에 도착할 때까지 이 Task를 빠져나가지 못하게 한다.
 	return EBTNodeResult::InProgress;
@@ -123,12 +123,12 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
-	if (monsterAnimInst->GetIsHit())
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-
-		return;
-	}
+	//if (monsterAnimInst->GetMonsterMotionType() == MONSTER_MOTION::HIT)
+	//{
+	//	monster->SetIsAttackEnd(true);
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+	//	return;
+	//}
 
 
 	//---------------
@@ -157,6 +157,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 		}
 
+		//monsterAnimInst->Attack();
 		monster->SetIsAttackEnd(false);
 	}
 }
