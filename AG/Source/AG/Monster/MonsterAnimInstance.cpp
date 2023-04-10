@@ -4,7 +4,7 @@
 #include "MonsterAnimInstance.h"
 
 #include "Monster.h"
-
+#include "MonsterAIController.h"
 
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
@@ -48,6 +48,10 @@ void UMonsterAnimInstance::AnimNotify_HitEnd()
 {
 	mHitAdditive = 0.f;
 	mIsHit = false;
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+	AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
+	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), false);
+	monster->SetIsAttackEnd(true);
 	PrintViewport(10.f, FColor::Purple, TEXT("hit end"));
 }
 
@@ -108,6 +112,11 @@ void UMonsterAnimInstance::SetHitDirection(FString _value)
 		mHitMontageIndex = 3;
 	}
 
+	
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+	AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
+	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), true);
+	monster->SetIsAttackEnd(true);
 	Hit();
 	//PrintViewport(2.f, FColor::Blue, mHitDirection);
 }

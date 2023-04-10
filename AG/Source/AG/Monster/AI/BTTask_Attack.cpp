@@ -131,6 +131,14 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	//}
 
 
+	//bool isHit = (controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsHitEnd")));
+	//if (!isHit)
+	//{
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+	//	return;
+	//}
+
 	//---------------
 	// Target 이 존재하면 공격이 끝났는지 체크한 후, 계속 공격할지 결정한다.
 	//---------------
