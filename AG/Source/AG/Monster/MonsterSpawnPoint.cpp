@@ -25,7 +25,7 @@ AMonsterSpawnPoint::AMonsterSpawnPoint()
 	mSpawnCount = 1;
 
 	mDivideCount = 5;
-	mIsDivideMeshVisible = true;
+	mIsDivideMeshVisible = false;
 	mSplineLength = 0.f;
 	mCellDistance = 0.f;
 	mPreDivideCount = 0;

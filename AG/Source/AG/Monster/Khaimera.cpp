@@ -46,6 +46,8 @@ void AKhaimera::UnPossessed()
 
 void AKhaimera::NormalAttackCheck()
 {
+	Super::NormalAttackCheck();
+
 	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
 	FVector endPosition = startPosition + GetActorForwardVector() * mInfo.attackDistance;
 
