@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class MONSTER_MOTION : uint8
 {
-	IDLE, PATROL, CHASE, ATTACK, DEATH, END
+	IDLE, PATROL, CHASE, ATTACK, DEATH, HIT, END
 };
 
 
@@ -46,7 +46,8 @@ public:
 public:
 	void Hit();
 	void SetHitDirection(FString _value);
-
+	
+	void Attack();
 	
 public:
 	void SetMonsterMotionType(MONSTER_MOTION _motion) { mMonsterMotionType = _motion; }
@@ -64,6 +65,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<UAnimMontage*>	mHitMontageArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UAnimMontage*	mAttackMontage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mHitAdditive;
 
@@ -71,5 +75,6 @@ protected:
 	int32		mHitMontageIndex;
 	FString		mHitDirection;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool		mIsHit;
 };
