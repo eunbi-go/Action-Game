@@ -22,4 +22,7 @@ protected:
 public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
+
+public:
+	virtual void NormalAttackCheck();
 };

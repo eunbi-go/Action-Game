@@ -57,6 +57,8 @@ APlayerCharacter::APlayerCharacter()
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	// 데미지 수신 가능.
+	SetCanBeDamaged(true);
 
 
 	//---------------------------
@@ -259,6 +261,88 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 
 
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	damage -= mInfo.defensePoint;
+
+	if (damage < 1)
+		damage = 1;
+
+
+	mInfo.hp -= damage;
+
+	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("player: hp: %d, damage: %d"), mInfo.hp, damage));
+
+
+	if (mInfo.hp <= 0)
+	{
+		// 다시 충돌되지 않도록.
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
+
+
+		// 동작되고 있던 로직을 멈춘다.
+		AAGPlayerController* ai = Cast<AAGPlayerController>(GetController());
+
+		if (IsValid(ai))
+		{
+			//ai->BrainComponent->StopLogic(TEXT("Death"));
+		}
+		
+	}
+	else
+	{
+		//---------------------
+		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
+		//---------------------
+
+		FVector targetPosition = DamageCauser->GetActorLocation();
+		FVector position = GetActorLocation();
+		FVector direction = targetPosition - position;
+
+		direction.Z = 0.f;
+		direction.Normalize();
+
+		float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+		float degree = UKismetMathLibrary::DegAcos(innerProduct);
+
+		FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+		float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+		float angle = sign * degree;
+		FString angleString = TEXT("");
+
+		// 오른쪽.
+		if (angle >= 0.f)
+		{
+			if (degree >= 50.f && angle <= 130.f)
+				angleString = TEXT("Right");
+			else if (degree < 50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		// 왼쪽
+		else if (angle < 0.f)
+		{
+			if (degree <= -50.f && angle >= -130.f)
+				angleString = TEXT("Left");
+			else if (degree > -50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		mAnimInst->SetHitDirection(angleString);
+	}
+
+	return damage;
 }
 
 void APlayerCharacter::NormalAttackCheck()

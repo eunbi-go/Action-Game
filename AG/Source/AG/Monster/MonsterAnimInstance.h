@@ -40,6 +40,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
 
+	UFUNCTION()
+		void AnimNotify_AttackCheck();
+
 public:
 	void Hit();
 	void SetHitDirection(FString _value);

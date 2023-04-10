@@ -338,7 +338,6 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-
 void AWarriorCharacter::NormalAttackCheck()
 {
 	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;

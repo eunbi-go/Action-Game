@@ -47,6 +47,14 @@ void UMonsterAnimInstance::AnimNotify_AttackEnd()
 		monster->SetIsAttackEnd(true);
 }
 
+void UMonsterAnimInstance::AnimNotify_AttackCheck()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+		monster->NormalAttackCheck();
+}
+
 void UMonsterAnimInstance::Hit()
 {
 	if (!IsValid(mHitMontageArray[mHitMontageIndex]))

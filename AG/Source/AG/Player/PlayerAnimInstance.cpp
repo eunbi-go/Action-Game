@@ -58,6 +58,8 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	mContinuousCount = 0;
 
 	mIsEndContinuous = false;
+
+	mHitMontageIndex = 0;
 }
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -69,7 +71,8 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (mPlayerState == PLAYER_MOTION::NORMAL_ATTACK || mPlayerState == PLAYER_MOTION::SKILL)
+	if (mPlayerState == PLAYER_MOTION::NORMAL_ATTACK || mPlayerState == PLAYER_MOTION::SKILL
+		|| mPlayerState == PLAYER_MOTION::HIT)
 		return;
 
 
@@ -532,6 +535,11 @@ void UPlayerAnimInstance::AnimNotify_NormalCS()
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
 }
 
+void UPlayerAnimInstance::AnimNotify_HitEnd()
+{
+	mPlayerState = PLAYER_MOTION::IDLE;
+}
+
 
 
 void UPlayerAnimInstance::ChangePlayMode()
@@ -732,4 +740,36 @@ void UPlayerAnimInstance::StopContinuousSkill()
 	mIsEndContinuous = true;
 	mPlayerState = PLAYER_MOTION::IDLE;
 	mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
+}
+
+void UPlayerAnimInstance::SetHitDirection(FString _value)
+{
+	mPlayerState = PLAYER_MOTION::HIT;
+	if (_value == TEXT("Front"))
+	{
+		mHitMontageIndex = 0;
+	}
+	else if (_value == TEXT("Back"))
+	{
+		mHitMontageIndex = 1;
+	}
+	else if (_value == TEXT("Left"))
+	{
+		mHitMontageIndex = 2;
+	}
+	else if (_value == TEXT("Right"))
+	{
+		mHitMontageIndex = 3;
+	}
+
+	Hit();
+}
+
+void UPlayerAnimInstance::Hit()
+{
+	if (!Montage_IsPlaying(mHitMontageArray[mHitMontageIndex]))
+	{
+		Montage_SetPosition(mHitMontageArray[mHitMontageIndex], 0.f);
+		Montage_Play(mHitMontageArray[mHitMontageIndex]);
+	}
 }

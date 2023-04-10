@@ -28,6 +28,9 @@ public:
 
 
 public:
+	virtual void NormalAttackCheck();
+
+public:
 	void GoNextPatrolPoint();
 
 
@@ -78,6 +81,7 @@ protected:
 
 	class UMonsterAnimInstance* mAnimInst;
 
+	AActor* mHitActor;
 
 protected:
 	// 몬스터의 현재 공격이 끝났는가.
