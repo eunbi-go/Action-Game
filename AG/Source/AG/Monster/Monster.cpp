@@ -32,7 +32,6 @@ AMonster::AMonster()
 
 
 	mWidgetComopnent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetCom"));
-	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
 
 	mWidgetComopnent->SetupAttachment(GetMesh());
 
@@ -63,6 +62,9 @@ AMonster::AMonster()
 	
 	mPatrolCurrDistance = 0.f;
 
+
+	// -1: 사용하는 스킬 없음.
+	mUsingSkillIndex = -1;
 }
 
 void AMonster::BeginPlay()
@@ -70,6 +72,10 @@ void AMonster::BeginPlay()
 	Super::BeginPlay();
 	
 	UAGGameInstance* gameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
+
+	//------------------
+	// Info.
+	//------------------
 
 	const FMonsterTableInfo* info = gameInst->FindMonsterTable(mMonsterTableRowName);
 
@@ -99,10 +105,42 @@ void AMonster::BeginPlay()
 	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
 
 
+
+	//------------------
+	// Widget.
+	//------------------
+
 	UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
 	if (IsValid(HPWidget))
 	{
 		HPWidget->SetTargetRatio(1.f);
+	}
+
+
+
+	//------------------
+	// Skill.
+	//------------------
+	
+	int32 skillCount = mSkillNameArray.Num();
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		const FSkillData* data = gameInst->FindMonsterSkillTable(mSkillNameArray[i]);
+
+		FMonsterSkillInfo	skillInfo;
+		skillInfo.type = data->type;
+		skillInfo.system = data->system;
+		skillInfo.name = data->name;
+		skillInfo.description = data->description;
+		skillInfo.optionArray = data->optionArray;
+		skillInfo.effectArray = data->effectArray;
+		skillInfo.distance = data->distance;
+		skillInfo.animType = data->animType;
+		skillInfo.isUse = false;
+		skillInfo.duration = 0.0f;
+
+		mSkillInfoArray.Add(skillInfo);
 	}
 }
 
@@ -378,5 +416,13 @@ bool AMonster::GetIsPatrolPointArrive()
 		return mPatrolIndex * mPatrolCellDistance - distance <= mPatrolCurrDistance;
 
 	return mPatrolIndex * mPatrolCellDistance + distance >= mPatrolCurrDistance;
+}
+
+const FMonsterSkillInfo* AMonster::GetSkillInfo()
+{
+	if (mUsingSkillIndex == -1)
+		return nullptr;
+
+	return &mSkillInfoArray[mUsingSkillIndex];
 }
 

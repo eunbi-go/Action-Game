@@ -269,6 +269,164 @@ enum class PATROL_TYPE : uint8
 };
 
 
+//----------------------------
+// Boss Skill.
+//----------------------------
+
+UENUM(BlueprintType)
+enum class ESkill_Type : uint8
+{
+	PASSIVE, ACTIVE, END
+};
+
+
+UENUM(BlueprintType)
+enum class ESkill_System : uint8
+{
+	ATTACK_SINGLE_ONE, ATTACK_SINGE_DURATION, 
+	ATTACK_MULTI_ONE, ATTACK_MULTI_DURATION, 
+	BUF, END
+};
+
+
+UENUM(BlueprintType)
+enum class ESkill_Point_Type : uint8
+{
+	DAMAGE, HP_RECOVERY, MP_RECOVERY, ATTACK_UP, DEFENSE_UP, END
+};
+
+
+USTRUCT(Atomic, BlueprintType)
+struct FSkillPoint
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	ESkill_Point_Type	type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	float	value;
+};
+
+
+UENUM(BlueprintType)
+enum class ESkill_Effect_Type : uint8
+{
+	CAST, PLAY, END
+};
+
+
+USTRUCT(Atomic, BlueprintType)
+struct FSkillEffect
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		ESkill_Effect_Type	type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		UNiagaraSystem* niagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		UParticleSystem* particle;
+};
+
+
+UENUM(BlueprintType)
+enum class ESkill_Anim_Type : uint8
+{
+	IDLE, PATROL, CHASE, ATTACK, DEATH, 
+	SKILL1, SKILL2, SKILL3, SKILL4, SKILL5, END
+};
+
+
+UENUM(BlueprintType)
+enum class MONSTER_MOTION : uint8
+{
+	IDLE, PATROL, CHASE, ATTACK, DEATH, HIT, 
+	SKILL1, SKILL2, SKILL3, SKILL4, SKILL5, END
+};
+
+
+USTRUCT(BlueprintType)
+struct FSkillData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		ESkill_Type	type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		ESkill_System	system;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString	name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString	description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		TArray<FSkillPoint>	optionArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		TArray<FSkillEffect>	effectArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float	distance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		MONSTER_MOTION	animType;
+};
+
+
+USTRUCT(BlueprintType)
+struct FMonsterSkillInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		ESkill_Type	type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		ESkill_System	system;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString	name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString	description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		TArray<FSkillPoint>	optionArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		TArray<FSkillEffect>	effectArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float	distance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		MONSTER_MOTION	animType;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		bool	isUse;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float	duration;
+};
+
+
+
+
+
+
+
+
 
 DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);
 

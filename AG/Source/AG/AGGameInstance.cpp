@@ -17,6 +17,11 @@ UAGGameInstance::UAGGameInstance()
 	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterTable(TEXT("DataTable'/Game/Blueprints/DataTable/MonsterInfoTable.MonsterInfoTable'"));
 	if (monsterTable.Succeeded())
 		mMonsterInfoTable = monsterTable.Object;
+
+
+	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterSkillTable(TEXT("DataTable'/Game/Blueprints/DataTable/SkillInfoTable.SkillInfoTable'"));
+	if (monsterSkillTable.Succeeded())
+		mMonsterSkillTable = monsterSkillTable.Object;
 }
 
 UAGGameInstance::~UAGGameInstance()
@@ -43,4 +48,9 @@ FPlayerTableInfo* UAGGameInstance::FindPlayerTables(const FName& _name)
 const FMonsterTableInfo* UAGGameInstance::FindMonsterTable(const FName& _name)
 {
 	return mMonsterInfoTable->FindRow<FMonsterTableInfo>(_name, TEXT(""));
+}
+
+const FSkillData* UAGGameInstance::FindMonsterSkillTable(const FName& _name)
+{
+	return mMonsterSkillTable->FindRow<FSkillData>(_name, TEXT(""));
 }

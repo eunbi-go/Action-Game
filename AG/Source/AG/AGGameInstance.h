@@ -27,6 +27,7 @@ public:
 	const FPlayerTableInfo* FindPlayerTable(const FName& _name);
 	FPlayerTableInfo* FindPlayerTables(const FName& _name);
 	const FMonsterTableInfo* FindMonsterTable(const FName& _name);
+	const FSkillData* FindMonsterSkillTable(const FName& _name);
 
 
 
@@ -34,4 +35,5 @@ public:
 private:
 	UDataTable* mPlayerInfoTable;
 	UDataTable* mMonsterInfoTable;
+	UDataTable* mMonsterSkillTable;
 };

@@ -31,13 +31,16 @@ void UCharacterStatComponent::InitializeComponent()
 
 
 	UAGGameInstance* gmaeInstance = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	mCurrentData = gmaeInstance->FindPlayerTables(TEXT("Player"));
+	if (IsValid(gmaeInstance))
+	{
+		mCurrentData = gmaeInstance->FindPlayerTables(TEXT("Player"));
 
-	mCurrentHp = mCurrentData->maxHp;
-	SetHp(mCurrentData->maxHp);
+		mCurrentHp = mCurrentData->maxHp;
+		SetHp(mCurrentData->maxHp);
 
-	mCurrentMp = mCurrentData->maxMp;
-	SetMp(mCurrentData->maxMp);
+		mCurrentMp = mCurrentData->maxMp;
+		SetMp(mCurrentData->maxMp);
+	}
 }
 
 void UCharacterStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

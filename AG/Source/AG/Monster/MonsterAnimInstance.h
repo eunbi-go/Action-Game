@@ -7,11 +7,7 @@
 #include "MonsterAnimInstance.generated.h"
 
 
-UENUM(BlueprintType)
-enum class MONSTER_MOTION : uint8
-{
-	IDLE, PATROL, CHASE, ATTACK, DEATH, HIT, END
-};
+
 
 
 UCLASS()

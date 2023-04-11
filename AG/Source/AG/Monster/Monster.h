@@ -67,8 +67,9 @@ public:
 	PATROL_TYPE GetPatrolType() { return mPatrolType; }
 	bool	GetIsPatrolEnable() { return mIsPatrolEnable; }
 
-
-
+	int32	GetUsingSkillIndex() { return mUsingSkillIndex; }
+	const FMonsterSkillInfo* GetSkillInfo();
+		
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -87,8 +88,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UWidgetComponent* mWidgetComopnent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		class UCharacterStatComponent* mStat;
+	
+
 
 protected:
 	// 몬스터의 현재 공격이 끝났는가.
@@ -115,4 +116,17 @@ protected:
 	float	mPatrolCellDistance;
 	// 현재까지 이동한 거리.
 	float	mPatrolCurrDistance;
+
+
+
+protected:
+	//------------------
+	// 스킬.
+	//------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<FMonsterSkillInfo>	mSkillInfoArray;
+
+	int32	mUsingSkillIndex;
+
+	TArray<FName>	mSkillNameArray;
 };
