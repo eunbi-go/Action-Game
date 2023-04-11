@@ -65,6 +65,9 @@ AMonster::AMonster()
 
 	// -1: 사용하는 스킬 없음.
 	mUsingSkillIndex = -1;
+
+	// 현재 스킬을 사용하는 중인가.
+	mIsUsingSkill = false;
 }
 
 void AMonster::BeginPlay()
@@ -137,7 +140,7 @@ void AMonster::BeginPlay()
 		skillInfo.effectArray = data->effectArray;
 		skillInfo.distance = data->distance;
 		skillInfo.animType = data->animType;
-		skillInfo.isUse = false;
+		skillInfo.isUse = false;	// 사용중인가.
 		skillInfo.duration = 0.0f;
 
 		mSkillInfoArray.Add(skillInfo);
@@ -172,6 +175,10 @@ void AMonster::Tick(float DeltaTime)
 			mIsPatrolEnable = false;
 		}
 	}
+
+
+	if (!mIsUsingSkill)
+		UseSkill(DeltaTime);
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -295,8 +302,92 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	return damage;
 }
 
+void AMonster::UseSkill(float _deltaTime)
+{
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+
+	AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!target)
+		return;
+
+
+	float	capsuleHalfHeight = 0.f;
+
+	if (Cast<ACharacter>(target))
+		capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	FVector targetPosition = target->GetActorLocation();
+	targetPosition.Z -= capsuleHalfHeight;
+
+	FVector position = GetActorLocation();
+	position.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	float distance = (float)FVector::Distance(targetPosition, position);
+	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+
+
+	int32 skillCount = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		// 현재 사용중이면 pass.
+		if (mSkillInfoArray[i].isUse)
+			continue;
+
+
+		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
+		{
+			PrintViewport(2.f, FColor::Yellow, TEXT("UseSkill"));
+
+			mSkillInfoArray[i].isUse = true;
+			mIsUsingSkill = true;
+			mUsingSkillIndex = i;
+
+			aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+		}
+	}
+}
+
 void AMonster::NormalAttackCheck()
 {
+}
+
+void AMonster::ClearUsingSkill()
+{
+	if (mUsingSkillIndex == -1)
+		return;
+
+	PrintViewport(3.f, FColor::Red, TEXT("ClearUsingSkill"));
+
+	mSkillInfoArray[mUsingSkillIndex].isUse = false;
+	mUsingSkillIndex = -1;
+	mIsUsingSkill = false;
+	mIsAttackEnd = true;
+
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+}
+
+void AMonster::ClearAllSkill()
+{
+	mUsingSkillIndex = -1;
+	mIsUsingSkill = false;
+	mIsAttackEnd = true;
+
+	int32 skillCount = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		mSkillInfoArray[i].isUse = false;
+	}
+
+	PrintViewport(3.f, FColor::Red, TEXT("ClearAllSkill"));
+
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
 }
 
 void AMonster::GoNextPatrolPoint()

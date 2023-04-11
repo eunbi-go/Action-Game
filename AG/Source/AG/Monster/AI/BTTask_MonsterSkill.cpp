@@ -10,6 +10,10 @@
 
 UBTTask_MonsterSkill::UBTTask_MonsterSkill()
 {
+	NodeName = TEXT("MonsterSkill");
+
+	bNotifyTick = true;
+	bNotifyTaskFinished = true;
 }
 
 EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -71,6 +75,91 @@ EBTNodeResult::Type UBTTask_MonsterSkill::AbortTask(UBehaviorTreeComponent& Owne
 void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	//---------------
+	// MonsterAIController, Monster, BB의 Target 을 얻어온다.
+	//---------------
+	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
+	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
+
+	if (!IsValid(controller) || !isSkillEnable)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+
+	AMonster* monster = Cast<AMonster>(controller->GetPawn());
+
+	if (!IsValid(monster))
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+
+	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
+
+	if (!IsValid(monsterAnimInst))
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+
+	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+	{
+		PrintViewport(3.f, FColor::Green, TEXT("no target"));
+		controller->StopMovement();
+
+		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
+
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+
+
+	if (monster->GetIsAttackEnd())
+	{
+		const FMonsterInfo& info = monster->GetMonsterInfo();
+		float capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		
+		FVector targetPosition = target->GetActorLocation();
+		targetPosition.Z -= capsuleHalfHeight;
+
+		FVector position = monster->GetActorLocation();
+		position.Z -= monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+		float distance = (float)FVector::Distance(targetPosition, position);
+		distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+		distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+
+		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
+		if (distance >= info.attackDistance)
+		{
+			PrintViewport(3.f, FColor::Red, TEXT("distance"));
+			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+			//return;
+		}
+
+		else
+		{
+			PrintViewport(3.f, FColor::Blue, TEXT("else"));
+			controller->StopMovement();
+
+			FVector direction = target->GetActorLocation() - monster->GetActorLocation();
+			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+		}
+
+		monster->SetIsAttackEnd(false);
+	}
+
 }
 
 void UBTTask_MonsterSkill::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)

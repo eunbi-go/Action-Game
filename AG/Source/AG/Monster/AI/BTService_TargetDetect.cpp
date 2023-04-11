@@ -79,5 +79,8 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	
 	else
+	{
+		monster->ClearAllSkill();
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
+	}
 }

@@ -28,8 +28,14 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 
+private:
+	void UseSkill(float _deltaTime);
+
+
 public:
 	virtual void NormalAttackCheck();
+	void ClearUsingSkill();
+	void ClearAllSkill();
 
 public:
 	void GoNextPatrolPoint();
@@ -37,7 +43,7 @@ public:
 
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
-	void SetIsAttackEnd(bool _value) { mIsAttackEnd = _value; }
+	void SetIsAttackEnd(bool _value) { PrintViewport(3.f, FColor::Red, TEXT("setAttack")); mIsAttackEnd = _value; }
 	
 	void SetPatrolPointPosition(const TArray<FVector>& _array) { mPatrolPointPositionArray = _array; }
 	void SetPatrolDirection(PATROL_END_DIRECTION _direction) { mPatrolDirection = _direction; }
@@ -129,4 +135,6 @@ protected:
 	int32	mUsingSkillIndex;
 
 	TArray<FName>	mSkillNameArray;
+
+	bool	mIsUsingSkill;
 };

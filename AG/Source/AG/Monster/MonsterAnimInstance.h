@@ -37,7 +37,10 @@ public:
 	void AnimNotify_AttackEnd();
 
 	UFUNCTION()
-		void AnimNotify_AttackCheck();
+	void AnimNotify_AttackCheck();
+
+	UFUNCTION()
+	void AnimNotify_SkillEnd();
 
 public:
 	void Hit();
