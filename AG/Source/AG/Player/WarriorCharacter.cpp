@@ -452,7 +452,6 @@ void AWarriorCharacter::Skill2()
 
 	mAnimInst->UseSkill(skillType);
 	UseSkill(skillType);
-
 }
 
 void AWarriorCharacter::Skill3()
@@ -507,6 +506,7 @@ void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 		{
 			//SpawnSkill(_skillType, i);
 			ApplySkill(_skillType);
+			mStat->SetMp(mStat->GetMp() - 10.f);
 			break;
 		}
 	}

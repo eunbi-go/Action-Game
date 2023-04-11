@@ -28,6 +28,7 @@ public:
 	void SetCharacterStat(class UCharacterStatComponent* _characterStat);
 	
 	void UpdateHp();
+	void UpdateMp();
 
 
 public:

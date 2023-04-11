@@ -21,6 +21,7 @@ public:
 	void SetHp(float _ratio);
 	void SetHpRatio(float _ratio) { mHpTargetRatio = _ratio; }
 	void SetMp(float _ratio);
+	void SetMpRatio(float _ratio) { mMpTargetRatio = _ratio; }
 
 public:
 	virtual void NativeConstruct() override;
@@ -33,4 +34,6 @@ private:
 
 	float			mHpTargetRatio;
 	float			mHpRatio;
+
+	float			mMpTargetRatio;
 };

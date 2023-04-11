@@ -24,15 +24,24 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 		return;
 
 	mCurrentStat = _characterStat;
+
+
 	mCurrentStat->mHpChange.AddUObject(this, &UMainWidget::UpdateHp);
 	UpdateHp();
 
+	mCurrentStat->mMpChange.AddUObject(this, &UMainWidget::UpdateMp);
+	UpdateMp();
 }
 
 void UMainWidget::UpdateHp()
 {
 	PrintViewport(3.f, FColor::Blue, TEXT("UpdateHp"));
 	mPlayerInfo->SetHpRatio(mCurrentStat->GetHpRatio());
+}
+
+void UMainWidget::UpdateMp()
+{
+	mPlayerInfo->SetMpRatio(mCurrentStat->GetMpRatio());
 }
 
 void UMainWidget::SetHp(float _ratio)

@@ -22,6 +22,8 @@ void UPlayerInfoWidget::NativeConstruct()
 
 	mHpTargetRatio = 1.f;
 	mHpRatio = 1.f;
+
+	mMpTargetRatio = 1.f;
 }
 
 void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
@@ -29,4 +31,5 @@ void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 	Super::NativeTick(_geo, _deltaTime);
 
 	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _deltaTime, 5.f));
+	mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, mMpTargetRatio, _deltaTime, 5.f));
 }

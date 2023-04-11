@@ -9,6 +9,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnHpIsZero);
 DECLARE_MULTICAST_DELEGATE(FOnHpChange);
+DECLARE_MULTICAST_DELEGATE(FOnMpChange);
 
 
 
@@ -31,18 +32,25 @@ public:
 public:
 	void SetDamage(float _damage);
 	void SetHp(float _hp);
+	void SetMp(float _mp);
 
 	FOnHpIsZero	mHpDecrease;
 	FOnHpChange mHpChange;
+	FOnMpChange mMpChange;
 
 public:
 	float GetAttack() { return mCurrentData->attackPoint; }
 	float GetHpRatio();
 	float GetHp() { return mCurrentHp; }
+	float GetMpRatio();
+	float GetMp() { return mCurrentMp; }
 
 private:
 	struct FPlayerTableInfo* mCurrentData;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = true))
 	float	mCurrentHp;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = true))
+	float	mCurrentMp;
 };

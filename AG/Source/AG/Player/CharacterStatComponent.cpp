@@ -32,8 +32,12 @@ void UCharacterStatComponent::InitializeComponent()
 
 	UAGGameInstance* gmaeInstance = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	mCurrentData = gmaeInstance->FindPlayerTables(TEXT("Player"));
+
 	mCurrentHp = mCurrentData->maxHp;
 	SetHp(mCurrentData->maxHp);
+
+	mCurrentMp = mCurrentData->maxMp;
+	SetMp(mCurrentData->maxMp);
 }
 
 void UCharacterStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -63,8 +67,19 @@ void UCharacterStatComponent::SetHp(float _hp)
 	}
 }
 
+void UCharacterStatComponent::SetMp(float _mp)
+{
+	mCurrentMp = _mp;
+	mMpChange.Broadcast();
+}
+
 float UCharacterStatComponent::GetHpRatio()
 {
 	return mCurrentData->maxHp < 0.0f ? 0.0f : (mCurrentHp / mCurrentData->maxHp);
+}
+
+float UCharacterStatComponent::GetMpRatio()
+{
+	return mCurrentData->maxMp < 0.0f ? 0.0f : (mCurrentMp / mCurrentData->maxMp);
 }
 
