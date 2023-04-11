@@ -352,7 +352,7 @@ void AWarriorCharacter::NormalAttackCheck()
 		collisionResult, startPosition,
 		endPosition, FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeSphere(100.f),
+		FCollisionShape::MakeCapsule(mInfo.attackDistance, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
 		param);
 
 
@@ -365,8 +365,8 @@ void AWarriorCharacter::NormalAttackCheck()
 	// 바라보는 회전행렬을 만들어서 .ToQuat() 함수를 이용하여 회전행렬을
 	// 회전값으로 변환해준다.
 	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		mInfo.attackDistance / 2.f,
-		100.f,
+		GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+		mInfo.attackDistance,
 		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
 		DrawColor, false, 0.5f);
 

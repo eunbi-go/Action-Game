@@ -65,6 +65,17 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	monster->SetIsPatrolEnable(true);
 
+
+	// 회전.
+	FVector monsterPosition = monster->GetActorLocation();
+	FVector targetPosition = monster->GetPatrolPosition();
+	FVector direction = targetPosition - monsterPosition;
+
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
+
+	// 이동.
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller,
 		monster->GetPatrolPosition());
 
@@ -122,6 +133,11 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
+	FVector direction = monster->GetPatrolPosition() - monster->GetActorLocation();
+
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
 
 
 	//---------------
@@ -134,6 +150,9 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// 몬스터가 Patrol Point 에 도착했는지 확인한다.
 		// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
 		//---------------
+
+
+
 
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(
 			controller,

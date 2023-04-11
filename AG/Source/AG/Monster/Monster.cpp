@@ -222,7 +222,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	mInfo.hp -= damage;
 
-	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
+	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
 
 	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
 
@@ -340,7 +340,7 @@ void AMonster::UseSkill(float _deltaTime)
 
 		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
 		{
-			PrintViewport(2.f, FColor::Yellow, TEXT("UseSkill"));
+			//PrintViewport(2.f, FColor::Yellow, TEXT("UseSkill"));
 
 			mSkillInfoArray[i].isUse = true;
 			mIsUsingSkill = true;
@@ -360,7 +360,6 @@ void AMonster::ClearUsingSkill()
 	if (mUsingSkillIndex == -1)
 		return;
 
-	PrintViewport(3.f, FColor::Red, TEXT("ClearUsingSkill"));
 
 	mSkillInfoArray[mUsingSkillIndex].isUse = false;
 	mUsingSkillIndex = -1;
@@ -384,7 +383,7 @@ void AMonster::ClearAllSkill()
 		mSkillInfoArray[i].isUse = false;
 	}
 
-	PrintViewport(3.f, FColor::Red, TEXT("ClearAllSkill"));
+	//PrintViewport(3.f, FColor::Red, TEXT("ClearAllSkill"));
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);

@@ -8,10 +8,10 @@ AWraith::AWraith()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
-	GetCapsuleComponent()->SetCapsuleRadius(34.f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(93.f);
+	GetCapsuleComponent()->SetCapsuleRadius(40.f);
 
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -93.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 
@@ -64,11 +64,14 @@ void AWraith::NormalAttackCheck()
 
 	FCollisionQueryParams params(NAME_None, false, this);
 	
+	gunPosition.Z -= 10.f;
+	endPosition.Z -= 10.f;
+
 	FHitResult result;
 	bool IsCollision = GetWorld()->LineTraceSingleByChannel(result,
 		gunPosition,
 		endPosition,
-		ECollisionChannel::ECC_GameTraceChannel6,
+		ECC_Visibility,
 		params);
 
 

@@ -55,9 +55,9 @@ APlayerCharacter::APlayerCharacter()
 	//---------------------------
 	// 충돌 세팅.
 	//---------------------------
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -217,7 +217,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		{
 			if (hitInfo.Distance <= 70.f)
 			{
-				PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("down")));
+				//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("down")));
 				mAnimInst->SetIsLandStart(true);
 			}
 		}
@@ -309,45 +309,49 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
 		//---------------------
 
-		FVector targetPosition = DamageCauser->GetActorLocation();
-		FVector position = GetActorLocation();
-		FVector direction = targetPosition - position;
-
-		direction.Z = 0.f;
-		direction.Normalize();
-
-		float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
-		float degree = UKismetMathLibrary::DegAcos(innerProduct);
-
-		FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
-		float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
-
-		float angle = sign * degree;
-		FString angleString = TEXT("");
-
-		// 오른쪽.
-		if (angle >= 0.f)
+		if (mAnimInst->GetPlayerMotion() != PLAYER_MOTION::NORMAL_ATTACK
+			&& mAnimInst->GetPlayerMotion() != PLAYER_MOTION::SKILL)
 		{
-			if (degree >= 50.f && angle <= 130.f)
-				angleString = TEXT("Right");
-			else if (degree < 50.f)
-				angleString = TEXT("Front");
-			else
-				angleString = TEXT("Back");
-		}
+			FVector targetPosition = DamageCauser->GetActorLocation();
+			FVector position = GetActorLocation();
+			FVector direction = targetPosition - position;
 
-		// 왼쪽
-		else if (angle < 0.f)
-		{
-			if (degree <= -50.f && angle >= -130.f)
-				angleString = TEXT("Left");
-			else if (degree > -50.f)
-				angleString = TEXT("Front");
-			else
-				angleString = TEXT("Back");
-		}
+			direction.Z = 0.f;
+			direction.Normalize();
 
-		mAnimInst->SetHitDirection(angleString);
+			float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+			float degree = UKismetMathLibrary::DegAcos(innerProduct);
+
+			FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+			float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+			float angle = sign * degree;
+			FString angleString = TEXT("");
+
+			// 오른쪽.
+			if (angle >= 0.f)
+			{
+				if (degree >= 50.f && angle <= 130.f)
+					angleString = TEXT("Right");
+				else if (degree < 50.f)
+					angleString = TEXT("Front");
+				else
+					angleString = TEXT("Back");
+			}
+
+			// 왼쪽
+			else if (angle < 0.f)
+			{
+				if (degree <= -50.f && angle >= -130.f)
+					angleString = TEXT("Left");
+				else if (degree > -50.f)
+					angleString = TEXT("Front");
+				else
+					angleString = TEXT("Back");
+			}
+
+			mAnimInst->SetHitDirection(angleString);
+		}
 	}
 
 	return damage;
@@ -557,7 +561,7 @@ void APlayerCharacter::NormalAttackKey()
 	}
 	else
 	{
-		PrintViewport(2.f, FColor::Yellow, TEXT("NormalAtt"));
+		//PrintViewport(2.f, FColor::Yellow, TEXT("NormalAtt"));
 		// 일반 공격 몽타주 재생 시작.
 		mAnimInst->NormalAttack();
 		//mWeapon->SetTrailOnOff(true);

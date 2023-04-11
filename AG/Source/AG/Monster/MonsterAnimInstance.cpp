@@ -15,6 +15,7 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 	mHitDirection = TEXT("");
 
 	mIsHit = false;
+	mIsSkillEnd = true;
 }
 
 void UMonsterAnimInstance::NativeInitializeAnimation()
@@ -71,6 +72,7 @@ void UMonsterAnimInstance::AnimNotify_SkillEnd()
 	if (IsValid(monster))
 	{
 		monster->ClearUsingSkill();
+		mIsSkillEnd = true;
 	}
 }
 
@@ -134,5 +136,38 @@ void UMonsterAnimInstance::Attack()
 		if (IsValid(monster))
 			monster->SetIsAttackEnd(false);
 
+	}
+}
+
+void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
+{
+	mMonsterMotionType = _motion; 
+	int32 index = 0;
+
+	if (mMonsterMotionType == MONSTER_MOTION::SKILL1)
+	{
+		index = 0;
+		mIsSkillEnd = false;
+	}
+	if (mMonsterMotionType == MONSTER_MOTION::SKILL2)
+	{
+		index = 1;
+		mIsSkillEnd = false;
+	}
+	if (mMonsterMotionType == MONSTER_MOTION::SKILL3)
+	{
+		index = 2;
+		mIsSkillEnd = false;
+	}
+	if (mMonsterMotionType == MONSTER_MOTION::SKILL4)
+	{
+		index = 3;
+		mIsSkillEnd = false;
+	}
+
+	if (!Montage_IsPlaying(mSkillMontageArray[index]) && !mIsSkillEnd)
+	{
+		Montage_SetPosition(mSkillMontageArray[index], 0.f);
+		Montage_Play(mSkillMontageArray[index]);
 	}
 }

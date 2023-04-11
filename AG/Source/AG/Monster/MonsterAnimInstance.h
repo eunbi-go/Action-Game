@@ -49,12 +49,12 @@ public:
 	void Attack();
 	
 public:
-	void SetMonsterMotionType(MONSTER_MOTION _motion) { mMonsterMotionType = _motion; }
+	void SetMonsterMotionType(MONSTER_MOTION _motion);
 
 public:
 	MONSTER_MOTION GetMonsterMotionType() { return mMonsterMotionType; }
 	bool GetIsHit() { return mIsHit; }
-
+	bool GetIsSkillEnd() { return mIsSkillEnd; }
 
 
 protected:
@@ -67,6 +67,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UAnimMontage*	mAttackMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*>	mSkillMontageArray;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float	mHitAdditive;
 
@@ -76,4 +79,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool		mIsHit;
+	bool		mIsSkillEnd;
 };

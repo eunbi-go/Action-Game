@@ -122,7 +122,7 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 
 
-	if (monster->GetIsAttackEnd())
+	if (monsterAnimInst->GetIsSkillEnd())
 	{
 		const FMonsterInfo& info = monster->GetMonsterInfo();
 		float capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
@@ -155,10 +155,15 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
 			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+
+
+			const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
+			monsterAnimInst->SetMonsterMotionType(skillInfo->animType);
 		}
 
-		monster->SetIsAttackEnd(false);
 	}
+
+
 
 }
 

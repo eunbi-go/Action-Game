@@ -86,17 +86,17 @@ void AKhaimera::NormalAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			//FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			//SpawnParam.SpawnCollisionHandlingOverride =
-			//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			//// Hit 파티클 렌더링.
-			//AParticleCascade* Particle =
-			//	GetWorld()->SpawnActor<AParticleCascade>(
-			//		collisionResult[i].ImpactPoint,
-			//		collisionResult[i].ImpactNormal.Rotation(),
-			//		SpawnParam);
+			// Hit 파티클 렌더링.
+			AParticleCascade* Particle =
+				GetWorld()->SpawnActor<AParticleCascade>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
