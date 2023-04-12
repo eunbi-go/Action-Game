@@ -9,7 +9,7 @@
 #include "MonsterAIController.h"
 #include "../Widget/MonsterHpWidget.h"
 #include "../Player/CharacterStatComponent.h"
-
+#include "Math/UnrealMathUtility.h"
 
 AMonster::AMonster()
 {
@@ -142,6 +142,8 @@ void AMonster::BeginPlay()
 		skillInfo.animType = data->animType;
 		skillInfo.isUse = false;	// 사용중인가.
 		skillInfo.duration = 0.0f;
+		skillInfo.coolTime = data->coolTime;
+		skillInfo.isCheckCoolTime = false;
 
 		mSkillInfoArray.Add(skillInfo);
 	}
@@ -176,6 +178,13 @@ void AMonster::Tick(float DeltaTime)
 		}
 	}
 
+
+
+	//-----------------------------
+	// 스킬.
+	//-----------------------------
+
+	CheckSkillCoolTime(DeltaTime);
 
 	if (!mIsUsingSkill)
 		UseSkill(DeltaTime);
@@ -330,25 +339,69 @@ void AMonster::UseSkill(float _deltaTime)
 
 
 	int32 skillCount = mSkillInfoArray.Num();
+	TArray<int32> enableSkillIndexArray;
 
 	for (int32 i = 0; i < skillCount; ++i)
 	{
 		// 현재 사용중이면 pass.
-		if (mSkillInfoArray[i].isUse)
+		if (mSkillInfoArray[i].isUse || mSkillInfoArray[i].isCheckCoolTime)
 			continue;
 
 
 		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
 		{
-			//PrintViewport(2.f, FColor::Yellow, TEXT("UseSkill"));
-
-			mSkillInfoArray[i].isUse = true;
-			mIsUsingSkill = true;
-			mUsingSkillIndex = i;
-
-			aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+			enableSkillIndexArray.Add(i);
 		}
 	}
+
+	//---------------------
+	// 스킬 사용.
+	//---------------------
+
+	int32 enableSkillCount = enableSkillIndexArray.Num();
+
+	if (enableSkillCount == 0)
+		return;
+
+	int32 randomIndexValue = (int32)FMath::RandRange(0.0, (double)enableSkillCount);
+	
+	if (randomIndexValue == enableSkillCount)
+		randomIndexValue--;
+
+	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isUse = true;
+	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isCheckCoolTime = true;
+	mIsUsingSkill = true;
+	mUsingSkillIndex = enableSkillIndexArray[randomIndexValue];
+
+	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("index: %d"), mUsingSkillIndex));
+
+	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+}
+
+void AMonster::CheckSkillCoolTime(float _deltaTime)
+{
+	int32 skillCount = mSkillInfoArray.Num();
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		if (mSkillInfoArray[i].isCheckCoolTime)
+		{
+			mSkillInfoArray[i].duration += _deltaTime;
+			
+			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
+			{
+				PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
+
+				mSkillInfoArray[i].duration = 0.0f;
+				mSkillInfoArray[i].isCheckCoolTime = false;
+			}
+		}
+	}
+}
+
+void AMonster::SelectSkill(TArray<int32> _enableSkillIndexArray)
+{
+
 }
 
 void AMonster::NormalAttackCheck()
@@ -362,6 +415,7 @@ void AMonster::ClearUsingSkill()
 
 
 	mSkillInfoArray[mUsingSkillIndex].isUse = false;
+	
 	mUsingSkillIndex = -1;
 	mIsUsingSkill = false;
 	mIsAttackEnd = true;
@@ -383,7 +437,6 @@ void AMonster::ClearAllSkill()
 		mSkillInfoArray[i].isUse = false;
 	}
 
-	//PrintViewport(3.f, FColor::Red, TEXT("ClearAllSkill"));
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);

@@ -17,6 +17,9 @@ AFengMao::AFengMao()
 
 
 	mSkillNameArray.Add(TEXT("GroundSmash"));
+	mSkillNameArray.Add(TEXT("Stone"));
+	mSkillNameArray.Add(TEXT("Energize"));
+	mSkillNameArray.Add(TEXT("Roar"));
 }
 
 void AFengMao::BeginPlay()

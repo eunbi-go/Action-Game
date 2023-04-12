@@ -26,6 +26,7 @@
 
 #include <Components\WidgetComponent.h>
 
+
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
 
@@ -379,6 +380,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		MONSTER_MOTION	animType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float	coolTime;
 };
 
 
@@ -418,6 +422,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		float	duration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float	coolTime;
+
+	// 쿨타임을 체크해야 하는가.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		bool	isCheckCoolTime;
 };
 
 

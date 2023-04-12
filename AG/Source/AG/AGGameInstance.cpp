@@ -19,7 +19,7 @@ UAGGameInstance::UAGGameInstance()
 		mMonsterInfoTable = monsterTable.Object;
 
 
-	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterSkillTable(TEXT("DataTable'/Game/Blueprints/DataTable/SkillInfoTable.SkillInfoTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterSkillTable(TEXT("DataTable'/Game/Blueprints/DataTable/MonsterSkillInfoTable.MonsterSkillInfoTable'"));
 	if (monsterSkillTable.Succeeded())
 		mMonsterSkillTable = monsterSkillTable.Object;
 }
