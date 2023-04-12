@@ -61,10 +61,10 @@ void AFengMao::Skill3()
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	float randomX = FMath::RandRange(50.0f, 200.0f);
-	float randomY = FMath::RandRange(50.0f, 200.0f);
+	float randomX = FMath::RandRange(50.0f, 100.0f);
+	float randomY = FMath::RandRange(50.0f, 100.0f);
 
-	FVector position = GetActorLocation() - FVector(randomX, randomY, GetActorLocation().Z /*+ 100.f*/);
+	FVector position = GetActorLocation() - FVector(randomX, randomY,GetActorLocation().Z /*+ 100.f*/);
 	FVector direction = GetActorLocation() - target->GetActorLocation();
 	direction.Normalize();
 	
@@ -84,9 +84,21 @@ void AFengMao::Skill3()
 	}
 
 	particle->SetParticle(effect);
-	particle->GetNiagara()->SetRelativeScale3D(FVector(0.7f));
+
+	particle->mOnSHit.AddDynamic(this, &AFengMao::Temp);
 }
 
 void AFengMao::Skill4()
 {
+}
+
+void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+}
+
+void AFengMao::Temp(AParticleNiagara* niagara, const FHitResult& Hit, AActor* hitActor)
+{
+	PrintViewport(1.f, FColor::Green, TEXT("AFengMao::Temp"));
+	hitActor->TakeDamage(50.f, FDamageEvent(), GetController(), this);
+	niagara->Destroy();
 }

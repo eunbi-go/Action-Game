@@ -29,4 +29,8 @@ public:
 	virtual void Skill2()override;
 	virtual void Skill3()override;
 	virtual void Skill4()override;
+
+	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	UFUNCTION()
+	void Temp(class AParticleNiagara* niagara, const FHitResult& Hit, AActor* hitActor);
 };

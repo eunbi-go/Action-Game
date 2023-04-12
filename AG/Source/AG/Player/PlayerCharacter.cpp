@@ -275,7 +275,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	PrintViewport(10.f, FColor::Green, TEXT("APlayerCharacter::TakeDamage"));
 	damage -= mInfo.defensePoint;
 
 	if (damage < 1)
