@@ -29,7 +29,10 @@ public:
 	UFUNCTION()
 	void ParticleFinish(UNiagaraComponent* _particle);
 
+	UFUNCTION()
+	void ParticleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void Check();
 public:
 	UNiagaraComponent* GetNiagara() { return mParticle; }
 
@@ -38,4 +41,13 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UNiagaraComponent* mParticle;
+
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* MyComp;
+
+	UPROPERTY()
+	FTimerHandle timerHandle;
+
+	bool	mIsHit;
+	FHitResult	mHitResult;
 };

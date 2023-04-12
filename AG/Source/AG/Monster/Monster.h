@@ -28,6 +28,13 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 
+
+public:
+	virtual void Skill1();
+	virtual void Skill2();
+	virtual void Skill3();
+	virtual void Skill4();
+
 private:
 	void UseSkill(float _deltaTime);
 	void CheckSkillCoolTime(float _deltaTime);

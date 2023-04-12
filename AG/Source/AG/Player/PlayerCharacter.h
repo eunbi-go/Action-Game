@@ -62,7 +62,9 @@ public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }
 	int GetSprintCount() { return mSprintCount; }
 	bool GetIsSprint() { return isSprint; }
-
+	class UPlayerAnimInstance* GetAnimInstance() {
+		return mAnimInst;
+	}
 public:
 	//---------------------
 	// 키 입력 함수들.

@@ -42,6 +42,18 @@ public:
 	UFUNCTION()
 	void AnimNotify_SkillEnd();
 
+	UFUNCTION()
+	void AnimNotify_Skill3();
+
+
+public:
+	UFUNCTION()
+		void AnimNotify_PlayRataDown();
+
+	UFUNCTION()
+		void AnimNotify_PlayRataReset();
+
+
 public:
 	void Hit();
 	void SetHitDirection(FString _value);
@@ -80,4 +92,5 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool		mIsHit;
 	bool		mIsSkillEnd;
+	int32		mCurSkillMontagIndex;
 };

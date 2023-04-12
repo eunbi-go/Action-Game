@@ -311,6 +311,22 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	return damage;
 }
 
+void AMonster::Skill1()
+{
+}
+
+void AMonster::Skill2()
+{
+}
+
+void AMonster::Skill3()
+{
+}
+
+void AMonster::Skill4()
+{
+}
+
 void AMonster::UseSkill(float _deltaTime)
 {
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
@@ -367,6 +383,8 @@ void AMonster::UseSkill(float _deltaTime)
 	
 	if (randomIndexValue == enableSkillCount)
 		randomIndexValue--;
+
+	enableSkillIndexArray[randomIndexValue] = 2;
 
 	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isUse = true;
 	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isCheckCoolTime = true;

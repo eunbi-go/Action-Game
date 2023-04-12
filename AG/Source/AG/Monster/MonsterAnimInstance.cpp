@@ -16,6 +16,7 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 
 	mIsHit = false;
 	mIsSkillEnd = true;
+	mCurSkillMontagIndex = -1;
 }
 
 void UMonsterAnimInstance::NativeInitializeAnimation()
@@ -74,6 +75,28 @@ void UMonsterAnimInstance::AnimNotify_SkillEnd()
 		monster->ClearUsingSkill();
 		mIsSkillEnd = true;
 	}
+}
+
+void UMonsterAnimInstance::AnimNotify_Skill3()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+	{
+		monster->Skill3();
+	}
+}
+
+void UMonsterAnimInstance::AnimNotify_PlayRataDown()
+{
+	PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataDown"));
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 0.2f);
+}
+
+void UMonsterAnimInstance::AnimNotify_PlayRataReset()
+{
+	PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataReset"));
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 1.f);
 }
 
 void UMonsterAnimInstance::Hit()
@@ -143,31 +166,35 @@ void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
 {
 	mMonsterMotionType = _motion; 
 	int32 index = 0;
+	mIsSkillEnd = true;
 
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL1)
 	{
-		index = 0;
+		mCurSkillMontagIndex = 0;
 		mIsSkillEnd = false;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL2)
 	{
-		index = 1;
+		mCurSkillMontagIndex = 1;
 		mIsSkillEnd = false;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL3)
 	{
-		index = 2;
+		mCurSkillMontagIndex = 2;
 		mIsSkillEnd = false;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL4)
 	{
-		index = 3;
+		mCurSkillMontagIndex = 3;
 		mIsSkillEnd = false;
 	}
 
-	if (!Montage_IsPlaying(mSkillMontageArray[index]) && !mIsSkillEnd)
+	if (!mIsSkillEnd)
 	{
-		Montage_SetPosition(mSkillMontageArray[index], 0.f);
-		Montage_Play(mSkillMontageArray[index]);
+		if (!Montage_IsPlaying(mSkillMontageArray[mCurSkillMontagIndex]))
+		{
+			Montage_SetPosition(mSkillMontageArray[mCurSkillMontagIndex], 0.f);
+			Montage_Play(mSkillMontageArray[mCurSkillMontagIndex]);
+		}
 	}
 }

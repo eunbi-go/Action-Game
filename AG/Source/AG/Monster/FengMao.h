@@ -22,4 +22,11 @@ protected:
 public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
+
+
+public:
+	virtual void Skill1()override;
+	virtual void Skill2()override;
+	virtual void Skill3()override;
+	virtual void Skill4()override;
 };
