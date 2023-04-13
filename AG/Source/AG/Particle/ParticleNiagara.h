@@ -13,7 +13,7 @@ class AG_API AParticleNiagara : public AParticleActor
 {
 	GENERATED_BODY()
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHit, AParticleNiagara*, niagara, const FHitResult&, Hit, AActor*, hitActor);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHitedd, class ACollisionObject*, collisionObject, const FHitResult&, Hit, AActor*, hitActor);
 
 
 public:
@@ -32,27 +32,25 @@ public:
 	void ParticleFinish(UNiagaraComponent* _particle);
 
 	UFUNCTION()
-	void ParticleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	UPROPERTY(BlueprintAssignable)
-		FOnHit	mOnSHit;
-
 	void Check();
+
+	UFUNCTION()
+	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
+
 public:
 	UNiagaraComponent* GetNiagara() { return mParticle; }
 
-
+	UPROPERTY(BlueprintAssignable)
+		FOnHitedd	mOnHittd;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UNiagaraComponent* mParticle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UBoxComponent* MyComp;
-
 	UPROPERTY()
-	FTimerHandle timerHandle;
+	FTimerHandle mTimerHandle;
 
-	bool	mIsHit;
-	FHitResult	mHitResult;
+public:
+	UPROPERTY()
+	class ACollisionObject* collObj;
 };

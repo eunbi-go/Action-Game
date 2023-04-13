@@ -32,5 +32,9 @@ public:
 
 	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION()
-	void Temp(class AParticleNiagara* niagara, const FHitResult& Hit, AActor* hitActor);
+	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
+
+public:
+	UPROPERTY()
+		FTimerHandle mTimerHandle;
 };

@@ -4,7 +4,7 @@
 #include "FengMao.h"
 #include "MonsterAIController.h"
 #include "../Particle/ParticleNiagara.h"
-
+#include "../Basic/CollisionObject.h"
 
 AFengMao::AFengMao()
 {
@@ -64,14 +64,15 @@ void AFengMao::Skill3()
 	float randomX = FMath::RandRange(50.0f, 100.0f);
 	float randomY = FMath::RandRange(50.0f, 100.0f);
 
-	FVector position = GetActorLocation() - FVector(randomX, randomY,GetActorLocation().Z /*+ 100.f*/);
-	FVector direction = GetActorLocation() - target->GetActorLocation();
+
+
+	FVector position = target->GetActorLocation();
+	FVector direction = target->GetActorLocation() - GetActorLocation();
 	direction.Normalize();
-	
 
 	AParticleNiagara* particle = GetWorld()->SpawnActor<AParticleNiagara>(
 									position,
-									direction.Rotation(),
+									FRotator::ZeroRotator,
 									params);
 
 
@@ -84,8 +85,7 @@ void AFengMao::Skill3()
 	}
 
 	particle->SetParticle(effect);
-
-	particle->mOnSHit.AddDynamic(this, &AFengMao::Temp);
+	particle->mOnHittd.AddDynamic(this, &AFengMao::Temp);
 }
 
 void AFengMao::Skill4()
@@ -96,9 +96,8 @@ void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* Ot
 {
 }
 
-void AFengMao::Temp(AParticleNiagara* niagara, const FHitResult& Hit, AActor* hitActor)
+void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
-	PrintViewport(1.f, FColor::Green, TEXT("AFengMao::Temp"));
-	hitActor->TakeDamage(50.f, FDamageEvent(), GetController(), this);
-	niagara->Destroy();
+	hitActor->TakeDamage(100.f, FDamageEvent(), GetController(), this);
+	collisionObject->Destroy();
 }
