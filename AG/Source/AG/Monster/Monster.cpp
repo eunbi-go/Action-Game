@@ -384,7 +384,8 @@ void AMonster::UseSkill(float _deltaTime)
 	if (randomIndexValue == enableSkillCount)
 		randomIndexValue--;
 
-	enableSkillIndexArray[randomIndexValue] = 2;
+	// Test.
+	enableSkillIndexArray[randomIndexValue] = 3;
 
 	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isUse = true;
 	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isCheckCoolTime = true;

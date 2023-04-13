@@ -4,6 +4,8 @@
 #include "FengMao.h"
 #include "MonsterAIController.h"
 #include "../Particle/ParticleNiagara.h"
+#include "../Particle/ParticleCascade.h"
+#include "../Particle/RockBurst.h"
 #include "../Basic/CollisionObject.h"
 
 AFengMao::AFengMao()
@@ -59,10 +61,6 @@ void AFengMao::Skill2()
 
 void AFengMao::Skill3()
 {
-
-
-
-
 	//------------------------
 	// 예외처리.
 	//------------------------
@@ -127,6 +125,50 @@ void AFengMao::Skill3()
 
 void AFengMao::Skill4()
 {
+	//------------------------
+	// 예외처리.
+	//------------------------
+
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+
+
+
+	//------------------------
+	// 스폰할 위치를 정한 후, 스폰한다.
+	//------------------------
+	FVector position = GetActorLocation();
+	position.Z = 0.0f;
+
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	ARockBurst* particle = GetWorld()->SpawnActor<ARockBurst>(
+		position,
+		FRotator::ZeroRotator,
+		params);
+
+
+
+	//------------------------
+	// 이펙트와 델리게이트를 설정한다.
+	//------------------------
+
+	UParticleSystem* effect = nullptr;
+	int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
+
+	for (int32 j = 0; j < effectCount; ++j)
+	{
+		effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].particle;
+	}
+
+	particle->SetParticle(effect);
+	particle->SetActorScale3D(FVector(0.5f));
 }
 
 void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -45,6 +45,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_Skill3();
 
+	UFUNCTION()
+	void AnimNotify_Skill4();
+
 
 public:
 	UFUNCTION()

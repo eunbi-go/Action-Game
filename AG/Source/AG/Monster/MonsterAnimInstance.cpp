@@ -87,6 +87,16 @@ void UMonsterAnimInstance::AnimNotify_Skill3()
 	}
 }
 
+void UMonsterAnimInstance::AnimNotify_Skill4()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+	{
+		monster->Skill4();
+	}
+}
+
 void UMonsterAnimInstance::AnimNotify_PlayRataDown()
 {
 	PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataDown"));
