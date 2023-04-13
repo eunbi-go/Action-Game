@@ -14,7 +14,7 @@ class AG_API AParticleNiagara : public AParticleActor
 	GENERATED_BODY()
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHitedd, class ACollisionObject*, collisionObject, const FHitResult&, Hit, AActor*, hitActor);
-
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCameraShake, class AParticleNiagara*, niagara);
 
 public:
 	AParticleNiagara();
@@ -42,6 +42,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FOnHitedd	mOnHittd;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnCameraShake	mCameraShake;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

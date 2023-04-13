@@ -44,11 +44,14 @@ void AParticleNiagara::ParticleFinish(UNiagaraComponent* _particle)
 {
 	PrintViewport(3.f, FColor::Red, TEXT("AParticleNiagara::ParticleFinish"));
 	mOnHittd.Clear();
+	mCameraShake.Clear();
 	Destroy();
 }
 
 void AParticleNiagara::Check()
 {
+	mCameraShake.Broadcast(this);
+
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 

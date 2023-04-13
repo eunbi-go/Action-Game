@@ -23,6 +23,15 @@ AFengMao::AFengMao()
 	mSkillNameArray.Add(TEXT("Stone"));
 	mSkillNameArray.Add(TEXT("Energize"));
 	mSkillNameArray.Add(TEXT("Roar"));
+
+
+	mSkill3SpawnCount = 0;
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Meteo.CS_Meteo_C'"));
+
+	if (cameraShake.Succeeded())
+		mMeteoCameraShake = cameraShake.Class;
 }
 
 void AFengMao::BeginPlay()
@@ -50,6 +59,14 @@ void AFengMao::Skill2()
 
 void AFengMao::Skill3()
 {
+
+
+
+
+	//------------------------
+	// 예외처리.
+	//------------------------
+
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
 
 	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
@@ -58,34 +75,54 @@ void AFengMao::Skill3()
 		return;
 
 
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	float randomX = FMath::RandRange(50.0f, 100.0f);
-	float randomY = FMath::RandRange(50.0f, 100.0f);
 
 
-
-	FVector position = target->GetActorLocation();
-	FVector direction = target->GetActorLocation() - GetActorLocation();
-	direction.Normalize();
-
-	AParticleNiagara* particle = GetWorld()->SpawnActor<AParticleNiagara>(
-									position,
-									FRotator::ZeroRotator,
-									params);
-
-
-	UNiagaraSystem* effect = nullptr;
-	int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
-
-	for (int32 i = 0; i < effectCount; ++i)
+	for (int32 i = 0; i < 3; ++i)
 	{
-		effect = mSkillInfoArray[mUsingSkillIndex].effectArray[i].niagara;
-	}
+		//------------------------
+		// 스폰할 위치를 정한 후, 스폰한다.
+		//------------------------
 
-	particle->SetParticle(effect);
-	particle->mOnHittd.AddDynamic(this, &AFengMao::Temp);
+		float randomX = FMath::RandRange(-100.0f, -800.0f);
+		float randomY = FMath::RandRange(-800.0f, 800.0f);
+
+
+
+		FVector position = GetActorLocation() + GetActorForwardVector().Normalize() * FVector(randomX, randomY, 1.0f);
+		position.Z = 0.0f;
+
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AParticleNiagara* particle = GetWorld()->SpawnActor<AParticleNiagara>(
+			position,
+			FRotator::ZeroRotator,
+			params);
+
+
+
+		//------------------------
+		// 이펙트와 델리게이트를 설정한다.
+		//------------------------
+
+		UNiagaraSystem* effect = nullptr;
+		int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
+
+		for (int32 j = 0; j < effectCount; ++j)
+		{
+			effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].niagara;
+		}
+
+		particle->SetParticle(effect);
+		particle->SetActorScale3D(FVector(0.7f));
+		particle->mOnHittd.AddDynamic(this, &AFengMao::Temp);
+		particle->mCameraShake.AddDynamic(this, &AFengMao::CameraShake);
+
+	}
+	
+	if (mSkill3SpawnCount == 0)
+		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::Skill3, 0.3f, false);
+	mSkill3SpawnCount++;
 }
 
 void AFengMao::Skill4()
@@ -100,4 +137,9 @@ void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AA
 {
 	hitActor->TakeDamage(100.f, FDamageEvent(), GetController(), this);
 	collisionObject->Destroy();
+}
+
+void AFengMao::CameraShake(AParticleNiagara* niagara)
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mMeteoCameraShake);
 }

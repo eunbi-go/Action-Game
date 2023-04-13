@@ -27,14 +27,22 @@ public:
 public:
 	virtual void Skill1()override;
 	virtual void Skill2()override;
+	UFUNCTION()
 	virtual void Skill3()override;
 	virtual void Skill4()override;
 
 	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION()
 	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
+	UFUNCTION()
+	void CameraShake(class AParticleNiagara* niagara);
 
 public:
 	UPROPERTY()
-		FTimerHandle mTimerHandle;
+	FTimerHandle mTimerHandle;
+
+	int32	mSkill3SpawnCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> mMeteoCameraShake;
 };

@@ -31,4 +31,10 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* mCollisionBox;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandle;
+
+	bool	mIsEnd;
+	float	mDeadTime;
 };
