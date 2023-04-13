@@ -5,6 +5,7 @@
 
 #include "Monster.h"
 #include "MonsterAIController.h"
+#include "FengMao.h"
 
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
@@ -68,6 +69,8 @@ void UMonsterAnimInstance::AnimNotify_AttackCheck()
 
 void UMonsterAnimInstance::AnimNotify_SkillEnd()
 {
+	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 1.f);
+
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 
 	if (IsValid(monster))

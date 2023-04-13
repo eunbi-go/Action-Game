@@ -20,6 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void Tick(float DeltaTime) override;
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
@@ -36,6 +37,15 @@ public:
 	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	UFUNCTION()
 	void CameraShake(class AParticleNiagara* niagara);
+	UFUNCTION()
+	void RespawnSkill4(ARockBurst* particle);
+
+	UFUNCTION()
+		void Hit();
+
+public:
+	void EndSkill4() { isEnableSkill4Respawn = false; }
+
 
 public:
 	UPROPERTY()
@@ -45,4 +55,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mMeteoCameraShake;
+
+	int32	mSkill4Count;
+
+	FVector originalPos;
+	bool	isEnableSkill4Respawn;
 };

@@ -34,11 +34,27 @@ AFengMao::AFengMao()
 
 	if (cameraShake.Succeeded())
 		mMeteoCameraShake = cameraShake.Class;
+
+
+	mSkill4Count = 0;
+	originalPos = FVector(0.0f);
+	isEnableSkill4Respawn = true;
 }
 
 void AFengMao::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AFengMao::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (mSkill4Count >= 7 && isEnableSkill4Respawn)
+	{
+		isEnableSkill4Respawn = false;
+		mSkill4Count = 0;
+	}
 }
 
 void AFengMao::PossessedBy(AController* NewController)
@@ -128,23 +144,23 @@ void AFengMao::Skill4()
 	//------------------------
 	// 예외처리.
 	//------------------------
-
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
 
 	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
 	if (!IsValid(target))
 		return;
+	mSkill4Count = 0;
 
-
-
+	isEnableSkill4Respawn = true;
+	mSkill4Count++;
 
 	//------------------------
 	// 스폰할 위치를 정한 후, 스폰한다.
 	//------------------------
-	//FVector position = GetActorLocation();
-	FVector position = target->GetActorLocation();
+	FVector position = GetActorLocation();
 	position.Z = 0.0f;
+	originalPos = position;
 
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -170,10 +186,14 @@ void AFengMao::Skill4()
 
 	particle->SetParticle(effect);
 	particle->SetActorScale3D(FVector(0.5f));
+
+	particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill4);
+	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
 }
 
 void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+
 }
 
 void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
@@ -185,4 +205,92 @@ void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AA
 void AFengMao::CameraShake(AParticleNiagara* niagara)
 {
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mMeteoCameraShake);
+}
+
+void AFengMao::RespawnSkill4(ARockBurst* particles)
+{
+	if (!isEnableSkill4Respawn)
+	{
+		return;
+	}
+
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+
+
+	//------------------------
+	// 스폰할 위치를 정한 후, 스폰한다.
+	//------------------------
+	//FVector position = GetActorLocation();
+
+	for (int32 i = 0; i < 3; ++i)
+	{
+		FVector direction = GetActorForwardVector();
+		
+		if (i == 1)
+		{
+			FVector dir = GetActorRightVector();
+			dir.Y *= -1.0f;
+			dir += GetActorForwardVector();
+			direction += dir;
+		}
+		else if (i == 2)
+		{
+			direction += GetActorRightVector();
+		}
+
+		direction.Normalize();
+
+		FVector position = particles->GetActorLocation() + direction * 200.f;
+		position.Z = 0.0f;
+
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		ARockBurst* particle = GetWorld()->SpawnActor<ARockBurst>(
+			position,
+			FRotator::ZeroRotator,
+			params);
+
+
+
+		//------------------------
+		// 이펙트와 델리게이트를 설정한다.
+		//------------------------
+
+		UParticleSystem* effect = nullptr;
+		int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
+
+		for (int32 j = 0; j < effectCount; ++j)
+		{
+			effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].particle;
+		}
+
+		particle->SetParticle(effect);
+		particle->SetActorScale3D(FVector(0.5f));
+
+		particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill4);
+		particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
+	}
+
+	mSkill4Count++;
+
+	particles->Destroy();
+}
+
+void AFengMao::Hit()
+{
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (IsValid(target))
+	{
+		target->TakeDamage(100.f, FDamageEvent(), GetController(), this);
+	}
 }
