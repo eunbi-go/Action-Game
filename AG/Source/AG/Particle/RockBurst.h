@@ -18,4 +18,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+
+public:
+	UFUNCTION()
+		void ParticleColiision(FName EventName, float EmitterTime, int32 ParticleTime,
+			FVector Location, FVector Velocity, FVector Direction,
+			FVector Normal, FName BoneName, class UPhysicalMaterial* PhysMat);
 };

@@ -27,9 +27,10 @@
 #include <Components\WidgetComponent.h>
 
 
+
+
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
-
 
 USTRUCT(BlueprintType)
 struct FCharacterInfo

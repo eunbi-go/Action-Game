@@ -2,9 +2,9 @@
 
 #pragma once
 
+
 #include "ParticleActor.h"
 #include "ParticleCascade.generated.h"
-
 /**
  * 
  */
@@ -35,8 +35,7 @@ public:
 	UFUNCTION()
 	void ParticleFinish(UParticleSystemComponent* _particle);
 	
-	UFUNCTION()
-		void ParticleColiision(FName EventName, float EmitterTime, int32 ParticleTime, FVector Location, FVector Velocity, FVector Direction, FVector Normal, FName BoneName, UPhysicalMaterial* PhysMat);
+
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

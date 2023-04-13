@@ -17,7 +17,8 @@ public class AG : ModuleRules
             "AIModule",
             "GameplayTasks",
             "UMG",
-            "NavigationSystem"
+            "NavigationSystem",
+            "PhysicsCore"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

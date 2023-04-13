@@ -142,7 +142,8 @@ void AFengMao::Skill4()
 	//------------------------
 	// 스폰할 위치를 정한 후, 스폰한다.
 	//------------------------
-	FVector position = GetActorLocation();
+	//FVector position = GetActorLocation();
+	FVector position = target->GetActorLocation();
 	position.Z = 0.0f;
 
 	FActorSpawnParameters	params;
