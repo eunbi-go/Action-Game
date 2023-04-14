@@ -11,6 +11,7 @@ void UInventoryWidget::NativeConstruct()
 
 	mTileView = Cast<UTileView>(GetWidgetFromName(FName(TEXT("TileView"))));
 
+	// test.
 	UItemData* item = NewObject<UItemData>();
 
 	item->SetIconPath(TEXT("Texture2D'/Game/Viking_RPG_UI_5_0/Buttons/White_buttons/Flat_Icon_18.Flat_Icon_18'"));

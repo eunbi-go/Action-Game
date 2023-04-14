@@ -12,6 +12,7 @@
 #include "CharacterStatComponent.h"
 #include "../AGGameModeBase.h"
 #include "../Widget/MainWidget.h"
+#include "../Manager/InventoryManager.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -115,6 +116,9 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UInventoryManager::GetInst(GetWorld())->InventoryOnOff(false);
+
+
 	// Camera View Pitch 각도 제한.
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;
@@ -265,6 +269,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::Skill3Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill4"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Skill4Key);
+
+	FInputActionBinding& toggle = PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("InventoryOnOff"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::InventoryOnOffKey);
+	toggle.bConsumeInput = false;
 	/*PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("GaugeEnd"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::GaugeEnd);*/
 
@@ -583,6 +591,16 @@ void APlayerCharacter::Skill3Key()
 void APlayerCharacter::Skill4Key()
 {
 	Skill4();
+}
+
+void APlayerCharacter::InventoryOnOffKey()
+{
+	if (UInventoryManager::GetInst(GetWorld())->IsInventoryOn())
+	{
+		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(false);
+	}
+	else
+		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(true);
 }
 
 void APlayerCharacter::GaugeEnd()

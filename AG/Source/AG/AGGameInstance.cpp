@@ -2,11 +2,14 @@
 
 
 #include "AGGameInstance.h"
+#include "Manager/InventoryManager.h"
 
 UAGGameInstance::UAGGameInstance()
 {
 	mPlayerInfoTable = nullptr;
 	mMonsterInfoTable = nullptr;
+	mMonsterSkillTable = nullptr;
+	mItemInfoTable = nullptr;
 
 
 	static ConstructorHelpers::FObjectFinder<UDataTable>	playerTable(TEXT("DataTable'/Game/Blueprints/DataTable/PlayerInfoTable.PlayerInfoTable'"));
@@ -22,6 +25,14 @@ UAGGameInstance::UAGGameInstance()
 	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterSkillTable(TEXT("DataTable'/Game/Blueprints/DataTable/MonsterSkillInfoTable.MonsterSkillInfoTable'"));
 	if (monsterSkillTable.Succeeded())
 		mMonsterSkillTable = monsterSkillTable.Object;
+
+
+	static ConstructorHelpers::FObjectFinder<UDataTable>	itemInfoTable(TEXT("DataTable'/Game/Blueprints/DataTable/ItemInfoTable.ItemInfoTable'"));
+	if (itemInfoTable.Succeeded())
+	{
+		mItemInfoTable = itemInfoTable.Object;
+		UInventoryManager::GetInst(this)->SetItemInfoTable(mItemInfoTable);
+	}
 }
 
 UAGGameInstance::~UAGGameInstance()
@@ -53,4 +64,9 @@ const FMonsterTableInfo* UAGGameInstance::FindMonsterTable(const FName& _name)
 const FSkillData* UAGGameInstance::FindMonsterSkillTable(const FName& _name)
 {
 	return mMonsterSkillTable->FindRow<FSkillData>(_name, TEXT(""));
+}
+
+const FItemDataTable* UAGGameInstance::FindItemInfoTable(const FName& _name)
+{
+	return mItemInfoTable->FindRow<FItemDataTable>(_name, TEXT(""));
 }

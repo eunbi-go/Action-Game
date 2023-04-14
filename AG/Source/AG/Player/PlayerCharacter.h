@@ -87,6 +87,7 @@ public:
 	void Skill2Key();
 	void Skill3Key();
 	void Skill4Key();
+	void InventoryOnOffKey();
 
 
 
