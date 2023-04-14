@@ -117,8 +117,8 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	UInventoryManager::GetInst(GetWorld())->InventoryOnOff(false);
-
-
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+	
 	// Camera View Pitch 각도 제한.
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMin = -40.f;
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->ViewPitchMax = 20.f;

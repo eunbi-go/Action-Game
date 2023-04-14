@@ -84,6 +84,8 @@ public:
 
 	int32	GetUsingSkillIndex() { return mUsingSkillIndex; }
 	const FMonsterSkillInfo* GetSkillInfo();
+
+	ACharacter* GetBlackboardTarget();
 		
 
 protected:

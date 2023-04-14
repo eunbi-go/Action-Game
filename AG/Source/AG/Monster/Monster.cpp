@@ -588,3 +588,15 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 	return &mSkillInfoArray[mUsingSkillIndex];
 }
 
+ACharacter* AMonster::GetBlackboardTarget()
+{
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (IsValid(target))
+		return target;
+
+	return nullptr;
+}
+

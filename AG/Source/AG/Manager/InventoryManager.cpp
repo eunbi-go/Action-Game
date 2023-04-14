@@ -98,7 +98,8 @@ void UInventoryManager::InventoryOnOff(bool _Show)
 
 		APlayerController* Controller = mWorld->GetFirstPlayerController();
 
-		FInputModeGameOnly gameonly;
+		//FInputModeGameOnly gameonly;
+		FInputModeGameAndUI gameonly;
 		Controller->SetInputMode(gameonly);
 		Controller->bShowMouseCursor = false;
 	}

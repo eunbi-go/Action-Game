@@ -13,6 +13,9 @@ class AG_API AFengMao : public AMonster
 {
 	GENERATED_BODY()
 	
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1Start, class AActor*, actor);
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1MoveStart, class ACharacter*, target);
+
 public:
 	AFengMao();
 
@@ -26,6 +29,12 @@ public:
 
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnSkill1Start	mSkill1Start;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnSkill1MoveStart	mSkill1MoveStart;
+
 	virtual void Skill1()override;
 	virtual void Skill2()override;
 	UFUNCTION()
@@ -39,6 +48,9 @@ public:
 	void CameraShake(class AParticleNiagara* niagara);
 	UFUNCTION()
 	void RespawnSkill4(ARockBurst* particle);
+
+	UFUNCTION()
+	void RespawnSkill1(ARampageSlash* preParticle);
 
 	UFUNCTION()
 		void Hit();
@@ -65,4 +77,8 @@ public:
 
 	FVector originalPos;
 	bool	isEnableSkill4Respawn;
+
+	int32	mSkill1Count;
+	bool	isEnableSkill1Respawn;
+	FVector	mSkill1CenterPosition;
 };

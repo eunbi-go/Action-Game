@@ -91,6 +91,16 @@ void UMonsterAnimInstance::AnimNotify_Skill1()
 	}
 }
 
+void UMonsterAnimInstance::AnimNotify_Skill1End()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+	{
+		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(monster->GetBlackboardTarget());
+	}
+}
+
 void UMonsterAnimInstance::AnimNotify_Skill3()
 {
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
