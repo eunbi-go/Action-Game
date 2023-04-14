@@ -4,13 +4,14 @@
 #include "MainWidget.h"
 
 #include "../Player/CharacterStatComponent.h"
-
+#include "InventoryWidget.h"
 
 void UMainWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	mPlayerInfo = Cast<UPlayerInfoWidget>(GetWidgetFromName(FName(TEXT("PlayerInfo"))));
+	mInventory = Cast<UInventoryWidget>(GetWidgetFromName(FName(TEXT("Inventory"))));
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
@@ -35,7 +36,6 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 
 void UMainWidget::UpdateHp()
 {
-	PrintViewport(3.f, FColor::Blue, TEXT("UpdateHp"));
 	mPlayerInfo->SetHpRatio(mCurrentStat->GetHpRatio());
 }
 

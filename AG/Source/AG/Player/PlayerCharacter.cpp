@@ -561,10 +561,7 @@ void APlayerCharacter::NormalAttackKey()
 	}
 	else
 	{
-		//PrintViewport(2.f, FColor::Yellow, TEXT("NormalAtt"));
-		// 일반 공격 몽타주 재생 시작.
 		mAnimInst->NormalAttack();
-		//mWeapon->SetTrailOnOff(true);
 	}
 }	
 

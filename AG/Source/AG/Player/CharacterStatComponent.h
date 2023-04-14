@@ -39,6 +39,8 @@ public:
 	FOnMpChange mMpChange;
 
 public:
+	const FPlayerTableInfo& GetCurrentInfo() { return *mCurrentData; }
+
 	float GetAttack() { return mCurrentData->attackPoint; }
 	float GetHpRatio();
 	float GetHp() { return mCurrentHp; }

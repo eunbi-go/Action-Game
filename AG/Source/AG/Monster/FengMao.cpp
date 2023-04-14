@@ -6,7 +6,12 @@
 #include "../Particle/ParticleNiagara.h"
 #include "../Particle/ParticleCascade.h"
 #include "../Particle/RockBurst.h"
+#include "../Particle/RampageSlash.h"
 #include "../Basic/CollisionObject.h"
+#include "MonsterAnimInstance.h"
+
+
+
 
 AFengMao::AFengMao()
 {
@@ -55,6 +60,9 @@ void AFengMao::Tick(float DeltaTime)
 		isEnableSkill4Respawn = false;
 		mSkill4Count = 0;
 	}
+
+
+
 }
 
 void AFengMao::PossessedBy(AController* NewController)
@@ -69,6 +77,55 @@ void AFengMao::UnPossessed()
 
 void AFengMao::Skill1()
 {
+	//------------------------
+	// 예외처리.
+	//------------------------
+
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+
+
+	for (int32 i = 0; i < 6; ++i)
+	{
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		FVector position = GetActorLocation();
+		if (i < 4)
+		{
+			position.Y -= (i * 50.f);
+		}
+		else
+		{
+			position.Y += (i * 50.f);
+		}
+
+		ARampageSlash* particle = GetWorld()->SpawnActor<ARampageSlash>(
+			position,
+			GetActorRotation(),
+			params);
+
+
+
+		//------------------------
+		// 이펙트와 델리게이트를 설정한다.
+		//------------------------
+
+		UNiagaraSystem* effect = nullptr;
+		int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
+
+		for (int32 j = 0; j < effectCount; ++j)
+		{
+			effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].niagara;
+		}
+
+		particle->SetParticle(effect);
+	}
 }
 
 void AFengMao::Skill2()
@@ -293,4 +350,19 @@ void AFengMao::Hit()
 	{
 		target->TakeDamage(100.f, FDamageEvent(), GetController(), this);
 	}
+}
+
+void AFengMao::StartJump()
+{
+	GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+	LaunchCharacter(FVector(0.0f, 0.0f, 1.0f) * 1000.0f, true, true);
+	GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::StopJump, 0.3f, false);
+}
+
+void AFengMao::StopJump()
+{
+	GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+	GetCharacterMovement()->StopMovementImmediately();
+
+	Skill1();
 }

@@ -25,12 +25,14 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #include <Components\WidgetComponent.h>
-
+#include <Components\Image.h>
+#include <Components\TextBlock.h>
 
 
 
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FCharacterInfo
@@ -435,8 +437,42 @@ public:
 
 
 
+UENUM(BlueprintType)
+enum class EITEM_TYPE : uint8
+{
+	CONSUME, WEAPON, ARMOAR, PANTS, SHOES, ACCESARY, END
+};
 
 
+UENUM(BlueprintType)
+enum class EITEM_ID : uint8
+{
+	POTION_HP_MIN, POTION_HP_MAX, POTION_MP_MIN, POTION_MP_MAX,
+	SWORD1, END
+};
+
+
+USTRUCT(BlueprintType)
+struct FItemDataTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		EITEM_TYPE type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		EITEM_ID id;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		FString description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		float value;
+};
 
 
 

@@ -38,4 +38,7 @@ public:
 private:
 	UPlayerInfoWidget*	mPlayerInfo;
 	TWeakObjectPtr<class UCharacterStatComponent> mCurrentStat;
+
+
+	class UInventoryWidget* mInventory;
 };

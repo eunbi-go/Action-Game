@@ -70,6 +70,7 @@ void UMonsterAnimInstance::AnimNotify_AttackCheck()
 void UMonsterAnimInstance::AnimNotify_SkillEnd()
 {
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 1.f);
+	mCurSkillMontagIndex = -1;
 
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 
@@ -77,6 +78,16 @@ void UMonsterAnimInstance::AnimNotify_SkillEnd()
 	{
 		monster->ClearUsingSkill();
 		mIsSkillEnd = true;
+	}
+}
+
+void UMonsterAnimInstance::AnimNotify_Skill1()
+{
+	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+	if (IsValid(monster))
+	{
+		Cast<AFengMao>(monster)->StartJump();
 	}
 }
 

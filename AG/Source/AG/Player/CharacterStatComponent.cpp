@@ -40,6 +40,7 @@ void UCharacterStatComponent::InitializeComponent()
 
 		mCurrentMp = mCurrentData->maxMp;
 		SetMp(mCurrentData->maxMp);
+
 	}
 }
 

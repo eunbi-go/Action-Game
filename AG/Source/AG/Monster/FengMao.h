@@ -45,6 +45,11 @@ public:
 
 public:
 	void EndSkill4() { isEnableSkill4Respawn = false; }
+	void StartJump();
+	void StopJump();
+
+
+	
 
 
 public:
