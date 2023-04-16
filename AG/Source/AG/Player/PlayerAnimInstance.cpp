@@ -469,6 +469,7 @@ void UPlayerAnimInstance::AnimNotify_ContinuousEff()
 
 	if (IsValid(playerCharacter))
 	{
+		playerCharacter->NormalAttackCheck();
 		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
 	}
 
@@ -533,6 +534,11 @@ void UPlayerAnimInstance::AnimNotify_TarilOff()
 void UPlayerAnimInstance::AnimNotify_NormalCS()
 {
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+		playerCharacter->NormalAttackCheck();
 }
 
 void UPlayerAnimInstance::AnimNotify_HitEnd()
