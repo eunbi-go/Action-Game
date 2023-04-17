@@ -27,7 +27,7 @@
 #include <Components\WidgetComponent.h>
 #include <Components\Image.h>
 #include <Components\TextBlock.h>
-
+#include "Components/TileView.h"
 
 
 #include "UObject/NoExportTypes.h"

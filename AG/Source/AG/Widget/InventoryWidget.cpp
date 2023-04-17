@@ -2,7 +2,6 @@
 
 
 #include "InventoryWidget.h"
-#include "Components/TileView.h"
 #include "ItemData.h"
 #include "../Manager/InventoryManager.h"
 
@@ -33,16 +32,26 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 
 	if (IsValid(mItemMap.FindRef(_id)))
 	{
-		PrintViewport(10.f, FColor::Red, TEXT("new adddd"));
-		int32 index = mTileView->GetIndexInList(mItemMap.FindRef(_id));
-		UItemData* itemData = Cast<UItemData>(mTileView->GetItemAt(index));
-			//itemData->SetItemCount(itemData->GetItemCount() + 1);
-			//mTileView->AddItem(itemData);
+		TArray<UObject*> item = mTileView->GetListItems();
+		
+		int32 count = item.Num();
+		int32 index = -1;
 
+		for (int32 i = 0; i < count; ++i)
+		{
+			if (Cast<UItemData>(item[i])->GetItemId() == _id)
+			{
+				index = i;
+				break;
+			}
+		}
+
+		UItemData* itemData = Cast<UItemData>(mTileView->GetItemAt(index));
+		itemData->SetItemCount(itemData->GetItemCount() + 1);
+		mTileView->RegenerateAllEntries();
 	}
 	else
 	{
-		PrintViewport(10.f, FColor::Red, TEXT("adddd"));
 		UItemData* item = NewObject<UItemData>();
 
 		item->SetIconPath(table->iconPath);

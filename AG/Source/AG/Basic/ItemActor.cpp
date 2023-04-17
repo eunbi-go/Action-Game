@@ -3,6 +3,13 @@
 
 #include "ItemActor.h"
 #include "../Player/PlayerCharacter.h"
+#include "../Manager/InventoryManager.h"
+#include "../Widget/InventoryItem.h"
+#include "../Widget/InventoryWidget.h"
+#include "../Widget/MainWidget.h"
+#include "../Widget/ItemData.h"
+#include "../AGGameInstance.h"
+#include "../AGGameModeBase.h"
 
 AItemActor::AItemActor()
 {
@@ -36,6 +43,12 @@ void AItemActor::Tick(float DeltaTime)
 
 void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
+	if (nullptr == GameMode)
+		return;
+
 	mOnHitt.Broadcast(this, Hit, OtherActor);
 }
 

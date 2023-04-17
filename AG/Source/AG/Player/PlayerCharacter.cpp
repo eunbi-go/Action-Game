@@ -448,6 +448,7 @@ void APlayerCharacter::AddItem(EITEM_ID _id)
 	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
 
 	InveotyrWidget->AddItemByKey(_id);
+
 }
 
 void APlayerCharacter::SetCoin(int32 _value)
