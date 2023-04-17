@@ -29,7 +29,7 @@ public:
 		FOnHit	mOnHit;
 
 	UFUNCTION()
-		void Reset(AActor* preParticle);
+	void ResetSlash(AActor* preParticle);
 
 	UFUNCTION()
 	void MoveStart(ACharacter* target);

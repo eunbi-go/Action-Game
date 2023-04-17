@@ -375,17 +375,17 @@ void AWarriorCharacter::NormalAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			//FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			//SpawnParam.SpawnCollisionHandlingOverride =
-			//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			//// 나이아가라 렌더링.
-			//AParticleNiagara* Particle =
-			//	GetWorld()->SpawnActor<AParticleNiagara>(
-			//		collisionResult[i].ImpactPoint,
-			//		collisionResult[i].ImpactNormal.Rotation(),
-			//		SpawnParam);
+			// 나이아가라 렌더링.
+			AParticleNiagara* Particle =
+				GetWorld()->SpawnActor<AParticleNiagara>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -411,7 +411,7 @@ void AWarriorCharacter::NormalAttackCheck()
 void AWarriorCharacter::SprintAttackCheck()
 {
 	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
-	FVector endPosition = startPosition + GetActorForwardVector() * mInfo.attackDistance;
+	FVector endPosition = startPosition + GetActorForwardVector() * 100.f;
 
 	FCollisionQueryParams	param(NAME_None, false, this);
 
@@ -421,7 +421,7 @@ void AWarriorCharacter::SprintAttackCheck()
 		collisionResult, startPosition,
 		endPosition, FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeCapsule(mInfo.attackDistance, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+		FCollisionShape::MakeCapsule(100.f, 200.f),
 		param);
 
 
@@ -430,8 +430,8 @@ void AWarriorCharacter::SprintAttackCheck()
 	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
 	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
-		mInfo.attackDistance,
+		200.f,
+		100.f,
 		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
 		DrawColor, false, 0.5f);
 
@@ -444,17 +444,133 @@ void AWarriorCharacter::SprintAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			//FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			//SpawnParam.SpawnCollisionHandlingOverride =
-			//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			//// 나이아가라 렌더링.
-			//AParticleNiagara* Particle =
-			//	GetWorld()->SpawnActor<AParticleNiagara>(
-			//		collisionResult[i].ImpactPoint,
-			//		collisionResult[i].ImpactNormal.Rotation(),
-			//		SpawnParam);
+			// 나이아가라 렌더링.
+			AParticleNiagara* Particle =
+				GetWorld()->SpawnActor<AParticleNiagara>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
+
+			// 데미지 계산.
+			collisionResult[i].GetActor()->TakeDamage(
+				(float)mStat->GetAttack(),
+				FDamageEvent(),
+				GetController(),
+				this);
+		}
+	}
+}
+
+void AWarriorCharacter::SprintLastAttackCheck()
+{
+	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
+	FVector endPosition = startPosition + GetActorForwardVector() * 200.f;
+
+	FCollisionQueryParams	param(NAME_None, false, this);
+
+	TArray<FHitResult>	collisionResult;
+
+	bool IsCollision = GetWorld()->SweepMultiByChannel(
+		collisionResult, startPosition,
+		endPosition, FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel4,
+		FCollisionShape::MakeCapsule(200.f, 200.f),
+		param);
+
+
+#if ENABLE_DRAW_DEBUG
+
+	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+
+	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+		200.f,
+		200.f,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+		DrawColor, false, 0.5f);
+
+#endif
+
+
+	if (IsCollision)
+	{
+		int32	Count = collisionResult.Num();
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			// 나이아가라 렌더링.
+			AParticleNiagara* Particle =
+				GetWorld()->SpawnActor<AParticleNiagara>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
+
+			// 데미지 계산.
+			collisionResult[i].GetActor()->TakeDamage(
+				(float)mStat->GetAttack(),
+				FDamageEvent(),
+				GetController(),
+				this);
+		}
+	}
+}
+
+void AWarriorCharacter::SlashAttackCheck()
+{
+	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
+	FVector endPosition = startPosition + GetActorForwardVector() * 300.f;
+
+	FCollisionQueryParams	param(NAME_None, false, this);
+
+	TArray<FHitResult>	collisionResult;
+
+	bool IsCollision = GetWorld()->SweepMultiByChannel(
+		collisionResult, startPosition,
+		endPosition, FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel4,
+		FCollisionShape::MakeCapsule(300.f, 300.f),
+		param);
+
+
+#if ENABLE_DRAW_DEBUG
+
+	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+
+	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+		300.f,
+		300.f,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+		DrawColor, false, 0.5f);
+
+#endif
+
+
+	if (IsCollision)
+	{
+		int32	Count = collisionResult.Num();
+
+		for (int32 i = 0; i < Count; ++i)
+		{
+			FActorSpawnParameters	SpawnParam;
+			SpawnParam.Template = mHitActor;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			// 나이아가라 렌더링.
+			AParticleNiagara* Particle =
+				GetWorld()->SpawnActor<AParticleNiagara>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(

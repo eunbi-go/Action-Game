@@ -129,7 +129,7 @@ void AFengMao::Skill1()
 	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 	particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
-	mSkill1Start.AddDynamic(particle, &ARampageSlash::Reset);
+	mSkill1Start.AddDynamic(particle, &ARampageSlash::ResetSlash);
 	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
 	mSkill1Count++;
 
@@ -410,7 +410,7 @@ void AFengMao::RespawnSkill1(ARampageSlash* preParticle)
 	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 	particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
-	mSkill1Start.AddDynamic(particle, &ARampageSlash::Reset);
+	mSkill1Start.AddDynamic(particle, &ARampageSlash::ResetSlash);
 	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
 
 	mSkill1Count++;

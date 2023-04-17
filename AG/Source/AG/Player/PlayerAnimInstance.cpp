@@ -460,6 +460,7 @@ void UPlayerAnimInstance::AnimNotify_EffectSpawn()
 	{
 		playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
 		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
+		Cast<AWarriorCharacter>(playerCharacter)->SprintLastAttackCheck();
 	}
 }
 
@@ -469,7 +470,7 @@ void UPlayerAnimInstance::AnimNotify_ContinuousEff()
 
 	if (IsValid(playerCharacter))
 	{
-		playerCharacter->NormalAttackCheck();
+		Cast<AWarriorCharacter>(playerCharacter)->SprintAttackCheck();
 		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
 	}
 
@@ -538,13 +539,25 @@ void UPlayerAnimInstance::AnimNotify_NormalCS()
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 
 	if (IsValid(playerCharacter))
-		playerCharacter->NormalAttackCheck();
+	{
+		Cast<AWarriorCharacter>(playerCharacter)->SprintAttackCheck();
+	}
 }
 
 void UPlayerAnimInstance::AnimNotify_HitEnd()
 {
 	PrintViewport(1.f, FColor::Green, TEXT("hitend"));
 	mPlayerState = PLAYER_MOTION::IDLE;
+}
+
+void UPlayerAnimInstance::AnimNotify_SlashCheck()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (IsValid(playerCharacter))
+	{
+		Cast<AWarriorCharacter>(playerCharacter)->SlashAttackCheck();
+	}
 }
 
 

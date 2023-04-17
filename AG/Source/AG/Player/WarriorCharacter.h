@@ -43,6 +43,8 @@ public:
 public:
 	virtual void NormalAttackCheck();
 	virtual void SprintAttackCheck();
+	void SprintLastAttackCheck();
+	void SlashAttackCheck();
 
 	virtual void Skill1();
 	virtual void Skill2();

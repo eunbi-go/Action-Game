@@ -13,7 +13,7 @@ ARampageSlash::ARampageSlash()
 		mHitShake = cameraShake.Class;
 }
 
-void ARampageSlash::Reset(AActor* preParticle)
+void ARampageSlash::ResetSlash(AActor* preParticle)
 {
 	mParticle->ResetSystem();
 }

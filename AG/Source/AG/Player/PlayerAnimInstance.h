@@ -131,6 +131,9 @@ public:
 	UFUNCTION()
 		void AnimNotify_HitEnd();
 
+	UFUNCTION()
+		void AnimNotify_SlashCheck();
+
 
 public:
 	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
