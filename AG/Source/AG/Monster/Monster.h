@@ -28,6 +28,9 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 
+	UFUNCTION()
+		void Death(class AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor);
+
 
 public:
 	virtual void Skill1();

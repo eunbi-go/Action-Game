@@ -8,6 +8,7 @@
 #include "../Particle/RockBurst.h"
 #include "../Particle/RampageSlash.h"
 #include "../Basic/CollisionObject.h"
+
 #include "MonsterAnimInstance.h"
 
 
@@ -259,6 +260,8 @@ void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* Ot
 {
 
 }
+
+
 
 void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {

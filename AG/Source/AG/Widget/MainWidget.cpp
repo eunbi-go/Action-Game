@@ -32,6 +32,9 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 
 	mCurrentStat->mMpChange.AddUObject(this, &UMainWidget::UpdateMp);
 	UpdateMp();
+
+	mCurrentStat->mCoinChange.AddUObject(this, &UMainWidget::UpdateCoin);
+	UpdateCoin();
 }
 
 void UMainWidget::UpdateHp()
@@ -42,6 +45,11 @@ void UMainWidget::UpdateHp()
 void UMainWidget::UpdateMp()
 {
 	mPlayerInfo->SetMpRatio(mCurrentStat->GetMpRatio());
+}
+
+void UMainWidget::UpdateCoin()
+{
+	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
 }
 
 void UMainWidget::SetHp(float _ratio)

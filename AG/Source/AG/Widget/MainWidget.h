@@ -29,6 +29,7 @@ public:
 	
 	void UpdateHp();
 	void UpdateMp();
+	void UpdateCoin();
 
 
 public:

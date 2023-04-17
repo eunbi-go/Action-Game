@@ -9,7 +9,10 @@
 #include "MonsterAIController.h"
 #include "../Widget/MonsterHpWidget.h"
 #include "../Player/CharacterStatComponent.h"
+#include "../Player/PlayerCharacter.h"
 #include "Math/UnrealMathUtility.h"
+#include "../Basic/ItemActor.h"
+
 
 AMonster::AMonster()
 {
@@ -309,6 +312,26 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	}
 
 	return damage;
+}
+
+void AMonster::Death(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
+{
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+	if (!IsValid(Cast<APlayerCharacter>(target)))
+		return;
+
+	//PrintViewport(10.f, FColor::White, TEXT("get coin"));
+	Cast<APlayerCharacter>(target)->SetCoin(10);
+
+
+	Destroy();
+	collisionObject->Destroy();
 }
 
 void AMonster::Skill1()

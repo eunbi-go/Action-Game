@@ -10,9 +10,13 @@ UCLASS()
 class AG_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCoin, class AActor*, actor);
 
 public:
 	APlayerCharacter();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnCoin	mGetCoin;
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,6 +61,7 @@ public:
 	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
 	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
 	void SetISEnableSprint(bool _value) { isSprint = _value; }
+	void SetCoin(int32 _value);
 
 public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }

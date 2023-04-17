@@ -38,7 +38,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
-	TryGetPawnOwner()->Destroy();
+	//TryGetPawnOwner()->Destroy();
 
 	// 아이템 생성.
 	FActorSpawnParameters	params;
@@ -53,6 +53,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 
 	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
 	particle->SetActorScale3D(FVector(10.f));
+	particle->mOnHitt.AddDynamic(Cast<AMonster>(TryGetPawnOwner()), &AMonster::Death);
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()

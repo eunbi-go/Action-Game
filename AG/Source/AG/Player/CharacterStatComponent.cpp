@@ -41,6 +41,7 @@ void UCharacterStatComponent::InitializeComponent()
 		mCurrentMp = mCurrentData->maxMp;
 		SetMp(mCurrentData->maxMp);
 
+		mCurrentCoin = mCurrentData->gold;
 	}
 }
 
@@ -75,6 +76,13 @@ void UCharacterStatComponent::SetMp(float _mp)
 {
 	mCurrentMp = _mp;
 	mMpChange.Broadcast();
+}
+
+void UCharacterStatComponent::SetCoin(int _coin)
+{
+	mCurrentCoin += _coin;
+
+	mCoinChange.Broadcast();
 }
 
 float UCharacterStatComponent::GetHpRatio()

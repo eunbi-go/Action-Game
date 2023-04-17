@@ -22,6 +22,7 @@ public:
 	void SetHpRatio(float _ratio) { mHpTargetRatio = _ratio; }
 	void SetMp(float _ratio);
 	void SetMpRatio(float _ratio) { mMpTargetRatio = _ratio; }
+	void SetCoin(int _value) { mCoin += _value; }
 
 public:
 	virtual void NativeConstruct() override;
@@ -31,9 +32,12 @@ public:
 private:
 	UProgressBar*	mHpBar;
 	UProgressBar*	mMpBar;
+	class UTextBlock* mCoinTxt;
 
 	float			mHpTargetRatio;
 	float			mHpRatio;
 
 	float			mMpTargetRatio;
+
+	int				mCoin;
 };

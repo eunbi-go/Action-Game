@@ -42,6 +42,9 @@ public:
 	virtual void Skill4()override;
 
 	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+
+
 	UFUNCTION()
 	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	UFUNCTION()

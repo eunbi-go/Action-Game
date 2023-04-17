@@ -10,6 +10,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnHpIsZero);
 DECLARE_MULTICAST_DELEGATE(FOnHpChange);
 DECLARE_MULTICAST_DELEGATE(FOnMpChange);
+DECLARE_MULTICAST_DELEGATE(FOnCoinChange);
 
 
 
@@ -33,10 +34,12 @@ public:
 	void SetDamage(float _damage);
 	void SetHp(float _hp);
 	void SetMp(float _mp);
+	void SetCoin(int _coin);
 
 	FOnHpIsZero	mHpDecrease;
 	FOnHpChange mHpChange;
 	FOnMpChange mMpChange;
+	FOnCoinChange	mCoinChange;
 
 public:
 	const FPlayerTableInfo& GetCurrentInfo() { return *mCurrentData; }
@@ -55,4 +58,7 @@ private:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = true))
 	float	mCurrentMp;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = true))
+	float	mCurrentCoin;
 };

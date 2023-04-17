@@ -435,6 +435,11 @@ void APlayerCharacter::ClickDestination()
 		playerController->SpawnDecalOnMousePick();
 }
 
+void APlayerCharacter::SetCoin(int32 _value)
+{
+	mStat->SetCoin(_value);
+}
+
 
 
 void APlayerCharacter::MoveForward(float _scale)

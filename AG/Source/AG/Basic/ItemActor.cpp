@@ -2,6 +2,7 @@
 
 
 #include "ItemActor.h"
+#include "../Player/PlayerCharacter.h"
 
 AItemActor::AItemActor()
 {
@@ -43,16 +44,17 @@ void AItemActor::Tick(float DeltaTime)
 	{
 		mDeadTime += DeltaTime;
 
-		if (mDeadTime >= 0.5f)
-			Destroy();
+		//if (mDeadTime >= 0.5f)
+			//Destroy();
 	}
 }
 
 void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	PrintViewport(10.f, FColor::White, TEXT("coin death"));
-	//Destroy();
 	mIsHit = true;
+
+	mOnHitt.Broadcast(this, Hit, OtherActor);
 }
 
 void AItemActor::SetStaticMesh(const FString& _path)
