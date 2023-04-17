@@ -29,10 +29,12 @@ public:
 	void SetItemCount(int _Count) { mItemCount = _Count; }
 	int GetItemCount() { return mItemCount; }
 
-
+	EITEM_ID GetItemId() { return mId; }
+	void SetItemId(EITEM_ID _id) { mId = _id; }
 
 private:
 	FString		mIconPath;		// 아이콘 이미지 경로
 	FString		mDescription;	// 아이템 설명
 	int			mItemCount;	// 아이템 수량
+	EITEM_ID	mId;
 };

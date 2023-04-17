@@ -2,6 +2,11 @@
 
 #include "InventoryItem.h"
 #include "ItemData.h"
+#include "../Manager/InventoryManager.h"
+#include "../Widget/InventoryWidget.h"
+#include "../AGGameModeBase.h"
+#include "../AGGameInstance.h"
+#include "../Widget/MainWidget.h"
 
 void UInventoryItem::NativeConstruct()
 {
@@ -14,6 +19,24 @@ void UInventoryItem::NativeConstruct()
 void UInventoryItem::NativeTick(const FGeometry& _geo, float _DT)
 {
 	Super::NativeTick(_geo, _DT);
+
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == GameMode)
+		return;
+
+
+	UMainWidget* MainHUD = GameMode->GetMainWidget();
+	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
+	TMap<EITEM_ID, class UItemData*> map = InveotyrWidget->GetItemMap();
+
+	int32 count = map.Num();
+	for (int32 i = 0; i < count; ++i)
+	{
+		//mCountTxt->SetText(FText::FromString(FString::Printf(TEXT("%d"), Count)));
+	}
+
+	
 }
 
 void UInventoryItem::InitFromData(UObject* _Data)

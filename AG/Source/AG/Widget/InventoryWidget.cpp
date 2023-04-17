@@ -13,13 +13,13 @@ void UInventoryWidget::NativeConstruct()
 	mTileView = Cast<UTileView>(GetWidgetFromName(FName(TEXT("TileView"))));
 
 	// test.
-	UItemData* item = NewObject<UItemData>();
+	//UItemData* item = NewObject<UItemData>();
 
-	item->SetIconPath(TEXT("Texture2D'/Game/Viking_RPG_UI_5_0/Buttons/White_buttons/Flat_Icon_18.Flat_Icon_18'"));
-	item->SetDescription(TEXT("Mega Potion"));
-	item->SetItemCount(5);
+	//item->SetIconPath(TEXT("Texture2D'/Game/Viking_RPG_UI_5_0/Buttons/White_buttons/Flat_Icon_18.Flat_Icon_18'"));
+	//item->SetDescription(TEXT("Mega Potion"));
+	//item->SetItemCount(5);
 
-	mTileView->AddItem(item);
+	//mTileView->AddItem(item);
 }
 
 void UInventoryWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
@@ -29,13 +29,30 @@ void UInventoryWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 
 void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 {
-	UItemData* item = NewObject<UItemData>();
-
 	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
 
-	item->SetIconPath(table->iconPath);
-	item->SetDescription(table->description);
-	item->SetItemCount(1);
+	if (IsValid(mItemMap.FindRef(_id)))
+	{
+		PrintViewport(10.f, FColor::Red, TEXT("new adddd"));
+		int32 index = mTileView->GetIndexInList(mItemMap.FindRef(_id));
+		UItemData* itemData = Cast<UItemData>(mTileView->GetItemAt(index));
+			//itemData->SetItemCount(itemData->GetItemCount() + 1);
+			//mTileView->AddItem(itemData);
 
-	mTileView->AddItem(item);
+	}
+	else
+	{
+		PrintViewport(10.f, FColor::Red, TEXT("adddd"));
+		UItemData* item = NewObject<UItemData>();
+
+		item->SetIconPath(table->iconPath);
+		item->SetDescription(table->description);
+		item->SetItemCount(1);
+		item->SetItemId(_id);
+
+		mItemMap.Add(_id, item);
+		mTileView->AddItem(item);
+	}
+
+	
 }

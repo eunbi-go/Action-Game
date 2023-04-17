@@ -23,6 +23,10 @@ public:
 public:
 	void AddItemByKey(EITEM_ID _id);
 
+public:
+	TMap<EITEM_ID, class UItemData*> GetItemMap() { return mItemMap; }
+	
 private:
 	class UTileView* mTileView;
+	TMap<EITEM_ID, class UItemData*> mItemMap;
 };

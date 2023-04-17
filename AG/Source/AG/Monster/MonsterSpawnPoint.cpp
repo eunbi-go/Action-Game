@@ -105,43 +105,43 @@ void AMonsterSpawnPoint::Tick(float DeltaTime)
 	if (!IsValid(mSpawnClass))
 		return;
 
-	//if (mMonstersArray.Num() < mSpawnCount)
-	//{
-	//	mSpawnCheckTime += DeltaTime;
+	if (mMonstersArray.Num() < mSpawnCount)
+	{
+		mSpawnCheckTime += DeltaTime;
 
-	//	if (mSpawnCheckTime >= mSpawnTime)
-	//	{
-	//		mSpawnCheckTime -= mSpawnCheckTime;
+		if (mSpawnCheckTime >= mSpawnTime)
+		{
+			mSpawnCheckTime -= mSpawnCheckTime;
 
-	//		
-	//		// 몬스터 스폰.
-	//		FActorSpawnParameters spawnParam;
-	//		spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			
+			// 몬스터 스폰.
+			FActorSpawnParameters spawnParam;
+			spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	//		AMonster* monster = GetWorld()->SpawnActor<AMonster>(mSpawnClass,
-	//			GetActorLocation(),
-	//			GetActorRotation(),
-	//			spawnParam);
+			AMonster* monster = GetWorld()->SpawnActor<AMonster>(mSpawnClass,
+				GetActorLocation(),
+				GetActorRotation(),
+				spawnParam);
 
-	//		monster->SetSpawnPoint(this);
-	//		monster->SetPatrolPointPosition(mPatrolPointPositionArray);
-	//		monster->SetPatrolDirection(mPatrolDirection);
-	//		monster->SetPatrolType(mPatrolType);
-	//		monster->SetPatrolSplineLength(mSplineLength);
-	//		monster->SetPatrolCellDistance(mCellDistance);
-	//		monster->SetPatrolSplineCount(mDivideCount);
+			monster->SetSpawnPoint(this);
+			monster->SetPatrolPointPosition(mPatrolPointPositionArray);
+			monster->SetPatrolDirection(mPatrolDirection);
+			monster->SetPatrolType(mPatrolType);
+			monster->SetPatrolSplineLength(mSplineLength);
+			monster->SetPatrolCellDistance(mCellDistance);
+			monster->SetPatrolSplineCount(mDivideCount);
 
-	//		mMonstersArray.Add(monster);
-	//		
+			mMonstersArray.Add(monster);
+			
 
-	//		// 스폰 포인트에서 스폰된 몬스터가 죽을 수 있음.
-	//		// -> 몬스터가 죽으면 다시 스폰시킨다.
-	//		if (mMonstersArray.Num() == mSpawnCount)
-	//		{
-	//			mSpawnCheckTime = 0.f;
-	//		}
-	//	}
-	//}
+			// 스폰 포인트에서 스폰된 몬스터가 죽을 수 있음.
+			// -> 몬스터가 죽으면 다시 스폰시킨다.
+			if (mMonstersArray.Num() == mSpawnCount)
+			{
+				mSpawnCheckTime = 0.f;
+			}
+		}
+	}
 }
 
 void AMonsterSpawnPoint::ComputeSpline()
