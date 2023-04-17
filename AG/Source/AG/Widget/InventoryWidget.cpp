@@ -4,6 +4,7 @@
 #include "InventoryWidget.h"
 #include "Components/TileView.h"
 #include "ItemData.h"
+#include "../Manager/InventoryManager.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -24,4 +25,17 @@ void UInventoryWidget::NativeConstruct()
 void UInventoryWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 {
 	Super::NativeTick(_geo, _DeltaTime);
+}
+
+void UInventoryWidget::AddItemByKey(EITEM_ID _id)
+{
+	UItemData* item = NewObject<UItemData>();
+
+	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
+
+	item->SetIconPath(table->iconPath);
+	item->SetDescription(table->description);
+	item->SetItemCount(1);
+
+	mTileView->AddItem(item);
 }

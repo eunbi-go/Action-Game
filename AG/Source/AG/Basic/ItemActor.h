@@ -42,8 +42,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* mBox;
-
-
-	bool	mIsHit;
-	float	mDeadTime;
 };

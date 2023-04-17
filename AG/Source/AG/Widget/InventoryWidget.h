@@ -20,6 +20,9 @@ public:
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
 
 
+public:
+	void AddItemByKey(EITEM_ID _id);
+
 private:
 	class UTileView* mTileView;
 };

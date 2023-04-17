@@ -13,6 +13,7 @@
 #include "../AGGameModeBase.h"
 #include "../Widget/MainWidget.h"
 #include "../Manager/InventoryManager.h"
+#include "../Widget/InventoryWidget.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -433,6 +434,20 @@ void APlayerCharacter::ClickDestination()
 
 	if (IsValid(playerController))
 		playerController->SpawnDecalOnMousePick();
+}
+
+void APlayerCharacter::AddItem(EITEM_ID _id)
+{
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == GameMode)
+		return;
+
+
+	UMainWidget* MainHUD = GameMode->GetMainWidget();
+	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
+
+	InveotyrWidget->AddItemByKey(_id);
 }
 
 void APlayerCharacter::SetCoin(int32 _value)

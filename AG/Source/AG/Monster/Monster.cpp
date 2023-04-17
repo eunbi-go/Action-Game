@@ -328,7 +328,7 @@ void AMonster::Death(AItemActor* collisionObject, const FHitResult& Hit, AActor*
 
 	//PrintViewport(10.f, FColor::White, TEXT("get coin"));
 	Cast<APlayerCharacter>(target)->SetCoin(10);
-
+	//Cast<APlayerCharacter>(target)->AddItem(EITEM_ID::POTION_HP_MIN);
 
 	Destroy();
 	collisionObject->Destroy();

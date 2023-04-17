@@ -52,6 +52,8 @@ public:
 	void EquipWeaponToHand();
 	void SetWeaponTrailOnOff(bool _value);
 	void ClickDestination();
+	void AddItem(EITEM_ID _id);
+
 
 public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
@@ -67,9 +69,8 @@ public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }
 	int GetSprintCount() { return mSprintCount; }
 	bool GetIsSprint() { return isSprint; }
-	class UPlayerAnimInstance* GetAnimInstance() {
-		return mAnimInst;
-	}
+	class UPlayerAnimInstance* GetAnimInstance() { return mAnimInst; }
+
 public:
 	//---------------------
 	// 키 입력 함수들.

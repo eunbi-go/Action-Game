@@ -11,10 +11,6 @@ AItemActor::AItemActor()
 	mBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 
-	//mMesh->BodyInstance.SetCollisionProfileName(TEXT("Item"));
-	//mMesh->SetNotifyRigidBodyCollision(true);
-	//mMesh->SetSimulatePhysics(true);
-
 	mBox->BodyInstance.SetCollisionProfileName(TEXT("Item"));
 	mBox->SetNotifyRigidBodyCollision(true);
 	mBox->SetSimulatePhysics(true);
@@ -22,9 +18,6 @@ AItemActor::AItemActor()
 	SetRootComponent(mBox);
 
 	mMesh->SetupAttachment(mBox);
-
-	mIsHit = false;
-	mDeadTime = 0.0f;
 }
 
 void AItemActor::BeginPlay()
@@ -39,21 +32,10 @@ void AItemActor::BeginPlay()
 void AItemActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (mIsHit)
-	{
-		mDeadTime += DeltaTime;
-
-		//if (mDeadTime >= 0.5f)
-			//Destroy();
-	}
 }
 
 void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	PrintViewport(10.f, FColor::White, TEXT("coin death"));
-	mIsHit = true;
-
 	mOnHitt.Broadcast(this, Hit, OtherActor);
 }
 
