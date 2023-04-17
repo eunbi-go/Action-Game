@@ -6,6 +6,8 @@
 #include "Monster.h"
 #include "MonsterAIController.h"
 #include "FengMao.h"
+#include "../Basic/ItemActor.h"
+
 
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
@@ -33,7 +35,24 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
+	FVector position = TryGetPawnOwner()->GetActorLocation();
+	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
+
 	TryGetPawnOwner()->Destroy();
+
+	// 아이템 생성.
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	//position.Z = 80.0f;
+
+	AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+		position,
+		rotation,
+		params);
+
+	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
+	particle->SetActorScale3D(FVector(10.f));
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()
