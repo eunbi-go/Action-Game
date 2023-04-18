@@ -430,10 +430,10 @@ void APlayerCharacter::SetWeaponTrailOnOff(bool _value)
 
 void APlayerCharacter::ClickDestination()
 {
-	AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
+	//AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
 
-	if (IsValid(playerController))
-		playerController->SpawnDecalOnMousePick();
+	//if (IsValid(playerController))
+	//	playerController->SpawnDecalOnMousePick();
 }
 
 void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
@@ -609,7 +609,8 @@ void APlayerCharacter::NormalAttackKey()
 
 	AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
 
-	if (IsValid(playerController) && mAnimInst->GetCurSkillType() == SKILL_TYPE::TELEPORT)
+	if (IsValid(playerController) && mAnimInst->GetCurSkillType() == SKILL_TYPE::TELEPORT
+		&& mAnimInst->GetPlayerMotion() == PLAYER_MOTION::SKILL)
 	{
 		playerController->SpawnDecalOnMousePick();
 		GaugeEnd();
@@ -655,7 +656,7 @@ void APlayerCharacter::GaugeEnd()
 	if (mAnimInst->GetPlayerMotion() != PLAYER_MOTION::SKILL)
 		return;
 
-	//GaugeEnd();
+	GaugeEnd();
 }
 
 void APlayerCharacter::StopLaunchCharacter()

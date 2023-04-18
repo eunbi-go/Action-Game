@@ -28,7 +28,7 @@
 #include <Components\Image.h>
 #include <Components\TextBlock.h>
 #include "Components/TileView.h"
-
+#include <Components\ProgressBar.h>
 
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"

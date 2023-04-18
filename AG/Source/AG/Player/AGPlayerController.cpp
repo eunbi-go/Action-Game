@@ -72,7 +72,7 @@ void AAGPlayerController::SpawnDecalOnMousePick()
 					SpawnParam);
 
 			Decal->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
-			Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
+			Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle_2.MTMagicCircle_2'"));
 			Decal->SetLifeSpan(5.f);
 			Decal->SetDecalVisibility(true);
 	}

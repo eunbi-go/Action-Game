@@ -10,9 +10,11 @@
 #include "../Basic/CollisionObject.h"
 #include "../Particle/Decal.h"
 #include "MonsterAnimInstance.h"
-
-
-
+#include "../AGGameInstance.h"
+#include "../AGGameModeBase.h"
+#include "../Widget/MainWidget.h"
+#include "../Widget/BossInfoWidget.h"
+#include "MonsterSpawnPoint.h"
 
 AFengMao::AFengMao()
 {
@@ -28,7 +30,6 @@ AFengMao::AFengMao()
 
 
 	mSkillNameArray.Add(TEXT("GroundSmash"));
-	mSkillNameArray.Add(TEXT("Stone"));
 	mSkillNameArray.Add(TEXT("Energize"));
 	mSkillNameArray.Add(TEXT("Roar"));
 
@@ -56,6 +57,7 @@ AFengMao::AFengMao()
 void AFengMao::BeginPlay()
 {
 	Super::BeginPlay();
+	mWidgetComopnent->DestroyComponent();
 }
 
 void AFengMao::Tick(float DeltaTime)
@@ -74,6 +76,34 @@ void AFengMao::Tick(float DeltaTime)
 		mSkill1Count = 0;
 	}
 
+	// 플레이어와의 거리에 따라 UI ON / OFF.
+	AMonsterAIController* controller = Cast<AMonsterAIController>(GetController());
+
+	if (!IsValid(controller))
+		return;
+
+	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	if (!IsValid(target))
+		return;
+
+	FVector	position = GetActorLocation();
+	FVector targetPosition = target->GetActorLocation();
+
+	float distance = (position - targetPosition).Size();
+
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
+	if (nullptr == GameMode)
+		return;
+
+
+	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
+	UMainWidget* MainHUD = GameMode->GetMainWidget();
+	if (distance <= 5000.0f)
+		MainHUD->BossInfoOnOff(true);
+	else
+		MainHUD->BossInfoOnOff(false);
 }
 
 void AFengMao::PossessedBy(AController* NewController)
@@ -84,6 +114,100 @@ void AFengMao::PossessedBy(AController* NewController)
 void AFengMao::UnPossessed()
 {
 	Super::UnPossessed();
+}
+
+float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	damage -= mInfo.defensePoint;
+
+	if (damage < 1)
+		damage = 1;
+
+
+	mInfo.hp -= damage;
+
+	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
+
+	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
+
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
+	UMainWidget* MainHUD = GameMode->GetMainWidget();
+
+
+	if (IsValid(MainHUD))
+	{
+		MainHUD->UpdateBossHp(mInfo.hp, mInfo.maxHp);
+	}
+
+	if (mInfo.hp <= 0)
+	{
+		// 다시 충돌되지 않도록.
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
+
+
+		// 동작되고 있던 로직을 멈춘다.
+		AAIController* ai = Cast<AAIController>(GetController());
+
+		if (IsValid(ai))
+			ai->BrainComponent->StopLogic(TEXT("Death"));
+
+
+		mSpawnPoint->RemoveMonster(this);
+	}
+	else
+	{
+		//---------------------
+		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
+		//---------------------
+
+		FVector targetPosition = DamageCauser->GetActorLocation();
+		FVector position = GetActorLocation();
+		FVector direction = targetPosition - position;
+
+		direction.Z = 0.f;
+		direction.Normalize();
+
+		float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+		float degree = UKismetMathLibrary::DegAcos(innerProduct);
+
+		FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+		float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+		float angle = sign * degree;
+		FString angleString = TEXT("");
+
+		// 오른쪽.
+		if (angle >= 0.f)
+		{
+			if (degree >= 50.f && angle <= 130.f)
+				angleString = TEXT("Right");
+			else if (degree < 50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		// 왼쪽
+		else if (angle < 0.f)
+		{
+			if (degree <= -50.f && angle >= -130.f)
+				angleString = TEXT("Left");
+			else if (degree > -50.f)
+				angleString = TEXT("Front");
+			else
+				angleString = TEXT("Back");
+		}
+
+		mAnimInst->SetHitDirection(angleString);
+	}
+
+	return damage;
 }
 
 void AFengMao::Skill1()
@@ -169,7 +293,7 @@ void AFengMao::Skill3()
 
 
 		FVector position = GetActorLocation() + GetActorForwardVector().Normalize() * FVector(randomX, randomY, 1.0f);
-
+		position.Z = 0.f;
 		skill3PositionArray.Add(position);
 
 		FActorSpawnParameters	SpawnParam;
@@ -183,10 +307,9 @@ void AFengMao::Skill3()
 				SpawnParam);
 		
 		decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
-		decal->SetActorScale3D(FVector(0.7f));
-
-		mDecalDeath.AddDynamic(decal, &ADecal::Death);
-
+		decal->SetActorScale3D(FVector(0.6f, 0.6f, 0.4f));
+		decal->SetLifeSpan(1.f);
+		decal->SetDecalVisibility(true);
 
 	}
 	
@@ -203,14 +326,6 @@ void AFengMao::Skill3()
 		mSkill3Index = 0;
 		
 		SpawnSkill3();
-
-		// 0.2초 뒤에 데칼 다 없애기.
-		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				mDecalDeath.Broadcast();
-				// 여기에 코드를 치면 된다.
-
-			}), 0.3f, false); //반복도 여기서 추가 변수를 선언해 설정가능
 	}
 }
 
@@ -267,7 +382,7 @@ void AFengMao::SpawnSkill3()
 	// 1초 뒤, 데칼 없어지고 나이아가라 생성.
 	if (mSkill3SpawnCount == 0)
 	{
-		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::SpawnSkill3, 0.3f, false);
+		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::SpawnSkill3, 0.1f, false);
 		mSkill3SpawnCount++;
 	}
 	else

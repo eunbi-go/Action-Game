@@ -28,6 +28,8 @@ public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -43,6 +45,7 @@ public:
 	virtual void Skill2()override;
 	UFUNCTION()
 	virtual void Skill3()override; 
+
 	UFUNCTION()
 	void SpawnSkill3();
 

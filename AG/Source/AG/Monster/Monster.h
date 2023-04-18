@@ -114,6 +114,7 @@ protected:
 
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<FVector>	mPatrolPointPositionArray;
 
 	PATROL_END_DIRECTION	mPatrolDirection;

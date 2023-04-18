@@ -281,8 +281,8 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 	if (mCurSkillType == SKILL_TYPE::TELEPORT)
 	{
 		mPlayerState = PLAYER_MOTION::IDLE;
-		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 		playerCharacter->EndSkill(mCurSkillType);
+		mCurSkillType = SKILL_TYPE::SKILL_TYPE_END;
 	}
 
 	else if (mCurSkillType == SKILL_TYPE::SPRINT)

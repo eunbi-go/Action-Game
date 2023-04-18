@@ -30,11 +30,20 @@ public:
 	void UpdateHp();
 	void UpdateMp();
 	void UpdateCoin();
+	
+	void UpdateBossHp(float _hp, float _maxHp);
+
+
+
+public:
+	void BossInfoOnOff(bool _value);
+
 
 
 public:
 	void SetHp(float _ratio);
 	void SetMp(float _ratio);
+
 
 
 public:
@@ -48,4 +57,5 @@ private:
 
 	class UInventoryWidget* mInventory;
 	class UItemQuickSlot*	mItemQuickSlot;
+	class UBossInfoWidget* mBossInfo;
 };

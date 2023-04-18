@@ -6,6 +6,7 @@
 #include "../Player/CharacterStatComponent.h"
 #include "InventoryWidget.h"
 #include "ItemQuickSlot.h"
+#include "BossInfoWidget.h"
 
 void UMainWidget::NativeConstruct()
 {
@@ -14,6 +15,9 @@ void UMainWidget::NativeConstruct()
 	mPlayerInfo = Cast<UPlayerInfoWidget>(GetWidgetFromName(FName(TEXT("PlayerInfo"))));
 	mInventory = Cast<UInventoryWidget>(GetWidgetFromName(FName(TEXT("Inventory"))));
 	mItemQuickSlot = Cast<UItemQuickSlot>(GetWidgetFromName(FName(TEXT("ItemQuickSlot"))));
+	mBossInfo = Cast<UBossInfoWidget>(GetWidgetFromName(FName(TEXT("BossInfo"))));
+
+	mBossInfo->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
@@ -37,6 +41,8 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 
 	mCurrentStat->mCoinChange.AddUObject(this, &UMainWidget::UpdateCoin);
 	UpdateCoin();
+
+	UpdateBossHp(1.f, 1.f);
 }
 
 void UMainWidget::UpdateHp()
@@ -52,6 +58,19 @@ void UMainWidget::UpdateMp()
 void UMainWidget::UpdateCoin()
 {
 	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
+}
+
+void UMainWidget::UpdateBossHp(float _hp, float _maxHp)
+{
+	mBossInfo->SetHpRatio(_hp / _maxHp);
+}
+
+void UMainWidget::BossInfoOnOff(bool _value)
+{
+	if (_value)
+		mBossInfo->SetVisibility(ESlateVisibility::Visible);
+	else
+		mBossInfo->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMainWidget::SetHp(float _ratio)

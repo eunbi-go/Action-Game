@@ -2,17 +2,15 @@
 
 #pragma once
 
-
-
 #include "../BasicInfo.h"
 #include "Blueprint/UserWidget.h"
-#include "PlayerInfoWidget.generated.h"
+#include "BossInfoWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AG_API UPlayerInfoWidget : public UUserWidget
+class AG_API UBossInfoWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -20,29 +18,15 @@ class AG_API UPlayerInfoWidget : public UUserWidget
 public:
 	void SetHp(float _ratio);
 	void SetHpRatio(float _ratio) { mHpTargetRatio = _ratio; }
-	void SetMp(float _ratio);
-	void SetMpRatio(float _ratio) { mMpTargetRatio = _ratio; }
-	void SetCoin(int _value) { mCoin += _value; }
 
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;
 
 
-
-
-
-
-
 private:
-	UProgressBar*	mHpBar;
-	UProgressBar*	mMpBar;
-	class UTextBlock* mCoinTxt;
+	class UProgressBar* mHpBar;
 
 	float			mHpTargetRatio;
 	float			mHpRatio;
-
-	float			mMpTargetRatio;
-
-	int				mCoin;
 };
