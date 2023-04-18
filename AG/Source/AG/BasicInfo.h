@@ -448,6 +448,7 @@ UENUM(BlueprintType)
 enum class EITEM_ID : uint8
 {
 	POTION_HP_MIN, POTION_HP_MAX, POTION_MP_MIN, POTION_MP_MAX,
+	COIN, 
 	SWORD1, END
 };
 

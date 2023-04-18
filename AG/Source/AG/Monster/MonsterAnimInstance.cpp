@@ -40,26 +40,58 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
 	// 아이템 생성.
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
+	int32 randomValue = FMath::RandRange(1, 2);
 
-	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	// 코인.
+	if (randomValue == 1)
+	{
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	if (!IsValid(target))
-		return;
+		AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
 
-	AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
-		position,
-		rotation,
-		params);
+		ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
-	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
-	particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
-	particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
-	particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
-	Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::POTION_HP_MIN);
+		if (!IsValid(target))
+			return;
+
+		AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+			position,
+			rotation,
+			params);
+
+		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
+		particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
+		particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
+		Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::COIN);
+	}
+
+	// 랜덤 아이템.
+	else if (randomValue == 2)
+	{
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
+
+		ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+		if (!IsValid(target))
+			return;
+
+		AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+			position,
+			rotation,
+			params);
+
+		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
+		particle->GetMesh()->SetRelativeScale3D(FVector(7.f));
+		particle->GetBoxComponent()->SetBoxExtent(FVector(12.0f));
+		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
+	}
+
 
 	// 몬스터 삭제.
 	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();

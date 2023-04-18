@@ -57,6 +57,11 @@ public:
 	void AddItem(class AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	
 
+
+	void RandomItem();
+
+
+
 public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
 	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
@@ -65,7 +70,9 @@ public:
 	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
 	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
 	void SetISEnableSprint(bool _value) { isSprint = _value; }
+	
 	void SetCoin(int32 _value);
+
 	void SetItemId(EITEM_ID _id) { mItemId = _id; }
 public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }

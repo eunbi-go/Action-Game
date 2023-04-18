@@ -438,6 +438,13 @@ void APlayerCharacter::ClickDestination()
 
 void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
+	if (mItemId == EITEM_ID::COIN)
+	{
+		SetCoin(10);
+		collisionObject->Destroy();
+		return;
+	}
+
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	if (nullptr == GameMode)
@@ -447,9 +454,27 @@ void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hi
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
 	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
 
+	RandomItem();
+
 	InveotyrWidget->AddItemByKey(mItemId);
 
 	collisionObject->Destroy();
+}
+
+void APlayerCharacter::RandomItem()
+{
+	int32 randomValue = FMath::RandRange(1, 2);
+
+	if (randomValue == 1)
+	{
+		PrintViewport(10.f, FColor::Blue, TEXT("hp min"));
+		mItemId = EITEM_ID::POTION_HP_MIN;
+	}
+	else if (randomValue == 2)
+	{
+		PrintViewport(10.f, FColor::Blue, TEXT("mp min"));
+		mItemId = EITEM_ID::POTION_MP_MIN;
+	}
 }
 
 void APlayerCharacter::SetCoin(int32 _value)
