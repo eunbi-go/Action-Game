@@ -36,9 +36,12 @@ void ACollisionObject::Tick(float DeltaTime)
 
 void ACollisionObject::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	mIsEnd = true;
+	if (!mIsEnd)
+	{
+		mIsEnd = true;
 
-	PrintViewport(1.f, FColor::Green, TEXT("ACollisionObject::OnHit"));
-	mOnHitt.Broadcast(this, Hit, OtherActor);
+		PrintViewport(1.f, FColor::Green, TEXT("ACollisionObject::OnHit"));
+		mOnHitt.Broadcast(this, Hit, OtherActor);
+	}
 }
 

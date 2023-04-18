@@ -88,7 +88,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 
 		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
 		particle->GetMesh()->SetRelativeScale3D(FVector(7.f));
-		particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+		particle->GetBoxComponent()->SetBoxExtent(FVector(35.0f));
 		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
 	}
 
@@ -158,7 +158,7 @@ void UMonsterAnimInstance::AnimNotify_Skill1End()
 
 	if (IsValid(monster))
 	{
-		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(monster->GetBlackboardTarget());
+		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(Cast<APlayerCharacter>(monster->GetBlackboardTarget()));
 	}
 }
 

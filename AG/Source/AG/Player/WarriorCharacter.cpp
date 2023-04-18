@@ -358,13 +358,13 @@ void AWarriorCharacter::NormalAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 	
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
-		mInfo.attackDistance,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+	//	mInfo.attackDistance,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 
@@ -427,13 +427,13 @@ void AWarriorCharacter::SprintAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		200.f,
-		100.f,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	200.f,
+	//	100.f,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 
@@ -485,13 +485,13 @@ void AWarriorCharacter::SprintLastAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		200.f,
-		200.f,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	200.f,
+	//	200.f,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 
@@ -543,13 +543,13 @@ void AWarriorCharacter::SlashAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		300.f,
-		300.f,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	300.f,
+	//	300.f,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 

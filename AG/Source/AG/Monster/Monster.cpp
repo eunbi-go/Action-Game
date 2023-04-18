@@ -382,7 +382,7 @@ void AMonster::UseSkill(float _deltaTime)
 	if (enableSkillCount == 0)
 		return;
 
-	int32 randomIndexValue = (int32)FMath::RandRange(0.0, (double)enableSkillCount);
+	int32 randomIndexValue = FMath::RandRange(0, enableSkillCount);
 	
 	if (randomIndexValue == enableSkillCount)
 		randomIndexValue--;
@@ -395,9 +395,9 @@ void AMonster::UseSkill(float _deltaTime)
 	mIsUsingSkill = true;
 	mUsingSkillIndex = enableSkillIndexArray[randomIndexValue];
 
-	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("index: %d"), mUsingSkillIndex));
-
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+
+	enableSkillIndexArray.RemoveAll([](int32) {return true; });
 }
 
 void AMonster::CheckSkillCoolTime(float _deltaTime)
@@ -443,7 +443,9 @@ void AMonster::ClearUsingSkill()
 	mIsAttackEnd = true;
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
-	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+
+	UseSkill(GetWorld()->GetDeltaSeconds()); 
 }
 
 void AMonster::ClearAllSkill()
@@ -462,6 +464,8 @@ void AMonster::ClearAllSkill()
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+
+	UseSkill(GetWorld()->GetDeltaSeconds());
 }
 
 void AMonster::GoNextPatrolPoint()
@@ -592,7 +596,9 @@ bool AMonster::GetIsPatrolPointArrive()
 const FMonsterSkillInfo* AMonster::GetSkillInfo()
 {
 	if (mUsingSkillIndex == -1)
+	{
 		return nullptr;
+	}
 
 	return &mSkillInfoArray[mUsingSkillIndex];
 }

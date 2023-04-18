@@ -14,7 +14,7 @@ class AG_API AFengMao : public AMonster
 	GENERATED_BODY()
 	
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1Start, class AActor*, actor);
-		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1MoveStart, class ACharacter*, target);
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1MoveStart, class APlayerCharacter*, target);
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDecalDeath);
 
 public:

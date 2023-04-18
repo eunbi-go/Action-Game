@@ -32,7 +32,7 @@ public:
 	void ResetSlash(AActor* preParticle);
 
 	UFUNCTION()
-	void MoveStart(ACharacter* target);
+	void MoveStart(class APlayerCharacter* target);
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,4 +54,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mHitShake;
+
+	FVector targetPosition;
 };

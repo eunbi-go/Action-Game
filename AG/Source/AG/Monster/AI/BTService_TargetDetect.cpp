@@ -60,14 +60,14 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 						param);
 
 #if ENABLE_DRAW_DEBUG 
-	FColor drawColor = isCollision ? FColor::Red : FColor::Green;
+	//FColor drawColor = isCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugSphere(GetWorld(), monster->GetActorLocation(),	// 원의 중심.
-		monsterInfo.traceDistance,								// 거리.
-		20,														// 몇 조각으로 낼 것인가.
-		drawColor,												// 색상.
-		false,
-		0.3f);													// 0.3초동안 있다가 사라짐.
+	//DrawDebugSphere(GetWorld(), monster->GetActorLocation(),	// 원의 중심.
+	//	monsterInfo.traceDistance,								// 거리.
+	//	20,														// 몇 조각으로 낼 것인가.
+	//	drawColor,												// 색상.
+	//	false,
+	//	0.3f);													// 0.3초동안 있다가 사라짐.
 #endif
 
 

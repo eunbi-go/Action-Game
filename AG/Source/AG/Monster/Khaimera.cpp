@@ -65,17 +65,17 @@ void AKhaimera::NormalAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 
-	// CollisionEnable 가 true이면 Red, false이면 Green을 저장한다.
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//// CollisionEnable 가 true이면 Red, false이면 Green을 저장한다.
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	// FRotationMatrix::MakeFromZ(GetActorForwardVector()) : 앞쪽을
-	// 바라보는 회전행렬을 만들어서 .ToQuat() 함수를 이용하여 회전행렬을
-	// 회전값으로 변환해준다.
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		mInfo.attackDistance / 2.f,
-		mInfo.attackDistance,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//// FRotationMatrix::MakeFromZ(GetActorForwardVector()) : 앞쪽을
+	//// 바라보는 회전행렬을 만들어서 .ToQuat() 함수를 이용하여 회전행렬을
+	//// 회전값으로 변환해준다.
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	mInfo.attackDistance / 2.f,
+	//	mInfo.attackDistance,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 

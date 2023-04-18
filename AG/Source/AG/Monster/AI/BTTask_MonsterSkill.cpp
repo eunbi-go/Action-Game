@@ -59,7 +59,13 @@ EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	// else.
 	const FMonsterSkillInfo* info = monster->GetSkillInfo();
-	monsterAnimInst->SetMonsterMotionType(info->animType);
+
+	if (info != nullptr)
+	{
+		monsterAnimInst->SetMonsterMotionType(info->animType);
+
+	}
+
 
 
 	// 몬스터가 타겟에 도착할 때까지 이 Task를 빠져나가지 못하게 한다.
@@ -141,14 +147,12 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
 		if (distance >= info.attackDistance)
 		{
-			PrintViewport(3.f, FColor::Red, TEXT("distance"));
 			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 			//return;
 		}
 
 		else
 		{
-			PrintViewport(3.f, FColor::Blue, TEXT("else"));
 			controller->StopMovement();
 
 			FVector direction = target->GetActorLocation() - monster->GetActorLocation();
