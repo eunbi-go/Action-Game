@@ -13,7 +13,7 @@ ABasicActor::ABasicActor()
 	mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 
 	SetRootComponent(mBox);
-
+	
 	mMesh->SetupAttachment(mBox);
 }
 

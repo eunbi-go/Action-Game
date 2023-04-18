@@ -19,6 +19,7 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _DT) override;
 
+
 public:
 	UFUNCTION(BlueprintCallable)
 		void InitFromData(UObject* _Data);

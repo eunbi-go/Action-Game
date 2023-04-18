@@ -4,6 +4,11 @@
 #include "InventoryWidget.h"
 #include "ItemData.h"
 #include "../Manager/InventoryManager.h"
+#include "InventoryItem.h"
+#include "ItemQuickSlot.h"
+#include "../AGGameInstance.h"
+#include "../AGGameModeBase.h"
+#include "MainWidget.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -64,4 +69,29 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 	}
 
 	
+}
+
+// item: 클릭된 아이템.
+void UInventoryWidget::Clicked(UObject* item)
+{
+	PrintViewport(20.f, FColor::Yellow, TEXT("click"));
+
+	UItemData* itemData = Cast<UItemData>(item);
+
+	if (IsValid(itemData))
+	{
+		AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+		// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
+		if (nullptr == GameMode)
+			return;
+
+
+		// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
+		UMainWidget* MainHUD = GameMode->GetMainWidget();
+		UItemQuickSlot* quickSlot = MainHUD->GetItemQuickSlot();
+
+		EITEM_ID id = itemData->GetItemId();
+		quickSlot->AddItemToQuickSlot(itemData);
+	}
 }

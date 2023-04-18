@@ -12,6 +12,13 @@ AWeaponActor::AWeaponActor()
 	mGauge = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Gauge"));
 
 	mGauge->SetupAttachment(GetMesh());
+	mBox->SetCollisionProfileName(TEXT("Weapon"));
+	mBox->SetGenerateOverlapEvents(true);
+	mBox->SetNotifyRigidBodyCollision(true);
+
+	mMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	mBox->SetBoxExtent(FVector(10.f, 10.f, 100.f));
 }
 
 void AWeaponActor::BeginPlay()

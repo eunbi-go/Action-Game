@@ -8,7 +8,7 @@
 #include "../Particle/RockBurst.h"
 #include "../Particle/RampageSlash.h"
 #include "../Basic/CollisionObject.h"
-
+#include "../Particle/Decal.h"
 #include "MonsterAnimInstance.h"
 
 
@@ -49,6 +49,8 @@ AFengMao::AFengMao()
 	mSkill1Count = 0;
 	isEnableSkill1Respawn = true;
 	mSkill1CenterPosition = FVector(0.0f);
+
+	mSkill3Index = 0;
 }
 
 void AFengMao::BeginPlay()
@@ -155,7 +157,6 @@ void AFengMao::Skill3()
 
 
 
-
 	for (int32 i = 0; i < 3; ++i)
 	{
 		//------------------------
@@ -168,6 +169,70 @@ void AFengMao::Skill3()
 
 
 		FVector position = GetActorLocation() + GetActorForwardVector().Normalize() * FVector(randomX, randomY, 1.0f);
+
+		skill3PositionArray.Add(position);
+
+		FActorSpawnParameters	SpawnParam;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		ADecal* decal =
+			GetWorld()->SpawnActor<ADecal>(
+				position,
+				FRotator(0.f, 0.f, 0.f),
+				SpawnParam);
+		
+		decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
+		decal->SetActorScale3D(FVector(0.7f));
+
+		mDecalDeath.AddDynamic(decal, &ADecal::Death);
+
+
+	}
+	
+	// 1초 뒤, 데칼 없어지고 나이아가라 생성.
+
+	if (mSkill3SpawnCount == 0)
+	{
+		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::Skill3, 0.3f, false);
+		mSkill3SpawnCount++;
+	}
+	else
+	{
+		mSkill3SpawnCount = 0;
+		mSkill3Index = 0;
+		
+		SpawnSkill3();
+
+		// 0.2초 뒤에 데칼 다 없애기.
+		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, FTimerDelegate::CreateLambda([&]()
+			{
+				mDecalDeath.Broadcast();
+				// 여기에 코드를 치면 된다.
+
+			}), 0.3f, false); //반복도 여기서 추가 변수를 선언해 설정가능
+	}
+}
+
+void AFengMao::SpawnSkill3()
+{
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+
+
+	for (int32 i = 0; i < 3; ++i)
+	{
+		//------------------------
+		// 스폰할 위치를 정한 후, 스폰한다.
+		//------------------------
+
+
+		FVector position = skill3PositionArray[mSkill3Index++];
 		position.Z = 0.0f;
 
 		FActorSpawnParameters	params;
@@ -198,10 +263,20 @@ void AFengMao::Skill3()
 		particle->mCameraShake.AddDynamic(this, &AFengMao::CameraShake);
 
 	}
-	
+
+	// 1초 뒤, 데칼 없어지고 나이아가라 생성.
 	if (mSkill3SpawnCount == 0)
-		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::Skill3, 0.3f, false);
-	mSkill3SpawnCount++;
+	{
+		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::SpawnSkill3, 0.3f, false);
+		mSkill3SpawnCount++;
+	}
+	else
+	{
+		mSkill3SpawnCount = 0;
+		mSkill3Index = 0;
+		skill3PositionArray.RemoveAll([](FVector) {return true; });
+	}
+
 }
 
 void AFengMao::Skill4()

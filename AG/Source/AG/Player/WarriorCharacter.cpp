@@ -375,17 +375,17 @@ void AWarriorCharacter::NormalAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			FActorSpawnParameters	SpawnParam;
-			SpawnParam.Template = mHitActor;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			//FActorSpawnParameters	SpawnParam;
+			//SpawnParam.Template = mHitActor;
+			//SpawnParam.SpawnCollisionHandlingOverride =
+			//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			// 나이아가라 렌더링.
-			AParticleNiagara* Particle =
-				GetWorld()->SpawnActor<AParticleNiagara>(
-					collisionResult[i].ImpactPoint,
-					collisionResult[i].ImpactNormal.Rotation(),
-					SpawnParam);
+			//// 나이아가라 렌더링.
+			//AParticleNiagara* Particle =
+			//	GetWorld()->SpawnActor<AParticleNiagara>(
+			//		collisionResult[i].ImpactPoint,
+			//		collisionResult[i].ImpactNormal.Rotation(),
+			//		SpawnParam);
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -398,13 +398,13 @@ void AWarriorCharacter::NormalAttackCheck()
 
 
 
-	if (mAnimInst->GetNormalAttackIndex() == 3)
-	{
-		return;
-	}
-	
-	else
-		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
+	//if (mAnimInst->GetNormalAttackIndex() == 3)
+	//{
+	//	return;
+	//}
+	//
+	//else
+	//	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
 	
 }
 

@@ -38,22 +38,22 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
-	//TryGetPawnOwner()->Destroy();
+	TryGetPawnOwner()->Destroy();
 
-	// 아이템 생성.
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//// 아이템 생성.
+	//FActorSpawnParameters	params;
+	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	//position.Z = 80.0f;
+	////position.Z = 80.0f;
 
-	AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
-		position,
-		rotation,
-		params);
+	//AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+	//	position,
+	//	rotation,
+	//	params);
 
-	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
-	particle->SetActorScale3D(FVector(10.f));
-	particle->mOnHitt.AddDynamic(Cast<AMonster>(TryGetPawnOwner()), &AMonster::Death);
+	//particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
+	//particle->SetActorScale3D(FVector(10.f));
+	//particle->mOnHitt.AddDynamic(Cast<AMonster>(TryGetPawnOwner()), &AMonster::Death);
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()

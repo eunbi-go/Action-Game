@@ -5,6 +5,7 @@
 
 #include "../Player/CharacterStatComponent.h"
 #include "InventoryWidget.h"
+#include "ItemQuickSlot.h"
 
 void UMainWidget::NativeConstruct()
 {
@@ -12,6 +13,7 @@ void UMainWidget::NativeConstruct()
 
 	mPlayerInfo = Cast<UPlayerInfoWidget>(GetWidgetFromName(FName(TEXT("PlayerInfo"))));
 	mInventory = Cast<UInventoryWidget>(GetWidgetFromName(FName(TEXT("Inventory"))));
+	mItemQuickSlot = Cast<UItemQuickSlot>(GetWidgetFromName(FName(TEXT("ItemQuickSlot"))));
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)

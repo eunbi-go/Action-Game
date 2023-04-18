@@ -22,6 +22,11 @@ public:
 
 public:
 	void AddItemByKey(EITEM_ID _id);
+	//void EquipQuickSlot();
+	
+	UFUNCTION(BlueprintCallable)
+		void Clicked(UObject* item);
+
 
 public:
 	TMap<EITEM_ID, class UItemData*> GetItemMap() { return mItemMap; }

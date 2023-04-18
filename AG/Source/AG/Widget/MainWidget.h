@@ -39,6 +39,7 @@ public:
 
 public:
 	class UInventoryWidget* GetInventoryWidget() { return mInventory; }
+	class UItemQuickSlot* GetItemQuickSlot() { return mItemQuickSlot; }
 
 private:
 	UPlayerInfoWidget*	mPlayerInfo;
@@ -46,4 +47,5 @@ private:
 
 
 	class UInventoryWidget* mInventory;
+	class UItemQuickSlot*	mItemQuickSlot;
 };

@@ -15,6 +15,7 @@ class AG_API AFengMao : public AMonster
 	
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1Start, class AActor*, actor);
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1MoveStart, class ACharacter*, target);
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDecalDeath);
 
 public:
 	AFengMao();
@@ -34,11 +35,17 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FOnSkill1MoveStart	mSkill1MoveStart;
+	
+	UPROPERTY(BlueprintAssignable)
+	FDecalDeath mDecalDeath;
 
 	virtual void Skill1()override;
 	virtual void Skill2()override;
 	UFUNCTION()
-	virtual void Skill3()override;
+	virtual void Skill3()override; 
+	UFUNCTION()
+	void SpawnSkill3();
+
 	virtual void Skill4()override;
 
 	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -84,4 +91,8 @@ public:
 	int32	mSkill1Count;
 	bool	isEnableSkill1Respawn;
 	FVector	mSkill1CenterPosition;
+
+	TArray<FVector> skill3PositionArray;
+	TArray<class ADecal*> skill3DecalArray;
+	int32	mSkill3Index;
 };
