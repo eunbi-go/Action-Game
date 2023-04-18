@@ -28,9 +28,6 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 
-	UFUNCTION()
-		void Death(class AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor);
-
 
 public:
 	virtual void Skill1();
@@ -51,7 +48,7 @@ public:
 
 public:
 	void GoNextPatrolPoint();
-
+	void DestroyMonster();
 
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
@@ -89,7 +86,7 @@ public:
 	const FMonsterSkillInfo* GetSkillInfo();
 
 	ACharacter* GetBlackboardTarget();
-		
+	
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

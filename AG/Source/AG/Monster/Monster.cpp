@@ -314,27 +314,6 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	return damage;
 }
 
-void AMonster::Death(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
-{
-	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
-
-	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-	if (!IsValid(target))
-		return;
-
-	if (!IsValid(Cast<APlayerCharacter>(target)))
-		return;
-
-	//PrintViewport(10.f, FColor::White, TEXT("get coin"));
-	//Cast<APlayerCharacter>(target)->SetCoin(10);
-	Cast<APlayerCharacter>(target)->AddItem(EITEM_ID::POTION_HP_MIN);
-
-	collisionObject->Destroy();
-
-	Destroy();
-}
-
 void AMonster::Skill1()
 {
 }
@@ -551,6 +530,12 @@ void AMonster::GoNextPatrolPoint()
 		}
 	}
 	
+}
+
+void AMonster::DestroyMonster()
+{
+	mSpawnPoint->RemoveMonster(this);
+	Destroy();
 }
 
 FVector AMonster::GetPatrolPosition() const

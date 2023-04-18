@@ -8,6 +8,7 @@
 #include "../Basic/WeaponActor.h"
 #include "../AGGameInstance.h"
 #include "../Basic/WeaponActor.h"
+#include "../Basic/ItemActor.h"
 #include "AGPlayerController.h"
 #include "CharacterStatComponent.h"
 #include "../AGGameModeBase.h"
@@ -435,7 +436,7 @@ void APlayerCharacter::ClickDestination()
 		playerController->SpawnDecalOnMousePick();
 }
 
-void APlayerCharacter::AddItem(EITEM_ID _id)
+void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
@@ -446,8 +447,9 @@ void APlayerCharacter::AddItem(EITEM_ID _id)
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
 	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
 
-	InveotyrWidget->AddItemByKey(_id);
+	InveotyrWidget->AddItemByKey(mItemId);
 
+	collisionObject->Destroy();
 }
 
 void APlayerCharacter::SetCoin(int32 _value)

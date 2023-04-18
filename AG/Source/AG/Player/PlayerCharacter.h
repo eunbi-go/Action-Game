@@ -52,8 +52,10 @@ public:
 	void EquipWeaponToHand();
 	void SetWeaponTrailOnOff(bool _value);
 	void ClickDestination();
-	void AddItem(EITEM_ID _id);
 
+	UFUNCTION()
+	void AddItem(class AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor);
+	
 
 public:
 	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
@@ -64,7 +66,7 @@ public:
 	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
 	void SetISEnableSprint(bool _value) { isSprint = _value; }
 	void SetCoin(int32 _value);
-
+	void SetItemId(EITEM_ID _id) { mItemId = _id; }
 public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }
 	int GetSprintCount() { return mSprintCount; }
@@ -149,4 +151,6 @@ protected:
 
 	int mSprintCount;
 	bool isSprint;
+
+	EITEM_ID mItemId;
 };

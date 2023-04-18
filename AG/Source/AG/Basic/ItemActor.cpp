@@ -33,7 +33,7 @@ void AItemActor::BeginPlay()
 
 	mBox->OnComponentHit.AddDynamic(this, &AItemActor::OnHit);
 
-	mBox->SetBoxExtent(FVector(15.0f));
+	//mBox->SetBoxExtent(FVector(15.0f));
 }
 
 void AItemActor::Tick(float DeltaTime)
@@ -49,7 +49,8 @@ void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	if (nullptr == GameMode)
 		return;
 
-	mOnHitt.Broadcast(this, Hit, OtherActor);
+	if (Cast<APlayerCharacter>(OtherActor))
+		mOnHitt.Broadcast(this, Hit, OtherActor);
 }
 
 void AItemActor::SetStaticMesh(const FString& _path)

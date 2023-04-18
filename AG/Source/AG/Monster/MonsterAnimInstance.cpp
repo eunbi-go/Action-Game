@@ -7,6 +7,7 @@
 #include "MonsterAIController.h"
 #include "FengMao.h"
 #include "../Basic/ItemActor.h"
+#include "../Player/PlayerCharacter.h"
 
 
 UMonsterAnimInstance::UMonsterAnimInstance()
@@ -38,22 +39,30 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
-	TryGetPawnOwner()->Destroy();
+	// 아이템 생성.
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	//// 아이템 생성.
-	//FActorSpawnParameters	params;
-	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
 
-	////position.Z = 80.0f;
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
-	//AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
-	//	position,
-	//	rotation,
-	//	params);
+	if (!IsValid(target))
+		return;
 
-	//particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
-	//particle->SetActorScale3D(FVector(10.f));
-	//particle->mOnHitt.AddDynamic(Cast<AMonster>(TryGetPawnOwner()), &AMonster::Death);
+	AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+		position,
+		rotation,
+		params);
+
+	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
+	particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
+	particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+	particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
+	Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::POTION_HP_MIN);
+
+	// 몬스터 삭제.
+	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()

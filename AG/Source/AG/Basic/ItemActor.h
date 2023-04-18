@@ -28,6 +28,7 @@ public:
 
 public:
 	UStaticMeshComponent* GetMesh() { return mMesh; }
+	UBoxComponent* GetBoxComponent() { return mBox; }
 
 public:
 	void SetStaticMesh(const FString& _path);
@@ -42,4 +43,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* mBox;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandle;
 };
