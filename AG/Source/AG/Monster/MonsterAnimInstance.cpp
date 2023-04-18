@@ -88,7 +88,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 
 		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
 		particle->GetMesh()->SetRelativeScale3D(FVector(7.f));
-		particle->GetBoxComponent()->SetBoxExtent(FVector(12.0f));
+		particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
 		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
 	}
 
