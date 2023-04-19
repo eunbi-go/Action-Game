@@ -149,4 +149,6 @@ protected:
 	TArray<FName>	mSkillNameArray;
 
 	bool	mIsUsingSkill;
+
+	ACharacter* mTarget;
 };

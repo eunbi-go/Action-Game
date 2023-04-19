@@ -55,5 +55,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mHitShake;
 
-	FVector targetPosition;
+	//FVector targetPosition;
 };

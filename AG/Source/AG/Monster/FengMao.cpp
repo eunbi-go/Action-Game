@@ -210,6 +210,7 @@ float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	return damage;
 }
 
+// 슬래시 날림.
 void AFengMao::Skill1()
 {
 	//------------------------
@@ -266,6 +267,7 @@ void AFengMao::Skill2()
 {
 }
 
+// 메테오 낙하.
 void AFengMao::Skill3()
 {
 	//------------------------
@@ -286,6 +288,8 @@ void AFengMao::Skill3()
 		//------------------------
 		// 스폰할 위치를 정한 후, 스폰한다.
 		//------------------------
+
+		// 플레이어와 몬스터 사이 각도 구해서 각도의 범위에 따라 나눠야 함.
 
 		float randomX = FMath::RandRange(-100.0f, -800.0f);
 		float randomY = FMath::RandRange(-800.0f, 800.0f);

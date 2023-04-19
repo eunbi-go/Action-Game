@@ -21,8 +21,8 @@ void ARampageSlash::ResetSlash(AActor* preParticle)
 
 void ARampageSlash::MoveStart(APlayerCharacter* target)
 {
-	//mTarget = target;
-	targetPosition = target->GetActorLocation();
+	mTarget = target;
+	//targetPosition = target->GetActorLocation();
 	mIsEnableMove = true;
 	//mParticle->ResetSystem();
 	//mParticle->SetCustomTimeDilation(0.5f);
@@ -43,9 +43,8 @@ void ARampageSlash::Tick(float DeltaTime)
 		return;
 	else
 	{
-		// 회전.
 		FVector position = GetActorLocation();
-		//FVector targetPosition = mTarget->GetActorLocation();
+		FVector targetPosition = mTarget->GetActorLocation();
 		FVector direction = targetPosition - position;
 
 		FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
@@ -53,25 +52,24 @@ void ARampageSlash::Tick(float DeltaTime)
 		SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRotation, DeltaTime, 2.f));
 
 
-		//// 이동.
-
+		// 이동.
 		float	Distance = FVector::Distance(position, targetPosition);
-		//Distance -= mTarget->GetCapsuleComponent()->GetScaledCapsuleRadius();
+		Distance -= mTarget->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-		SetActorLocation(GetActorLocation() + direction.Normalize() * DeltaTime * 1500.0f);
+		SetActorLocation(position + direction.GetSafeNormal() * DeltaTime * 1500.0f);
+		
+		
 
 		if (Distance <= 500.f)
 			mParticle->ResetSystem();
 
 		if (Distance <= 100.f)
 		{
-			// 카메라 세이크 추가.
-			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mHitShake);
-
 			// 충돌했다고 판정.
 			mOnHit.Broadcast();
 
-			
+			// 카메라 세이크 추가.
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mHitShake);
 
 			Destroy();
 		}

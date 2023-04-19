@@ -71,6 +71,8 @@ AMonster::AMonster()
 
 	// 현재 스킬을 사용하는 중인가.
 	mIsUsingSkill = false;
+
+	mTarget = nullptr;
 }
 
 void AMonster::BeginPlay()
@@ -181,6 +183,16 @@ void AMonster::Tick(float DeltaTime)
 		}
 	}
 
+
+
+	//-----------------------------
+	// 타겟 세팅.
+	//-----------------------------
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	if (IsValid(target))
+		mTarget = target;
 
 
 	//-----------------------------
@@ -602,13 +614,14 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 
 ACharacter* AMonster::GetBlackboardTarget()
 {
-	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+	return mTarget;
+	//AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
 
-	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	//ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
-	if (IsValid(target))
-		return target;
+	//if (IsValid(target))
+	//	return target;
 
-	return nullptr;
+	//return nullptr;
 }
 
