@@ -367,7 +367,7 @@ void AMonster::UseSkill(float _deltaTime)
 			continue;
 
 
-		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
+		if (!mIsUsingSkill/* && distance >= mSkillInfoArray[i].distance*/)
 		{
 			enableSkillIndexArray.Add(i);
 		}
@@ -412,9 +412,8 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 			
 			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
 			{
-				PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
-
 				mSkillInfoArray[i].duration = 0.0f;
+				mSkillInfoArray[i].isUse = false;
 				mSkillInfoArray[i].isCheckCoolTime = false;
 			}
 		}
@@ -597,7 +596,8 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 {
 	if (mUsingSkillIndex == -1)
 	{
-		return nullptr;
+		UseSkill(GetWorld()->GetDeltaSeconds());
+		//return nullptr;
 	}
 
 	return &mSkillInfoArray[mUsingSkillIndex];
