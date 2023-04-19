@@ -4,6 +4,7 @@
 #include "MainWidget.h"
 
 #include "../Player/CharacterStatComponent.h"
+#include "../Player/PlayerCharacter.h"
 #include "InventoryWidget.h"
 #include "ItemQuickSlot.h"
 #include "BossInfoWidget.h"
@@ -42,6 +43,9 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 	mCurrentStat->mCoinChange.AddUObject(this, &UMainWidget::UpdateCoin);
 	UpdateCoin();
 
+	mItemQuickSlot->mUseItems.AddDynamic(mInventory, &UInventoryWidget::UseItem);
+	mItemQuickSlot->mUseItems.AddDynamic(this, &UMainWidget::UseItem);
+
 	UpdateBossHp(1.f, 1.f);
 }
 
@@ -63,6 +67,30 @@ void UMainWidget::UpdateCoin()
 void UMainWidget::UpdateBossHp(float _hp, float _maxHp)
 {
 	mBossInfo->SetHpRatio(_hp / _maxHp);
+}
+
+void UMainWidget::UseItem(EITEM_ID id, APlayerCharacter* userCharacter)
+{
+	switch (id)
+	{
+	case EITEM_ID::POTION_HP_MIN:
+		break;
+
+	case EITEM_ID::POTION_HP_MAX:
+		break;
+
+	case EITEM_ID::POTION_MP_MIN:
+		break;
+
+	case EITEM_ID::POTION_MP_MAX:
+		break;
+
+	case EITEM_ID::COIN:
+		break;
+
+	case EITEM_ID::SWORD1:
+		break;
+	}
 }
 
 void UMainWidget::BossInfoOnOff(bool _value)

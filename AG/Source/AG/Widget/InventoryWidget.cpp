@@ -9,6 +9,7 @@
 #include "../AGGameInstance.h"
 #include "../AGGameModeBase.h"
 #include "MainWidget.h"
+#include "../Player/PlayerCharacter.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -35,7 +36,7 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 {
 	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
 
-	if (IsValid(mItemMap.FindRef(_id)))
+	if (mItemMap.Contains(_id))
 	{
 		TArray<UObject*> item = mTileView->GetListItems();
 		
@@ -69,6 +70,36 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 	}
 
 	
+}
+
+void UInventoryWidget::UseItem(EITEM_ID _id, APlayerCharacter* userCharacter)
+{
+	// 아이템 사용.
+	userCharacter->UseItem(_id);
+
+	// 인벤토리 업데이트.
+	TArray<UObject*> itemArray = mTileView->GetListItems();
+	int32 num = itemArray.Num();
+
+	for (int32 i = 0; i < num; ++i)
+	{
+		UItemData* item = Cast<UItemData>(itemArray[i]);
+
+		if (item->GetItemId() == _id)
+		{
+			int32 itemCount = item->GetItemCount();
+			if (itemCount - 1 == 0)
+			{
+				mTileView->RemoveItem(item);
+				mItemMap.Remove(_id);
+			}
+			else
+				item->SetItemCount(itemCount - 1);
+
+			mTileView->RegenerateAllEntries();
+			break;
+		}
+	}
 }
 
 // item: 클릭된 아이템.

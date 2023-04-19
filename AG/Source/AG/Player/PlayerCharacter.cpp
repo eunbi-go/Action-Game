@@ -15,6 +15,7 @@
 #include "../Widget/MainWidget.h"
 #include "../Manager/InventoryManager.h"
 #include "../Widget/InventoryWidget.h"
+#include "../Widget/ItemQuickSlot.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -278,8 +279,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	/*PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("GaugeEnd"), EInputEvent::IE_Released,
 		this, &APlayerCharacter::GaugeEnd);*/
 
-
-
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item1"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Item1Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item2"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Item2Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item3"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Item3Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item4"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Item4Key);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item5"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::Item5Key);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -428,14 +437,6 @@ void APlayerCharacter::SetWeaponTrailOnOff(bool _value)
 	mWeapon->SetTrailOnOff(_value);
 }
 
-void APlayerCharacter::ClickDestination()
-{
-	//AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
-
-	//if (IsValid(playerController))
-	//	playerController->SpawnDecalOnMousePick();
-}
-
 void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
 	if (mItemId == EITEM_ID::COIN)
@@ -462,6 +463,32 @@ void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hi
 	mItemId = EITEM_ID::END;
 
 	collisionObject->Destroy();
+}
+
+void APlayerCharacter::UseItem(EITEM_ID _id)
+{
+	switch (_id)
+	{
+	case EITEM_ID::POTION_HP_MIN:
+		mStat->SetHp(mStat->GetCurrentInfo().hp + 10.f);
+		break;
+
+	case EITEM_ID::POTION_HP_MAX:
+		break;
+
+	case EITEM_ID::POTION_MP_MIN:
+		mStat->SetMp(mStat->GetCurrentInfo().mp + 10.f);
+		break;
+
+	case EITEM_ID::POTION_MP_MAX:
+		break;
+
+	case EITEM_ID::COIN:
+		break;
+
+	case EITEM_ID::SWORD1:
+		break;
+	}
 }
 
 void APlayerCharacter::RandomItem()
@@ -652,6 +679,61 @@ void APlayerCharacter::InventoryOnOffKey()
 	}
 	else
 		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(true);
+}
+
+void APlayerCharacter::Item1Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == gameMode)
+		return;
+
+	UMainWidget* mainHUD = gameMode->GetMainWidget();
+	mainHUD->GetItemQuickSlot()->UseItem(1, this);
+}
+
+void APlayerCharacter::Item2Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == gameMode)
+		return;
+
+	UMainWidget* mainHUD = gameMode->GetMainWidget();
+	mainHUD->GetItemQuickSlot()->UseItem(2, this);
+}
+
+void APlayerCharacter::Item3Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == gameMode)
+		return;
+
+	UMainWidget* mainHUD = gameMode->GetMainWidget();
+	mainHUD->GetItemQuickSlot()->UseItem(3, this);
+}
+
+void APlayerCharacter::Item4Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == gameMode)
+		return;
+
+	UMainWidget* mainHUD = gameMode->GetMainWidget();
+	mainHUD->GetItemQuickSlot()->UseItem(4, this);
+}
+
+void APlayerCharacter::Item5Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (nullptr == gameMode)
+		return;
+
+	UMainWidget* mainHUD = gameMode->GetMainWidget();
+	mainHUD->GetItemQuickSlot()->UseItem(5, this);
 }
 
 void APlayerCharacter::GaugeEnd()

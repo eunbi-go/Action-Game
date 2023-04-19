@@ -47,7 +47,6 @@ void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 {
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
 	if (nullptr == GameMode)
 		return;
 

@@ -8,12 +8,28 @@
 #include "../AGGameModeBase.h"
 #include "../Widget/MainWidget.h"
 #include "../Widget/InventoryWidget.h"
+#include "../Player/PlayerCharacter.h"
+
 
 void UItemQuickSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	mListView = Cast<UListView>(GetWidgetFromName(FName(TEXT("ListView"))));
+
+	mQuickSlotSize = 5;
+
+
+	for (int32 i = 0; i < mQuickSlotSize; ++i)
+	{
+		UItemData* item = NewObject<UItemData>();
+
+		item->SetIconPath(TEXT("Texture2D'/Game/Viking_RPG_UI_5_0/back.back'"));
+		item->SetItemId(EITEM_ID::END);
+		item->SetItemIndex(i+1);
+
+		mListView->AddItem(item);
+	}
 }
 
 void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
@@ -56,30 +72,52 @@ void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
 	
 }
 
+void UItemQuickSlot::UseItem(int32 _index, APlayerCharacter* userObject)
+{
+	TArray<UObject*> quickSlotItemArray = mListView->GetListItems();
+	int32 num = quickSlotItemArray.Num();
+
+	int32 itemCount = Cast<UItemData>(quickSlotItemArray[_index - 1])->GetItemCount();
+
+	EITEM_ID id = Cast<UItemData>(quickSlotItemArray[_index - 1])->GetItemId();
+
+	if (itemCount - 1 == 0)
+	{
+		//mListView->RemoveItem(quickSlotItemArray[_index - 1]);
+
+		// 나머지 인덱스 앞으로 땡겨주기.
+		Cast<UItemData>(quickSlotItemArray[_index - 1])->SetIconPath(TEXT("Texture2D'/Game/Viking_RPG_UI_5_0/back.back'"));
+		Cast<UItemData>(quickSlotItemArray[_index - 1])->SetItemId(EITEM_ID::END);
+		Cast<UItemData>(quickSlotItemArray[_index - 1])->SetItemCount(0);
+	}
+	else
+	{
+		Cast<UItemData>(quickSlotItemArray[_index - 1])->SetItemCount(itemCount - 1);
+	}
+
+	mListView->RegenerateAllEntries();
+
+	mUseItems.Broadcast(id, userObject);
+}
+
 void UItemQuickSlot::AddItemToQuickSlot(UItemData* _itemData)
 {
 	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_itemData->GetItemId());
 
-	UItemData* item = NewObject<UItemData>();
+	TArray<UObject*> quickSlotItemArray = mListView->GetListItems();
 
-	item->SetIconPath(table->iconPath);
-	item->SetDescription(table->description);
-	item->SetItemCount(_itemData->GetItemCount());
-	item->SetItemId(_itemData->GetItemId());
+	for (int32 i = 0; i < mQuickSlotSize; ++i)
+	{
+		UItemData* item = Cast<UItemData>(quickSlotItemArray[i]);
+		if (item->GetItemId() == EITEM_ID::END)
+		{
+			item->SetIconPath(table->iconPath);
+			item->SetDescription(table->description);
+			item->SetItemCount(_itemData->GetItemCount());
+			item->SetItemId(_itemData->GetItemId());
+			break;
+		}
+	}
 
-	if (mListView->GetNumItems() == 0)
-		item->SetItemIndex(1);
-	else if (mListView->GetNumItems() == 1)
-		item->SetItemIndex(2);
-	else if (mListView->GetNumItems() == 2)
-		item->SetItemIndex(3);
-	else if (mListView->GetNumItems() == 3)
-		item->SetItemIndex(4);
-	else if (mListView->GetNumItems() == 4)
-		item->SetItemIndex(5);
-	else
-		return;
-
-
-	mListView->AddItem(item);
+	mListView->RegenerateAllEntries();
 }

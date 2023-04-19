@@ -93,17 +93,17 @@ void AWraith::NormalAttackCheck()
 	if (IsCollision)
 	{
 
-		FActorSpawnParameters	SpawnParam;
-		SpawnParam.Template = mHitActor;
-		SpawnParam.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		//FActorSpawnParameters	SpawnParam;
+		//SpawnParam.Template = mHitActor;
+		//SpawnParam.SpawnCollisionHandlingOverride =
+		//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		// Hit 파티클 렌더링.
-		AParticleCascade* Particle =
-			GetWorld()->SpawnActor<AParticleCascade>(
-				result.ImpactPoint,
-				result.ImpactNormal.Rotation(),
-				SpawnParam);
+		//// Hit 파티클 렌더링.
+		//AParticleCascade* Particle =
+		//	GetWorld()->SpawnActor<AParticleCascade>(
+		//		result.ImpactPoint,
+		//		result.ImpactNormal.Rotation(),
+		//		SpawnParam);
 
 		// 데미지 계산.
 		result.GetActor()->TakeDamage(

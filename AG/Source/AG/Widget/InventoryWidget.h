@@ -6,9 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class AG_API UInventoryWidget : public UUserWidget
 {
@@ -22,10 +20,12 @@ public:
 
 public:
 	void AddItemByKey(EITEM_ID _id);
-	//void EquipQuickSlot();
+
+	UFUNCTION()
+	void UseItem(EITEM_ID _id, class APlayerCharacter* userCharacter);
 	
 	UFUNCTION(BlueprintCallable)
-		void Clicked(UObject* item);
+	void Clicked(UObject* item);
 
 
 public:

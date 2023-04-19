@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ItemQuickSlot.generated.h"
 
+
+
 /**
  * 
  */
@@ -14,13 +16,21 @@ class AG_API UItemQuickSlot : public UUserWidget
 {
 	GENERATED_BODY()
 
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUseItems, EITEM_ID, id, class APlayerCharacter*, userCharacter);
+
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
+	
+	void UseItem(int32 _index, class APlayerCharacter* userObject);
+
+	UPROPERTY(BlueprintAssignable)
+		FUseItems	mUseItems;
 
 public:
 	void AddItemToQuickSlot(class UItemData* _itemData);
-	//void AddItemTo(UItemData* i){mListView.AddItem(i);}
+
 protected:
 	class UListView* mListView;
+	int32	mQuickSlotSize;
 };

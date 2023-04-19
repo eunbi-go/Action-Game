@@ -51,11 +51,11 @@ public:
 public:
 	void EquipWeaponToHand();
 	void SetWeaponTrailOnOff(bool _value);
-	void ClickDestination();
 
 	UFUNCTION()
 	void AddItem(class AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	
+	void UseItem(EITEM_ID _id);
 
 
 	void RandomItem();
@@ -72,8 +72,9 @@ public:
 	void SetISEnableSprint(bool _value) { isSprint = _value; }
 	
 	void SetCoin(int32 _value);
-
 	void SetItemId(EITEM_ID _id) { mItemId = _id; }
+
+
 public:
 	float GetTeleportGaueTime() { return mTeleportGauge; }
 	int GetSprintCount() { return mSprintCount; }
@@ -103,6 +104,11 @@ public:
 	void Skill3Key();
 	void Skill4Key();
 	void InventoryOnOffKey();
+	void Item1Key();
+	void Item2Key();
+	void Item3Key();
+	void Item4Key();
+	void Item5Key();
 
 
 

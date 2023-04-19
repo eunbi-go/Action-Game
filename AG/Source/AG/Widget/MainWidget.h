@@ -33,6 +33,8 @@ public:
 	
 	void UpdateBossHp(float _hp, float _maxHp);
 
+	UFUNCTION()
+	void UseItem(EITEM_ID id, class APlayerCharacter* userCharacter);
 
 
 public:
