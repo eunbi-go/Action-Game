@@ -27,4 +27,5 @@ public:
 private:
 	class UImage* mIconImage;
 	class UTextBlock* mCountTxt;
+	class UTextBlock* mIndexTxt;
 };

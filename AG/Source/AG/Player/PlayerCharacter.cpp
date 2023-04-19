@@ -444,6 +444,8 @@ void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hi
 		collisionObject->Destroy();
 		return;
 	}
+	else if (mItemId == EITEM_ID::END)
+		RandomItem();
 
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
@@ -454,9 +456,10 @@ void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hi
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
 	UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
 
-	RandomItem();
 
 	InveotyrWidget->AddItemByKey(mItemId);
+
+	mItemId = EITEM_ID::END;
 
 	collisionObject->Destroy();
 }

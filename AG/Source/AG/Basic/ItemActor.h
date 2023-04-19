@@ -32,6 +32,7 @@ public:
 
 public:
 	void SetStaticMesh(const FString& _path);
+	void SetItemId(EITEM_ID _id) { mItemId = _id; }
 
 	UPROPERTY(BlueprintAssignable)
 		FOnHited	mOnHitt;
@@ -46,4 +47,6 @@ protected:
 
 	UPROPERTY()
 	FTimerHandle mTimerHandle;
+
+	EITEM_ID	mItemId;
 };

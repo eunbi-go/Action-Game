@@ -67,5 +67,19 @@ void UItemQuickSlot::AddItemToQuickSlot(UItemData* _itemData)
 	item->SetItemCount(_itemData->GetItemCount());
 	item->SetItemId(_itemData->GetItemId());
 
+	if (mListView->GetNumItems() == 0)
+		item->SetItemIndex(1);
+	else if (mListView->GetNumItems() == 1)
+		item->SetItemIndex(2);
+	else if (mListView->GetNumItems() == 2)
+		item->SetItemIndex(3);
+	else if (mListView->GetNumItems() == 3)
+		item->SetItemIndex(4);
+	else if (mListView->GetNumItems() == 4)
+		item->SetItemIndex(5);
+	else
+		return;
+
+
 	mListView->AddItem(item);
 }

@@ -25,6 +25,8 @@ AItemActor::AItemActor()
 	SetRootComponent(mBox);
 
 	mMesh->SetupAttachment(mBox);
+
+	mItemId = EITEM_ID::END;
 }
 
 void AItemActor::BeginPlay()
@@ -50,7 +52,10 @@ void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		return;
 
 	if (Cast<APlayerCharacter>(OtherActor))
+	{
+		Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
 		mOnHitt.Broadcast(this, Hit, OtherActor);
+	}
 }
 
 void AItemActor::SetStaticMesh(const FString& _path)

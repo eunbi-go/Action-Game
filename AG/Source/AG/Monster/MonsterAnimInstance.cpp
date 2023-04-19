@@ -64,8 +64,9 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
 		particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
 		particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+		particle->SetItemId(EITEM_ID::COIN);
+		//Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::COIN);
 		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
-		Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::COIN);
 	}
 
 	// ·£´ý ¾ÆÀÌÅÛ.
@@ -89,6 +90,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
 		particle->GetMesh()->SetRelativeScale3D(FVector(7.f));
 		particle->GetBoxComponent()->SetBoxExtent(FVector(35.0f));
+		particle->SetItemId(EITEM_ID::END);
 		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
 	}
 
