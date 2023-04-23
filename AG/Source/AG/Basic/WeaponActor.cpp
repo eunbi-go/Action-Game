@@ -19,6 +19,8 @@ AWeaponActor::AWeaponActor()
 	mMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mBox->SetBoxExtent(FVector(10.f, 10.f, 100.f));
+
+	mBox->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 }
 
 void AWeaponActor::BeginPlay()

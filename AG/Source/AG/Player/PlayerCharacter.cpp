@@ -16,6 +16,8 @@
 #include "../Manager/InventoryManager.h"
 #include "../Widget/InventoryWidget.h"
 #include "../Widget/ItemQuickSlot.h"
+#include "../AGSaveGame.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -64,6 +66,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	// 데미지 수신 가능.
 	SetCanBeDamaged(true);
@@ -144,44 +147,94 @@ void APlayerCharacter::BeginPlay()
 
 
 
-
 	//---------------------------
 	// Data Table 을 활용해 PlayerInfo 세팅.
 	//---------------------------
-	UAGGameInstance* gameInst =
-		GetWorld()->GetGameInstance<UAGGameInstance>();
+	UAGGameInstance* gameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
 
+	FString FullPath = FPaths::ProjectSavedDir() + TEXT("SaveGames/Save.txt");
+
+	TSharedPtr<FArchive>	Reader = MakeShareable(IFileManager::Get().CreateFileReader(*FullPath));
 	const FPlayerTableInfo* info = gameInst->FindPlayerTable(mPlayerTableRowName);
 
-	if (info)
+	if (Reader.IsValid())
 	{
-		mInfo.name = info->name;
-		mInfo.attackPoint = info->attackPoint;
-		mInfo.defensePoint = info->defensePoint;
-		mInfo.hp = info->hp;
-		mInfo.maxHp = info->maxHp;
-		mInfo.mp = info->mp;
-		mInfo.maxMp = info->maxMp;
-		mInfo.level = info->level;
-		mInfo.exp = info->exp;
-		mInfo.gold = info->gold;
-		mInfo.movingWalkSpeed = info->movingWalkSpeed;
-		mInfo.movingRunSpeed = info->movingRunSpeed;
-		mInfo.movingDashSpeed = info->movingDashSpeed;
-		mInfo.attackDistance = info->attackDistance;
+		*Reader.Get() << mStat->GetInfo().name;
+		*Reader.Get() << mStat->GetInfo().attackPoint;
+		*Reader.Get() << mStat->GetInfo().defensePoint;
+		*Reader.Get() << mStat->GetInfo().hp;
+		*Reader.Get() << mStat->GetInfo().maxHp;
+		*Reader.Get() << mStat->GetInfo().mp;
+		*Reader.Get() << mStat->GetInfo().maxMp;
+		*Reader.Get() << mStat->GetInfo().level;
+		*Reader.Get() << mStat->GetInfo().exp;
+		*Reader.Get() << mStat->GetInfo().gold;
+		*Reader.Get() << mStat->GetInfo().movingWalkSpeed;
+		*Reader.Get() << mStat->GetInfo().movingRunSpeed;
+		*Reader.Get() << mStat->GetInfo().movingDashSpeed;
+		*Reader.Get() << mStat->GetInfo().attackDistance;
 
-		GetCharacterMovement()->MaxWalkSpeed = mInfo.movingWalkSpeed;
-
-		GetMesh()->SetSkeletalMesh(info->mesh);
-		GetMesh()->SetAnimInstanceClass(info->playerAnimClass);
+		mStat->SetHp(mStat->GetInfo().hp);
+		mStat->SetMp(mStat->GetInfo().mp);
 	}
-	
-	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	
+	else
+	{
 
+		if (info)
+		{
+			mStat->GetInfo().name = info->name;
+			mStat->GetInfo().attackPoint = info->attackPoint;
+			mStat->GetInfo().defensePoint = info->defensePoint;
+			mStat->GetInfo().hp = info->hp;
+			mStat->GetInfo().maxHp = info->maxHp;
+			mStat->GetInfo().mp = info->mp;
+			mStat->GetInfo().maxMp = info->maxMp;
+			mStat->GetInfo().level = info->level;
+			mStat->GetInfo().exp = info->exp;
+			mStat->GetInfo().gold = info->gold;
+			mStat->GetInfo().movingWalkSpeed = info->movingWalkSpeed;
+			mStat->GetInfo().movingRunSpeed = info->movingRunSpeed;
+			mStat->GetInfo().movingDashSpeed = info->movingDashSpeed;
+			mStat->GetInfo().attackDistance = info->attackDistance;
+		}
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = mInfo.movingWalkSpeed;
+
+	GetMesh()->SetSkeletalMesh(info->mesh);
+	GetMesh()->SetAnimInstanceClass(info->playerAnimClass);
+
+	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
+
 	MainHUD->SetCharacterStat(mStat);
+}
+
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	LOG(TEXT("EndPlay"));
+
+	switch (EndPlayReason)
+	{
+	case EEndPlayReason::Destroyed:
+		LOG(TEXT("Destroyed"));
+		break;
+	case EEndPlayReason::LevelTransition:
+		LOG(TEXT("Level Transition"));
+		break;
+	case EEndPlayReason::EndPlayInEditor:
+		LOG(TEXT("EndPlayInEditor"));
+		break;
+	case EEndPlayReason::RemovedFromWorld:
+		LOG(TEXT("RemovedFromWorld"));
+		break;
+	case EEndPlayReason::Quit:
+		LOG(TEXT("Quit"));
+		break;
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -335,7 +388,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 			FVector direction = targetPosition - position;
 
 			direction.Z = 0.f;
-			direction.Normalize();
+			direction.GetSafeNormal2D();
 
 			float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
 			float degree = UKismetMathLibrary::DegAcos(innerProduct);
@@ -343,11 +396,14 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 			FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
 			float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
 
+
+
 			float angle = sign * degree;
+
+
 			FString angleString = TEXT("");
 
-			// 오른쪽.
-			if (angle >= 0.f)
+			if (sign >= 0.f)
 			{
 				if (degree >= 50.f && angle <= 130.f)
 					angleString = TEXT("Right");
@@ -357,8 +413,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 					angleString = TEXT("Back");
 			}
 
-			// 왼쪽
-			else if (angle < 0.f)
+			else if (sign < 0.f)
 			{
 				if (degree <= -50.f && angle >= -130.f)
 					angleString = TEXT("Left");

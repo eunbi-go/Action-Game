@@ -18,7 +18,6 @@ public:
 	UInventoryManager();
 	~UInventoryManager();
 
-
 public:
 	static UInventoryManager* GetInst(UWorld* _World);
 

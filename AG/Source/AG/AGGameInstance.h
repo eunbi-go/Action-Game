@@ -33,8 +33,6 @@ public:
 	const FItemDataTable* FindItemInfoTable(const FName& _name);
 
 
-
-
 private:
 	UDataTable* mPlayerInfoTable;
 	UDataTable* mMonsterInfoTable;

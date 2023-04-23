@@ -71,6 +71,7 @@ public:
 	
 public:
 	void SetMonsterMotionType(MONSTER_MOTION _motion);
+	void SetIsSkillEnd(bool _value) { mIsSkillEnd = _value; }
 
 public:
 	MONSTER_MOTION GetMonsterMotionType() { return mMonsterMotionType; }

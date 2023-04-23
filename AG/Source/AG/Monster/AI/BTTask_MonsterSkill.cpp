@@ -162,7 +162,19 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 
 			const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
-			monsterAnimInst->SetMonsterMotionType(skillInfo->animType);
+			if (skillInfo != nullptr)
+			{
+				monsterAnimInst->SetMonsterMotionType(skillInfo->animType);
+				monsterAnimInst->SetIsSkillEnd(false);
+			}
+			else
+			{
+				controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+				FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+			}
+
+			
 		}
 
 	}

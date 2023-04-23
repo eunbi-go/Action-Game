@@ -11,7 +11,7 @@ class AG_API ACollisionObject : public AActor
 {
 	GENERATED_BODY()
 	
-		DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHited, ACollisionObject*, niagara, const FHitResult&, Hit, AActor*, hitActor);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHited, ACollisionObject*, collisionObject, const FHitResult&, Hit, AActor*, hitActor);
 
 public:	
 	ACollisionObject();
@@ -23,10 +23,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(BlueprintAssignable)
-		FOnHited	mOnHitt;
+	FOnHited	mOnHit;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -38,3 +38,7 @@ protected:
 	bool	mIsEnd;
 	float	mDeadTime;
 };
+
+
+
+

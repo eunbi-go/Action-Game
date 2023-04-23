@@ -14,8 +14,9 @@ UAGGameInstance::UAGGameInstance()
 
 	static ConstructorHelpers::FObjectFinder<UDataTable>	playerTable(TEXT("DataTable'/Game/Blueprints/DataTable/PlayerInfoTable.PlayerInfoTable'"));
 	if (playerTable.Succeeded())
+	{
 		mPlayerInfoTable = playerTable.Object;
-
+	}
 
 	static ConstructorHelpers::FObjectFinder<UDataTable>	monsterTable(TEXT("DataTable'/Game/Blueprints/DataTable/MonsterInfoTable.MonsterInfoTable'"));
 	if (monsterTable.Succeeded())

@@ -44,34 +44,33 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 	int32 randomValue = FMath::RandRange(1, 2);
 
 	// 코인.
-	//if (randomValue == 1)
-	//{
-	//	FActorSpawnParameters	params;
-	//	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	if (randomValue == 1)
+	{
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	//	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
+		AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
 
-	//	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+		ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
-	//	if (!IsValid(target))
-	//		return;
+		if (!IsValid(target))
+			return;
 
-	//	AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
-	//		position,
-	//		rotation,
-	//		params);
+		AItemActor* particle = GetWorld()->SpawnActor<AItemActor>(
+			position,
+			rotation,
+			params);
 
-	//	particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
-	//	particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
-	//	particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
-	//	particle->SetItemId(EITEM_ID::COIN);
-	//	//Cast<APlayerCharacter>(target)->SetItemId(EITEM_ID::COIN);
-	//	particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
-	//}
+		particle->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
+		particle->GetMesh()->SetRelativeScale3D(FVector(10.f));
+		particle->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+		particle->SetItemId(EITEM_ID::COIN);
+		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
+	}
 
-	//// 랜덤 아이템.
-	//else if (randomValue == 2)
-	//{
+	// 랜덤 아이템.
+	else if (randomValue == 2)
+	{
 		FActorSpawnParameters	params;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -92,7 +91,7 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 		particle->GetBoxComponent()->SetBoxExtent(FVector(35.0f));
 		particle->SetItemId(EITEM_ID::END);
 		particle->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
-	//}
+	}
 
 
 	// 몬스터 삭제.
@@ -205,7 +204,7 @@ void UMonsterAnimInstance::Hit()
 
 	if (!Montage_IsPlaying(mHitMontageArray[mHitMontageIndex]))
 	{
-		//PrintViewport(10.f, FColor::Purple, TEXT("hitttttttt"));
+		PrintViewport(10.f, FColor::Purple, TEXT("hitttttttt"));
 		Montage_SetPosition(mHitMontageArray[mHitMontageIndex], 0.f);
 		Montage_Play(mHitMontageArray[mHitMontageIndex]);
 	}

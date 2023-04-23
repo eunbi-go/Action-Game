@@ -250,10 +250,13 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
 
-	UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
-	if (IsValid(HPWidget))
+	if (IsValid(mWidgetComopnent))
 	{
-		HPWidget->SetTargetRatio((float)mInfo.hp / mInfo.maxHp);
+		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+		if (IsValid(HPWidget))
+		{
+			HPWidget->SetTargetRatio((float)mInfo.hp / mInfo.maxHp);
+		}
 	}
 
 	if (mInfo.hp <= 0)
@@ -379,7 +382,7 @@ void AMonster::UseSkill(float _deltaTime)
 			continue;
 
 
-		if (!mIsUsingSkill/* && distance >= mSkillInfoArray[i].distance*/)
+		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
 		{
 			enableSkillIndexArray.Add(i);
 		}
@@ -606,8 +609,10 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 	if (mUsingSkillIndex == -1)
 	{
 		UseSkill(GetWorld()->GetDeltaSeconds());
-		//return nullptr;
 	}
+
+	if (mUsingSkillIndex == -1)
+		return nullptr;
 
 	return &mSkillInfoArray[mUsingSkillIndex];
 }

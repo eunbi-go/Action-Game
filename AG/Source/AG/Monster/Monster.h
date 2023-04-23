@@ -35,7 +35,8 @@ public:
 	virtual void Skill3();
 	virtual void Skill4();
 
-private:
+//private:
+public:
 	void UseSkill(float _deltaTime);
 	void CheckSkillCoolTime(float _deltaTime);
 	void SelectSkill(TArray<int32> _enableSkillIndexArray);

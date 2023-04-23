@@ -62,7 +62,7 @@ void AParticleNiagara::Check()
 		FRotator::ZeroRotator,
 		params);
 
-	collObjg->mOnHitt.AddDynamic(this, &AParticleNiagara::Temp);
+	collObjg->mOnHit.AddDynamic(this, &AParticleNiagara::Temp);
 }
 
 void AParticleNiagara::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)

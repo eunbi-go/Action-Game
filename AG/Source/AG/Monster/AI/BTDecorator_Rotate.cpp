@@ -44,11 +44,13 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-	FVector direction = targetPosition - monsterPosition;
+	FVector direction = (targetPosition - monsterPosition).GetSafeNormal2D();
 
-	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+	FRotator monsterRotation = monster->GetActorRotation();
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction).Rotator();
+	FRotator finalRotation = FMath::RInterpTo(monsterRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 2.f);
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
+	monster->SetActorRotation(finalRotation);
 
 
 

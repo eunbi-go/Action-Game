@@ -7,10 +7,7 @@
 #include "CharacterStatComponent.generated.h"
 
 
-DECLARE_MULTICAST_DELEGATE(FOnHpIsZero);
-DECLARE_MULTICAST_DELEGATE(FOnHpChange);
-DECLARE_MULTICAST_DELEGATE(FOnMpChange);
-DECLARE_MULTICAST_DELEGATE(FOnCoinChange);
+
 
 
 
@@ -19,11 +16,23 @@ class AG_API UCharacterStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_MULTICAST_DELEGATE(mHpDecrease);
+	DECLARE_MULTICAST_DELEGATE(FOnHpChange);
+	DECLARE_MULTICAST_DELEGATE(FOnMpChange);
+	DECLARE_MULTICAST_DELEGATE(FOnCoinChange);
+
 public:	
 	UCharacterStatComponent();
 
+	mHpDecrease	mHpZero;
+	FOnHpChange mHpChange;
+	FOnMpChange mMpChange;
+	FOnCoinChange	mCoinChange;
+
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
 public:	
 	virtual void InitializeComponent() override;
@@ -36,13 +45,10 @@ public:
 	void SetMp(float _mp);
 	void SetCoin(int _coin);
 
-	FOnHpIsZero	mHpDecrease;
-	FOnHpChange mHpChange;
-	FOnMpChange mMpChange;
-	FOnCoinChange	mCoinChange;
 
 public:
 	const FPlayerTableInfo& GetCurrentInfo() { return *mCurrentData; }
+	FPlayerTableInfo& GetInfo() { return *mCurrentData; }
 
 	float GetAttack() { return mCurrentData->attackPoint; }
 	float GetHpRatio();

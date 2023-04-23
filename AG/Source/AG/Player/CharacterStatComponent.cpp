@@ -6,7 +6,7 @@
 #include "../AGGameInstance.h"
 #include "../AGGameModeBase.h"
 #include "../Widget/MainWidget.h"
-
+#include "../AGSaveGame.h"
 
 UCharacterStatComponent::UCharacterStatComponent()
 {
@@ -21,7 +21,34 @@ void UCharacterStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void UCharacterStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	AAGGameModeBase* gameMode = GetWorld()->GetAuthGameMode<AAGGameModeBase>();
 	
+	FPlayerInfo playerInfo;
+	playerInfo.name = mCurrentData->name;
+	playerInfo.attackPoint = mCurrentData->attackPoint;
+	playerInfo.defensePoint = mCurrentData->defensePoint;
+	playerInfo.hp = mCurrentHp;
+	playerInfo.maxHp = mCurrentData->maxHp;
+	playerInfo.mp = mCurrentMp;
+	playerInfo.maxMp = mCurrentData->maxMp;
+	playerInfo.level = mCurrentData->level;
+	playerInfo.exp = mCurrentData->exp;
+	playerInfo.gold = mCurrentCoin;
+	playerInfo.movingWalkSpeed = mCurrentData->movingWalkSpeed;
+	playerInfo.movingRunSpeed = mCurrentData->movingRunSpeed;
+	playerInfo.movingDashSpeed = mCurrentData->movingDashSpeed;
+	playerInfo.attackDistance = mCurrentData->attackDistance;
+
+
+	gameMode->GetSaveGame()->mPlayerInfo = playerInfo;
+
+	PrintViewport(10.f, FColor::Blue, TEXT("UCharacterStatComponent::EndPlay"));
 }
 
 
@@ -43,6 +70,7 @@ void UCharacterStatComponent::InitializeComponent()
 
 		mCurrentCoin = mCurrentData->gold;
 	}
+
 }
 
 void UCharacterStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -53,14 +81,16 @@ void UCharacterStatComponent::TickComponent(float DeltaTime, ELevelTick TickType
 void UCharacterStatComponent::SetDamage(float _damage)
 {
 	mCurrentHp = FMath::Clamp<float>(mCurrentHp - _damage, 0.0f, mCurrentData->maxHp);
+	mCurrentData->hp = mCurrentHp;
 
 	if (mCurrentHp <= 0.0f)
-		mHpDecrease.Broadcast();
+		mHpZero.Broadcast();
 }
 
 void UCharacterStatComponent::SetHp(float _hp)
 {
 	mCurrentHp = _hp;
+	mCurrentData->hp = mCurrentHp;
 	mHpChange.Broadcast();
 
 	//PrintViewport(3.f, FColor::Red, FString::Printf(TEXT("mCurrentHp: %f, max: %f, ratio: %f"), mCurrentHp, mCurrentData->maxHp, GetHpRatio()));
@@ -68,19 +98,23 @@ void UCharacterStatComponent::SetHp(float _hp)
 	if (mCurrentHp < 0.f)
 	{
 		mCurrentHp = 0.f;
-		mHpDecrease.Broadcast();
+		mHpZero.Broadcast();
 	}
 }
 
 void UCharacterStatComponent::SetMp(float _mp)
 {
 	mCurrentMp = _mp;
+	mCurrentData->mp = mCurrentMp;
+
 	mMpChange.Broadcast();
 }
 
 void UCharacterStatComponent::SetCoin(int _coin)
 {
 	mCurrentCoin += _coin;
+
+	mCurrentData->gold = mCurrentCoin;
 
 	mCoinChange.Broadcast();
 }

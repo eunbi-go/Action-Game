@@ -45,8 +45,7 @@ public:
 public:
 	void SetHp(float _ratio);
 	void SetMp(float _ratio);
-
-
+	
 
 public:
 	class UInventoryWidget* GetInventoryWidget() { return mInventory; }

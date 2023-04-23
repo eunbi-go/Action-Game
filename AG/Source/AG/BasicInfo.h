@@ -480,6 +480,14 @@ public:
 
 
 
+UENUM(BlueprintType)
+enum class ETRIGGER_ID : uint8
+{
+	BOX, CAPSULE, SPHERE, END
+};
+
+
+
 DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);
 
 // 로그 사용을 위해 매크로 생성: 함수이름[줄번호]
@@ -494,9 +502,9 @@ DECLARE_LOG_CATEGORY_EXTERN(AG, Log, All);
 //		문자열 포인터 지정해야 함.
 //		-> FString 앞에 * 을 붙여서 역참조를 하면 FString이 가지고 있는 문자열 포인터를 얻어온다,
 //  __VA_ARGS__ : 가변인자를 얻어온다.
-#define	LOG(Format, ...)	UE_LOG(MYUE, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
+#define	LOG(Format, ...)	UE_LOG(AG, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
 
-#define	LOGSTRING(Str)		UE_LOG(MYUE, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *Str)
+#define	LOGSTRING(Str)		UE_LOG(AG, Warning, TEXT("%s : %s"), *LOG_CALLINFO, *Str)
 
 
 // 에디터의 뷰포트에 로그를 띄워준다.
