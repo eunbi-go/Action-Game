@@ -50,6 +50,9 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//---------------
 	if (!IsValid(target))
 	{
+		controller->StopMovement();
+
+
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 
 		return EBTNodeResult::Failed;
@@ -123,9 +126,8 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
-	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 
-	if (isSkillEnable)
+	if (controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable")))
 	{
 		monster->SetIsAttackEnd(false);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -138,13 +140,28 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	//---------------
 	if (monster->GetIsAttackEnd())
 	{
+		bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 
+		if (isSkillEnable)
+		{
+			monster->SetIsAttackEnd(false);
+			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+			return;
+		}
 
 		FVector monsterPosition = monster->GetActorLocation();
 		FVector targetPosition = target->GetActorLocation();
 
-		float distance = (monsterPosition - targetPosition).Size();
+		monsterPosition -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		targetPosition -= FVector(0.f, 0.f, target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
+		// 두 위치 사이의 거리를 구해준다.
+		float	distance = FVector::Distance(monsterPosition, targetPosition);
+
+		// 두 위치 사이의 거리에서 Capsule의 반경을 뺀다.
+		distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+		distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
 		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
 		if (distance >= monsterInfo.attackDistance)

@@ -342,6 +342,9 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 void AWarriorCharacter::NormalAttackCheck()
 {
 	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
+
+	mInfo.attackDistance = 100.0f;
+
 	FVector endPosition = startPosition + GetActorForwardVector() * mInfo.attackDistance;
 
 	FCollisionQueryParams	param(NAME_None, false, this);
@@ -358,13 +361,13 @@ void AWarriorCharacter::NormalAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 	
-	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-	//	GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
-	//	mInfo.attackDistance,
-	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-	//	DrawColor, false, 0.5f);
+	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+		GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+		mInfo.attackDistance,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+		DrawColor, false, 0.5f);
 
 #endif
 

@@ -289,6 +289,11 @@ void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
 	{
 		if (!Montage_IsPlaying(mSkillMontageArray[mCurSkillMontagIndex]))
 		{
+			AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+
+			//if (IsValid(monster))
+			//	monster->SetRotationToTarget();
+
 			Montage_SetPosition(mSkillMontageArray[mCurSkillMontagIndex], 0.f);
 			Montage_Play(mSkillMontageArray[mCurSkillMontagIndex]);
 		}

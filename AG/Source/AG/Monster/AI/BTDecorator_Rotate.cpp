@@ -44,15 +44,13 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
-	FVector direction = (targetPosition - monsterPosition).GetSafeNormal2D();
-
-	FRotator monsterRotation = monster->GetActorRotation();
-	FRotator targetRotation = FRotationMatrix::MakeFromX(direction).Rotator();
-	FRotator finalRotation = FMath::RInterpTo(monsterRotation, targetRotation, GetWorld()->GetDeltaSeconds(), 2.f);
-
-	monster->SetActorRotation(finalRotation);
+	FVector direction = targetPosition - monsterPosition;
 
 
+
+	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 2.f));
 
 
 	//---------------
@@ -72,5 +70,20 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 	
 	//PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)angle)));
 	
-	return (float)FMath::Abs((float)angle) > 10.f;
+	bool returnValue = false;
+
+	if (sign <= 0.f)
+		returnValue = true;
+	else
+		returnValue = false;
+
+	if (degree <= 10.f)
+		returnValue = true;
+	else
+		returnValue = false;
+
+	if (!returnValue)
+		controller->StopMovement();
+
+	return returnValue;
 }

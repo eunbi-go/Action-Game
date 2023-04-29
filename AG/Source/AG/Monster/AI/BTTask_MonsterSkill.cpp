@@ -58,13 +58,19 @@ EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 	}
 
 	// else.
+	FVector direction = target->GetActorLocation() - monster->GetActorLocation();
+	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+
+
 	const FMonsterSkillInfo* info = monster->GetSkillInfo();
 
 	if (info != nullptr)
 	{
 		monsterAnimInst->SetMonsterMotionType(info->animType);
-
 	}
+	
 
 
 
@@ -128,11 +134,11 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 
 
-	if (monsterAnimInst->GetIsSkillEnd())
+	if (monster->GetIsAttackEnd())
 	{
 		const FMonsterInfo& info = monster->GetMonsterInfo();
 		float capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		
+
 		FVector targetPosition = target->GetActorLocation();
 		targetPosition.Z -= capsuleHalfHeight;
 
@@ -160,24 +166,30 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
-
+			PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), monster->GetActorRotation().Roll, monster->GetActorRotation().Pitch, monster->GetActorRotation().Yaw));
 			const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
+
 			if (skillInfo != nullptr)
 			{
 				monsterAnimInst->SetMonsterMotionType(skillInfo->animType);
-				monsterAnimInst->SetIsSkillEnd(false);
 			}
-			else
-			{
-				controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
-				FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+			//else
+			//{
+			//	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+			//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
-			}
+			//}
+			//monsterAnimInst->SetIsSkillEnd(false);
 
-			
+
 		}
-
 	}
+	//else
+	//{
+	//	//controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	//}
+
 
 
 

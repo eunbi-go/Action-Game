@@ -143,12 +143,9 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
 	FVector direction = targetPosition - monsterPosition;
-
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-	FRotator src = monster->GetActorRotation().GetNormalized();
 
-	monster->SetActorRotation(FMath::RInterpTo(src, rot, DeltaSeconds, 10.f));
-	
+	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 2.f));
 
 	//---------------
 	// Target 과의 각도가 일정 각도 이하가 되면 Target을 향해 바라보는 회전을 끝냈다고 판단 / Task 종료.
@@ -168,10 +165,25 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	
 	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)angle)));
 	
-	if ((float)FMath::Abs((float)angle) < 10.f)
+	bool returnValue = false;
+
+	if (sign <= 0.f)
+		returnValue = true;
+	else
+		returnValue = false;
+
+	if (degree <= 10.f)
+		returnValue = true;
+	else
+		returnValue = false;
+
+	if (!returnValue)
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		controller->StopMovement();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		//return;
 	}
+		
 }
 
 void UBTTask_RotateToTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)

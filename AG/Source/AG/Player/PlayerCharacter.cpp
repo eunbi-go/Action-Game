@@ -352,10 +352,10 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (damage < 1)
 		damage = 1;
 
-
+	damage = 1;
 	//mInfo.hp -= damage;
 	
-	if (mInfo.hp - damage <= 0)
+	if (mStat->GetHp() - damage <= 0)
 	{
 		// 다시 충돌되지 않도록.
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -374,7 +374,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
-		mStat->SetHp(mStat->GetHp() - damage);
+		//mStat->SetHp(mStat->GetHp() - damage);
 
 		//---------------------
 		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
@@ -382,7 +382,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 		if (mAnimInst->GetPlayerMotion() != PLAYER_MOTION::NORMAL_ATTACK
 			&& mAnimInst->GetPlayerMotion() != PLAYER_MOTION::SKILL)
-		{
+		{ 
 			FVector targetPosition = DamageCauser->GetActorLocation();
 			FVector position = GetActorLocation();
 			FVector direction = targetPosition - position;

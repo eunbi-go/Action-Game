@@ -19,7 +19,7 @@
 AFengMao::AFengMao()
 {
 	GetCapsuleComponent()->SetCapsuleHalfHeight(110.f);
-	GetCapsuleComponent()->SetCapsuleRadius(34.f);
+	GetCapsuleComponent()->SetCapsuleRadius(50.f);
 
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -110.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));

@@ -30,6 +30,7 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 		return false;
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	
 	if (!IsValid(target))
 		return false;
 
@@ -44,7 +45,16 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
 	
-	float distance = (monsterPosition - targetPosition).Size();
+	monsterPosition -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	targetPosition -= FVector(0.f, 0.f, target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+	// 두 위치 사이의 거리를 구해준다.
+	float	distance = FVector::Distance(monsterPosition, targetPosition);
+
+	// 두 위치 사이의 거리에서 Capsule의 반경을 뺀다.
+	distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
 	float checkDistance = 0.f;
 
 	switch (mCheckType)

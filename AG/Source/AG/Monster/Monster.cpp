@@ -243,6 +243,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	if (damage < 1)
 		damage = 1;
 	
+	damage = 10;
 
 	mInfo.hp -= damage;
 
@@ -395,7 +396,10 @@ void AMonster::UseSkill(float _deltaTime)
 	int32 enableSkillCount = enableSkillIndexArray.Num();
 
 	if (enableSkillCount == 0)
+	{
+		aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
 		return;
+	}
 
 	int32 randomIndexValue = FMath::RandRange(0, enableSkillCount);
 	
@@ -424,6 +428,8 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 			
 			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
 			{
+				PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
+
 				mSkillInfoArray[i].duration = 0.0f;
 				mSkillInfoArray[i].isUse = false;
 				mSkillInfoArray[i].isCheckCoolTime = false;
@@ -435,6 +441,28 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 void AMonster::SelectSkill(TArray<int32> _enableSkillIndexArray)
 {
 
+}
+
+void AMonster::SetRotationToTarget()
+{
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+
+	if (IsValid(aiController))
+	{
+		AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+		PrintViewport(1.f, FColor::Blue, TEXT("isvalid before"));
+
+		//if (IsValid(target))
+		//{
+			FVector direction = mTarget->GetActorLocation() - GetActorLocation();
+			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+			PrintViewport(1.f, FColor::Red, TEXT("SetActor"));
+
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
+		//}
+	}
 }
 
 void AMonster::NormalAttackCheck()
@@ -456,7 +484,7 @@ void AMonster::ClearUsingSkill()
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
 
-	UseSkill(GetWorld()->GetDeltaSeconds()); 
+	//UseSkill(GetWorld()->GetDeltaSeconds()); 
 }
 
 void AMonster::ClearAllSkill()
@@ -476,7 +504,7 @@ void AMonster::ClearAllSkill()
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
 
-	UseSkill(GetWorld()->GetDeltaSeconds());
+	//UseSkill(GetWorld()->GetDeltaSeconds());
 }
 
 void AMonster::GoNextPatrolPoint()
