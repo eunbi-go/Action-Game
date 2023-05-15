@@ -30,6 +30,7 @@ public:
 	void UpdateHp();
 	void UpdateMp();
 	void UpdateCoin();
+	void InitCoin();
 	
 	void UpdateBossHp(float _hp, float _maxHp);
 
@@ -58,5 +59,6 @@ private:
 
 	class UInventoryWidget* mInventory;
 	class UItemQuickSlot*	mItemQuickSlot;
+public:
 	class UBossInfoWidget* mBossInfo;
 };

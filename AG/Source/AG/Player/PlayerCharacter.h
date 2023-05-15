@@ -61,6 +61,7 @@ public:
 
 	void RandomItem();
 
+	void SetGameModeGameOnly();
 
 
 public:
@@ -110,8 +111,9 @@ public:
 	void Item3Key();
 	void Item4Key();
 	void Item5Key();
-
-
+	void CheatHpKey();
+	void CheatMpKey();
+	void CheatKey();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

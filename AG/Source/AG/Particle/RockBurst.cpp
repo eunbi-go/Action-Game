@@ -8,6 +8,8 @@ ARockBurst::ARockBurst()
 	mParticle->SetCollisionProfileName(TEXT("MonsterAttack"));
 	mParticle->SetNotifyRigidBodyCollision(true);
 	mParticle->SetGenerateOverlapEvents(true);
+
+	mIsCollide = false;
 }
 
 void ARockBurst::BeginPlay()
@@ -21,8 +23,12 @@ void ARockBurst::BeginPlay()
 
 void ARockBurst::ParticleColiision(FName EventName, float EmitterTime, int32 ParticleTime, FVector Location, FVector Velocity, FVector Direction, FVector Normal, FName BoneName, UPhysicalMaterial* PhysMat)
 {
-	mOnHit.Broadcast();
-	PrintViewport(3.f, FColor::Red, TEXT("ARockBurst::ParticleColiisionss"));
+	if (!mIsCollide)
+	{
+		mIsCollide = true;
+		mOnHit.Broadcast();
+		PrintViewport(3.f, FColor::Red, TEXT("ARockBurst::ParticleColiisionss"));
+	}
 }
 
 void ARockBurst::ParticleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

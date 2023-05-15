@@ -86,17 +86,19 @@ void AKhaimera::NormalAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			//FActorSpawnParameters	SpawnParam;
+			FActorSpawnParameters	SpawnParam;
 			//SpawnParam.Template = mHitActor;
-			//SpawnParam.SpawnCollisionHandlingOverride =
-			//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnParam.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			//// Hit 파티클 렌더링.
-			//AParticleCascade* Particle =
-			//	GetWorld()->SpawnActor<AParticleCascade>(
-			//		collisionResult[i].ImpactPoint,
-			//		collisionResult[i].ImpactNormal.Rotation(),
-			//		SpawnParam);
+			// Hit 파티클 렌더링.
+			AParticleCascade* Particle =
+				GetWorld()->SpawnActor<AParticleCascade>(
+					collisionResult[i].ImpactPoint,
+					collisionResult[i].ImpactNormal.Rotation(),
+					SpawnParam);
+
+			Particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonKhaimera/FX/ParticleSystems/Abilities/Ultimate/FX/P_Ult_Impact_DMG.P_Ult_Impact_DMG'"));
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(

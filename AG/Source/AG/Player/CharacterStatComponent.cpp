@@ -39,7 +39,7 @@ void UCharacterStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	playerInfo.maxMp = mCurrentData->maxMp;
 	playerInfo.level = mCurrentData->level;
 	playerInfo.exp = mCurrentData->exp;
-	playerInfo.gold = mCurrentCoin;
+	playerInfo.gold = mCurrentData->gold;
 	playerInfo.movingWalkSpeed = mCurrentData->movingWalkSpeed;
 	playerInfo.movingRunSpeed = mCurrentData->movingRunSpeed;
 	playerInfo.movingDashSpeed = mCurrentData->movingDashSpeed;
@@ -55,7 +55,7 @@ void UCharacterStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UCharacterStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
-
+	AAGGameModeBase* gameMode = GetWorld()->GetAuthGameMode<AAGGameModeBase>();
 
 	UAGGameInstance* gmaeInstance = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (IsValid(gmaeInstance))
@@ -69,6 +69,7 @@ void UCharacterStatComponent::InitializeComponent()
 		SetMp(mCurrentData->maxMp);
 
 		mCurrentCoin = mCurrentData->gold;
+		SetCoin(mCurrentCoin);
 	}
 
 }
@@ -83,8 +84,8 @@ void UCharacterStatComponent::SetDamage(float _damage)
 	mCurrentHp = FMath::Clamp<float>(mCurrentHp - _damage, 0.0f, mCurrentData->maxHp);
 	mCurrentData->hp = mCurrentHp;
 
-	if (mCurrentHp <= 0.0f)
-		mHpZero.Broadcast();
+	//if (mCurrentHp <= 0.0f)
+	//	mHpZero.Broadcast();
 }
 
 void UCharacterStatComponent::SetHp(float _hp)
@@ -97,8 +98,8 @@ void UCharacterStatComponent::SetHp(float _hp)
 	
 	if (mCurrentHp < 0.f)
 	{
-		mCurrentHp = 0.f;
-		mHpZero.Broadcast();
+		//mCurrentHp = 0.f;
+		//mHpZero.Broadcast();
 	}
 }
 
@@ -110,9 +111,9 @@ void UCharacterStatComponent::SetMp(float _mp)
 	mMpChange.Broadcast();
 }
 
-void UCharacterStatComponent::SetCoin(int _coin)
+void UCharacterStatComponent::SetCoin(int32 _coin)
 {
-	mCurrentCoin += _coin;
+	mCurrentCoin = _coin;
 
 	mCurrentData->gold = mCurrentCoin;
 

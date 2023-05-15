@@ -50,32 +50,32 @@ void AAGPlayerController::Tick(float DeltaTime)
 
 void AAGPlayerController::SpawnDecalOnMousePick()
 {
-	FHitResult	result;
-	bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
-		false, result);
+	//FHitResult	result;
+	//bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
+	//	false, result);
 
-	if (Hit)
-	{
-			mPickActor = result.GetActor();
-			mMousePick->SetActorLocation(result.ImpactPoint);
+	//if (Hit)
+	//{
+	//		mPickActor = result.GetActor();
+	//		mMousePick->SetActorLocation(result.ImpactPoint);
 
-			FActorSpawnParameters	SpawnParam;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//		FActorSpawnParameters	SpawnParam;
+	//		SpawnParam.SpawnCollisionHandlingOverride =
+	//			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			mPickingPosition = mMousePick->GetActorLocation();
+	//		mPickingPosition = mMousePick->GetActorLocation();
 
-			ADecal* Decal =
-				GetWorld()->SpawnActor<ADecal>(
-					mPickingPosition,
-					FRotator(0.f, 0.f, 0.f),
-					SpawnParam);
+	//		ADecal* Decal =
+	//			GetWorld()->SpawnActor<ADecal>(
+	//				mPickingPosition,
+	//				FRotator(0.f, 0.f, 0.f),
+	//				SpawnParam);
 
-			Decal->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
-			Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle_2.MTMagicCircle_2'"));
-			Decal->SetLifeSpan(5.f);
-			Decal->SetDecalVisibility(true);
-	}
+	//		Decal->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
+	//		Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle_2.MTMagicCircle_2'"));
+	//		Decal->SetLifeSpan(5.f);
+	//		Decal->SetDecalVisibility(true);
+	//}
 }
 
 void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)

@@ -12,9 +12,11 @@
 #include "../Skill/SprintSkil.h"
 #include "../Skill/SlashSkill.h"
 #include "../Particle/ParticleNiagara.h"
+#include "../Particle/DemonSlash.h"
 #include "../Skill/ContinuousSkill.h"
 #include "../Skill/FresnelActor.h"
 #include "CharacterStatComponent.h"
+#include "../Monster/Monster.h"
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -119,6 +121,8 @@ void AWarriorCharacter::Skill4EndWithNiagara(ASkillActor* SkillActor, UNiagaraCo
 	PrintViewport(10.f, FColor::Yellow, TEXT("Skill4EndWithNiagara"));
 	SkillActor->Destroy();
 }
+
+
 
 
 void AWarriorCharacter::BeginPlay()
@@ -350,24 +354,66 @@ void AWarriorCharacter::NormalAttackCheck()
 	FCollisionQueryParams	param(NAME_None, false, this);
 
 	TArray<FHitResult>	collisionResult;
+	bool IsCollision = false;
 
-	bool IsCollision = GetWorld()->SweepMultiByChannel(
+	float capsuleRadius = 0.f;
+	float capsuletHeight = 0.f;
+	PrintViewport(2.f, FColor::Red, FString::Printf(TEXT("index: %d"), mAnimInst->GetNormalAttackIndex()));
+
+	switch (mAnimInst->GetPlayerMotion())
+	{
+	case PLAYER_MOTION::IDLE:
+		break;
+
+	case PLAYER_MOTION::MOVE:
+		break;
+
+	case PLAYER_MOTION::JUMP:
+		break;
+
+	case PLAYER_MOTION::NORMAL_ATTACK:
+		if (mAnimInst->GetNormalAttackIndex() == 0)
+		{
+			startPosition += GetActorForwardVector() * 20.f;
+			capsuleRadius = mInfo.attackDistance * 2.f;
+			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		}
+		else
+		{
+			capsuleRadius = mInfo.attackDistance;
+			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		}
+		break;
+
+	case PLAYER_MOTION::SKILL:
+		if (mAnimInst->GetCurSkillType() == SKILL_TYPE::SPRINT)
+		{
+			capsuleRadius = mInfo.attackDistance;
+			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f;
+		}
+		break;
+	}
+
+	
+
+
+	IsCollision = GetWorld()->SweepMultiByChannel(
 		collisionResult, startPosition,
 		endPosition, FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeCapsule(mInfo.attackDistance, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+		FCollisionShape::MakeCapsule(capsuleRadius, capsuletHeight),
 		param);
 
 
 #if ENABLE_DRAW_DEBUG
 	
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
-		mInfo.attackDistance,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	capsuletHeight / 2.f,
+	//	capsuleRadius,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 
@@ -378,24 +424,29 @@ void AWarriorCharacter::NormalAttackCheck()
 
 		for (int32 i = 0; i < Count; ++i)
 		{
-			FActorSpawnParameters	SpawnParam;
-			SpawnParam.Template = mHitActor;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			if (IsValid(Cast<ACharacter>(collisionResult[i].GetActor())))
+			{
+				FActorSpawnParameters	SpawnParam;
+				//SpawnParam.Template = mHitActor;
+				SpawnParam.SpawnCollisionHandlingOverride =
+					ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			// 나이아가라 렌더링.
-			AParticleNiagara* Particle =
-				GetWorld()->SpawnActor<AParticleNiagara>(
-					collisionResult[i].ImpactPoint,
-					collisionResult[i].ImpactNormal.Rotation(),
-					SpawnParam);
+				// 나이아가라 렌더링.
+				AParticleNiagara* Particle =
+					GetWorld()->SpawnActor<AParticleNiagara>(
+						collisionResult[i].ImpactPoint,
+						collisionResult[i].ImpactNormal.Rotation(),
+						SpawnParam);
 
-			// 데미지 계산.
-			collisionResult[i].GetActor()->TakeDamage(
-				(float)mStat->GetAttack(),
-				FDamageEvent(),
-				GetController(),
-				this);
+				Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
+
+				// 데미지 계산.
+				collisionResult[i].GetActor()->TakeDamage(
+					(float)mStat->GetAttack(),
+					FDamageEvent(),
+					GetController(),
+					this);
+			}
 		}
 	}
 
@@ -448,7 +499,7 @@ void AWarriorCharacter::SprintAttackCheck()
 		for (int32 i = 0; i < Count; ++i)
 		{
 			FActorSpawnParameters	SpawnParam;
-			SpawnParam.Template = mHitActor;
+			//SpawnParam.Template = mHitActor;
 			SpawnParam.SpawnCollisionHandlingOverride =
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -458,6 +509,8 @@ void AWarriorCharacter::SprintAttackCheck()
 					collisionResult[i].ImpactPoint,
 					collisionResult[i].ImpactNormal.Rotation(),
 					SpawnParam);
+
+			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -506,7 +559,7 @@ void AWarriorCharacter::SprintLastAttackCheck()
 		for (int32 i = 0; i < Count; ++i)
 		{
 			FActorSpawnParameters	SpawnParam;
-			SpawnParam.Template = mHitActor;
+			//SpawnParam.Template = mHitActor;
 			SpawnParam.SpawnCollisionHandlingOverride =
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -516,6 +569,8 @@ void AWarriorCharacter::SprintLastAttackCheck()
 					collisionResult[i].ImpactPoint,
 					collisionResult[i].ImpactNormal.Rotation(),
 					SpawnParam);
+
+			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -564,9 +619,10 @@ void AWarriorCharacter::SlashAttackCheck()
 		for (int32 i = 0; i < Count; ++i)
 		{
 			FActorSpawnParameters	SpawnParam;
-			SpawnParam.Template = mHitActor;
+			//SpawnParam.Template = mHitActor;
 			SpawnParam.SpawnCollisionHandlingOverride =
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 
 			// 나이아가라 렌더링.
 			AParticleNiagara* Particle =
@@ -574,6 +630,8 @@ void AWarriorCharacter::SlashAttackCheck()
 					collisionResult[i].ImpactPoint,
 					collisionResult[i].ImpactNormal.Rotation(),
 					SpawnParam);
+
+			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -679,7 +737,7 @@ void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 		{
 			//SpawnSkill(_skillType, i);
 			ApplySkill(_skillType);
-			mStat->SetMp(mStat->GetMp() - 10.f);
+			mStat->SetMp(mStat->GetMp() - 50.f);
 			break;
 		}
 	}
@@ -691,6 +749,9 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	float rand = (float)FMath::FRandRange((float)30.f, (float)50.f);
+
+	FActorSpawnParameters	SpawnParam2;
+	SpawnParam2.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	switch (_skillType)
 	{
@@ -707,13 +768,15 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	case SKILL_TYPE::SPRINT:
 	{
 		FVector pos = GetActorLocation();
-		pos.Z = 30.f;
 
-		ASprintSkil* Skill =
-			GetWorld()->SpawnActor<ASprintSkil>(
+		ADemonSlash* skill =
+			GetWorld()->SpawnActor<ADemonSlash>(
 				pos,
 				GetActorRotation(),
-				SpawnParam);
+				SpawnParam2);
+
+		//skill->mHitDelegate.AddDynamic(this, &AWarriorCharacter::SkillCollision);
+		
 	}
 	break;
 
@@ -734,7 +797,8 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	case SKILL_TYPE::SLASH:
 	{
 
-		FVector pos = GetActorLocation() + GetActorForwardVector() * 500.f;
+		FVector pos = GetActorLocation() + GetActorForwardVector() * 100.f;
+		pos.Z -= (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
 
 		ASlashSkill* Skill =
 			GetWorld()->SpawnActor<ASlashSkill>(
@@ -748,6 +812,8 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 
 void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
 {
+	Cast<AAGPlayerController>(GetController())->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
+
 	switch (_skillType)
 	{
 	case SKILL_TYPE::TELEPORT:
@@ -778,6 +844,8 @@ void AWarriorCharacter::ApplySkill(SKILL_TYPE _skillType)
 
 void AWarriorCharacter::EndSkill(SKILL_TYPE _skillType)
 {
+	Cast<AAGPlayerController>(GetController())->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
+
 	switch (_skillType)
 	{
 	case SKILL_TYPE::TELEPORT:

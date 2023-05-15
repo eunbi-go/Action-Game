@@ -127,19 +127,19 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 
 
-	if (controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable")))
-	{
-		monster->SetIsAttackEnd(false);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	//if (controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable")))
+	//{
+	//	monster->SetIsAttackEnd(false);
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
-		return;
-	}
+	//	return;
+	//}
 
 	//---------------
 	// Target 이 존재하면 공격이 끝났는지 체크한 후, 계속 공격할지 결정한다.
 	//---------------
-	if (monster->GetIsAttackEnd())
-	{
+	//if (monster->GetIsAttackEnd())
+	//{
 		bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 
 		if (isSkillEnable)
@@ -163,6 +163,8 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
 		distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
+		
+
 		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
 		if (distance >= monsterInfo.attackDistance)
 			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -170,17 +172,19 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// - 공격을 한다. 하지만 이때, 몬스터가 이동을 멈추고, Target 을 바라보도록 한다.
 		else
 		{
+			PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("attack start distance: %f"), distance));
+			
 			controller->StopMovement();
 
 			FVector direction = targetPosition - monsterPosition;
 			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
-		}
+			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 2.f));
 
-		//monsterAnimInst->Attack();
-		monster->SetIsAttackEnd(false);
-	}
+			monsterAnimInst->Attack();
+		}
+	//}
+
 }
 
 void UBTTask_Attack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)

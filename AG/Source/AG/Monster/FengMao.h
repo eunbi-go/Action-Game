@@ -29,7 +29,7 @@ public:
 	virtual void UnPossessed();
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
-
+	void NormalAttackCheck();
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -58,7 +58,7 @@ public:
 	UFUNCTION()
 	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	UFUNCTION()
-	void CameraShake(class AParticleNiagara* niagara);
+	void CameraShake(class AMeteo* niagara);
 	UFUNCTION()
 	void RespawnSkill4(ARockBurst* particle);
 

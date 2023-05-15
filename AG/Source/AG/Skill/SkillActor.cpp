@@ -26,7 +26,7 @@ ASkillActor::ASkillActor()
 
 
 	mSound = nullptr;
-	mRoot->bVisualizeComponent = true;
+	//mRoot->bVisualizeComponent = true;
 }
 
 // Called when the game starts or when spawned

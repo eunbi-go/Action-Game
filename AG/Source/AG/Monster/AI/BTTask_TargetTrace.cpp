@@ -62,7 +62,6 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	//---------------
 
 	//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
-	controller->MoveToActor(target);
 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
@@ -72,6 +71,7 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
 
+	controller->MoveToActor(target);
 
 	
 

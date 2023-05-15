@@ -26,3 +26,5 @@ public:
 public:
 	virtual void NormalAttackCheck();
 };
+
+

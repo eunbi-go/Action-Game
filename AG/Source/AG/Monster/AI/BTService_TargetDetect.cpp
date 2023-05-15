@@ -11,7 +11,7 @@ UBTService_TargetDetect::UBTService_TargetDetect()
 	NodeName = TEXT("TargetDetect");
 
 	// 0.5 초 간격으로 처리.
-	Interval = 0.5f;
+	Interval = 0.3f;
 
 	// 0.5 +- 0.1.
 	// 이 사이 랜덤한 시간을 정해서 그 시간에 한 번씩 Tick() 호출.
@@ -60,14 +60,14 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 						param);
 
 #if ENABLE_DRAW_DEBUG 
-	FColor drawColor = isCollision ? FColor::Red : FColor::Green;
+	//FColor drawColor = isCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugSphere(GetWorld(), monster->GetActorLocation(),	// 원의 중심.
-		monsterInfo.traceDistance,								// 거리.
-		20,														// 몇 조각으로 낼 것인가.
-		drawColor,												// 색상.
-		false,
-		0.3f);													// 0.3초동안 있다가 사라짐.
+	//DrawDebugSphere(GetWorld(), monster->GetActorLocation(),	// 원의 중심.
+	//	monsterInfo.traceDistance,								// 거리.
+	//	20,														// 몇 조각으로 낼 것인가.
+	//	drawColor,												// 색상.
+	//	false,
+	//	0.3f);													// 0.3초동안 있다가 사라짐.
 #endif
 
 
@@ -76,7 +76,10 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	// 충돌한 객체가 있다면 BB의 Target 으로 값을 넘겨준다.
 	//---------------
 	if (isCollision)
+	{
+		//controller->StopMovement();
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
+	}
 	
 	else
 	{

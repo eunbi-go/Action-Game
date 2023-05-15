@@ -22,8 +22,8 @@ public:
 	void SetHpRatio(float _ratio) { mHpTargetRatio = _ratio; }
 	void SetMp(float _ratio);
 	void SetMpRatio(float _ratio) { mMpTargetRatio = _ratio; }
-	void SetCoin(int _value) { mCoin += _value; }
-
+	void SetCoin(int32 _value) { mCoin = _value; }
+	void InitCoin(int32 _value) { mCoin = _value; }
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;

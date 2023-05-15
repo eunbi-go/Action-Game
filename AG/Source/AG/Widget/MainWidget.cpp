@@ -64,6 +64,11 @@ void UMainWidget::UpdateCoin()
 	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
 }
 
+void UMainWidget::InitCoin()
+{
+	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
+}
+
 void UMainWidget::UpdateBossHp(float _hp, float _maxHp)
 {
 	mBossInfo->SetHpRatio(_hp / _maxHp);

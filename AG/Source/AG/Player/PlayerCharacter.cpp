@@ -176,6 +176,7 @@ void APlayerCharacter::BeginPlay()
 
 		mStat->SetHp(mStat->GetInfo().hp);
 		mStat->SetMp(mStat->GetInfo().mp);
+		mStat->SetCoin(mStat->GetInfo().gold);
 	}
 	else
 	{
@@ -205,6 +206,8 @@ void APlayerCharacter::BeginPlay()
 	GetMesh()->SetAnimInstanceClass(info->playerAnimClass);
 
 	mAnimInst = Cast<UPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	
+
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
 
@@ -317,8 +320,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("NormalAttack"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::NormalAttackKey);
 
-	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill1"), EInputEvent::IE_Pressed,
-		this, &APlayerCharacter::Skill1Key);
+	//PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill1"), EInputEvent::IE_Pressed,
+	//	this, &APlayerCharacter::Skill1Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill2"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Skill2Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Skill3"), EInputEvent::IE_Pressed,
@@ -342,6 +345,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		this, &APlayerCharacter::Item4Key);
 	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Item5"), EInputEvent::IE_Pressed,
 		this, &APlayerCharacter::Item5Key);
+
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("CheatHp"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::CheatHpKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("CheatMp"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::CheatMpKey);
+	PlayerInputComponent->BindAction<APlayerCharacter>(TEXT("Cheat"), EInputEvent::IE_Pressed,
+		this, &APlayerCharacter::CheatKey);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -352,13 +362,19 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (damage < 1)
 		damage = 1;
 
-	damage = 1;
+	int32 randomValue = FMath::RandRange(5, 15);
+
+	damage = randomValue;
 	//mInfo.hp -= damage;
+	if (mStat->GetHp() - damage <= 0)
+	{
+		mStat->SetHp(10.f);
+	}
 	
 	if (mStat->GetHp() - damage <= 0)
 	{
 		// 다시 충돌되지 않도록.
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		//mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
 
@@ -374,7 +390,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 	else
 	{
-		//mStat->SetHp(mStat->GetHp() - damage);
+		mStat->SetHp(mStat->GetHp() - damage);
 
 		//---------------------
 		// 자기 자신과 DamageCauser 사이의 각도를 구해 각도에 따라 다른 Hit 애니메이션을 재생한다. 
@@ -496,7 +512,7 @@ void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hi
 {
 	if (mItemId == EITEM_ID::COIN)
 	{
-		SetCoin(10);
+		SetCoin(mStat->GetCurrentInfo().gold + 10);
 		collisionObject->Destroy();
 		return;
 	}
@@ -525,14 +541,14 @@ void APlayerCharacter::UseItem(EITEM_ID _id)
 	switch (_id)
 	{
 	case EITEM_ID::POTION_HP_MIN:
-		mStat->SetHp(mStat->GetCurrentInfo().hp + 10.f);
+		mStat->SetHp(mStat->GetCurrentInfo().hp + 50.f);
 		break;
 
 	case EITEM_ID::POTION_HP_MAX:
 		break;
 
 	case EITEM_ID::POTION_MP_MIN:
-		mStat->SetMp(mStat->GetCurrentInfo().mp + 10.f);
+		mStat->SetMp(mStat->GetCurrentInfo().mp + 50.f);
 		break;
 
 	case EITEM_ID::POTION_MP_MAX:
@@ -560,6 +576,13 @@ void APlayerCharacter::RandomItem()
 		PrintViewport(10.f, FColor::Blue, TEXT("mp min"));
 		mItemId = EITEM_ID::POTION_MP_MIN;
 	}
+}
+
+void APlayerCharacter::SetGameModeGameOnly()
+{
+	FInputModeGameOnly	Mode;
+	APlayerController* controller = GetWorld()->GetFirstPlayerController();
+	controller->SetInputMode(Mode);
 }
 
 void APlayerCharacter::SetCoin(int32 _value)
@@ -690,20 +713,22 @@ void APlayerCharacter::NormalAttackKey()
 {
 	if (!mIsEquipWeapon)
 		return;
-
+	
+	
 
 	AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
 
-	if (IsValid(playerController) && mAnimInst->GetCurSkillType() == SKILL_TYPE::TELEPORT
-		&& mAnimInst->GetPlayerMotion() == PLAYER_MOTION::SKILL)
-	{
-		playerController->SpawnDecalOnMousePick();
-		GaugeEnd();
-	}
-	else
-	{
+	playerController->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
+	//if (IsValid(playerController) && mAnimInst->GetCurSkillType() == SKILL_TYPE::TELEPORT
+	//	&& mAnimInst->GetPlayerMotion() == PLAYER_MOTION::SKILL)
+	//{
+	//	playerController->SpawnDecalOnMousePick();
+	//	GaugeEnd();
+	//}
+	//else
+	//{
 		mAnimInst->NormalAttack();
-	}
+	//}
 }	
 
 void APlayerCharacter::Skill1Key()
@@ -789,6 +814,23 @@ void APlayerCharacter::Item5Key()
 
 	UMainWidget* mainHUD = gameMode->GetMainWidget();
 	mainHUD->GetItemQuickSlot()->UseItem(5, this);
+}
+
+void APlayerCharacter::CheatHpKey()
+{
+	mStat->SetHp(mStat->GetInfo().maxHp);
+}
+
+void APlayerCharacter::CheatMpKey()
+{
+	mStat->SetMp(mStat->GetInfo().maxMp);
+}
+
+void APlayerCharacter::CheatKey()
+{
+	AAGPlayerController* playerController = Cast<AAGPlayerController>(GetController());
+
+	playerController->SetInputModeType(INPUT_MODE_TYPE::GAME_ONLY);
 }
 
 void APlayerCharacter::GaugeEnd()

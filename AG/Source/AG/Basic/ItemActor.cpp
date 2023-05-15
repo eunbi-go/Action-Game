@@ -33,7 +33,8 @@ void AItemActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	mBox->OnComponentHit.AddDynamic(this, &AItemActor::OnHit);
+	//mBox->OnComponentHit.AddDynamic(this, &AItemActor::OnHit);
+	mBox->OnComponentBeginOverlap.AddDynamic(this, &AItemActor::OnOverlap);
 
 	//mBox->SetBoxExtent(FVector(15.0f));
 }
@@ -54,6 +55,15 @@ void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	{
 		Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
 		mOnHitt.Broadcast(this, Hit, OtherActor);
+	}
+}
+
+void AItemActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Cast<APlayerCharacter>(OtherActor))
+	{
+		Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
+		mOnHitt.Broadcast(this, SweepResult, OtherActor);
 	}
 }
 

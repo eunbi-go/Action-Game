@@ -5,6 +5,7 @@
 
 #include "../MonsterAIController.h"
 #include "../Monster.h"
+#include "../MonsterAnimInstance.h"
 
 
 UBTDecorator_Rotate::UBTDecorator_Rotate()
@@ -46,12 +47,10 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 	FVector targetPosition = target->GetActorLocation();
 	FVector direction = targetPosition - monsterPosition;
 
-
-
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 2.f));
-
+	monster->GetMonsterAnimInst()->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 
 	//---------------
 	// 몬스터와 Target 사이의 각도를 구해 일정 각도 이상이라면 return true-> 자식 노드 실행.
@@ -72,18 +71,18 @@ bool UBTDecorator_Rotate::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 	
 	bool returnValue = false;
 
-	if (sign <= 0.f)
-		returnValue = true;
-	else
-		returnValue = false;
+	//if (sign <= 0.f)
+	//	returnValue = true;
+	//else
+	//	returnValue = false;
 
 	if (degree <= 10.f)
 		returnValue = true;
 	else
 		returnValue = false;
 
-	if (!returnValue)
-		controller->StopMovement();
+	//if (!returnValue)
+	//	controller->StopMovement();
 
 	return returnValue;
 }

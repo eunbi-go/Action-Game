@@ -22,6 +22,11 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	void SetCollisionBoxExtent(FVector extent)
+	{
+		mCollisionBox->SetBoxExtent(FVector(extent.X, extent.Y, extent.Z));
+	}
+
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

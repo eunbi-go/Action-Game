@@ -13,7 +13,7 @@ ATriggerActor::ATriggerActor()
 	SetRootComponent(mRoot);
 	mBox->SetupAttachment(mRoot);
 
-	mRoot->bVisualizeComponent = true;
+	//mRoot->bVisualizeComponent = true;
 
 	mTriggerId = ETRIGGER_ID::BOX;
 }

@@ -61,6 +61,8 @@ EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 	FVector direction = target->GetActorLocation() - monster->GetActorLocation();
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
+	PrintViewport(1.f, FColor::Red, TEXT("UBTTask_MonsterSkill::ExecuteTask()"));
+
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
 

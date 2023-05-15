@@ -93,17 +93,19 @@ void AWraith::NormalAttackCheck()
 	if (IsCollision)
 	{
 
-		//FActorSpawnParameters	SpawnParam;
+		FActorSpawnParameters	SpawnParam;
 		//SpawnParam.Template = mHitActor;
-		//SpawnParam.SpawnCollisionHandlingOverride =
-		//	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		//// Hit 파티클 렌더링.
-		//AParticleCascade* Particle =
-		//	GetWorld()->SpawnActor<AParticleCascade>(
-		//		result.ImpactPoint,
-		//		result.ImpactNormal.Rotation(),
-		//		SpawnParam);
+		// Hit 파티클 렌더링.
+		AParticleCascade* Particle =
+			GetWorld()->SpawnActor<AParticleCascade>(
+				result.ImpactPoint,
+				result.ImpactNormal.Rotation(),
+				SpawnParam);
+
+		Particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonWraith/FX/Particles/Abilities/ScopedShot/FX/P_Wraith_Sniper_HitCharacter.P_Wraith_Sniper_HitCharacter'"));
 
 		// 데미지 계산.
 		result.GetActor()->TakeDamage(

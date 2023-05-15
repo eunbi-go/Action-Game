@@ -7,12 +7,15 @@
 #include "MonsterSpawnPoint.h"
 #include "MonsterAnimInstance.h"
 #include "MonsterAIController.h"
+#include "../AGGameInstance.h"
 #include "../Widget/MonsterHpWidget.h"
 #include "../Player/CharacterStatComponent.h"
 #include "../Player/PlayerCharacter.h"
+#include "../AGGameModeBase.h"
+#include "../Widget/MainWidget.h"
 #include "Math/UnrealMathUtility.h"
 #include "../Basic/ItemActor.h"
-
+#include "FengMao.h"
 
 AMonster::AMonster()
 {
@@ -163,6 +166,10 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
+
+
 	//-----------------------------
 	// 순찰 상태일 경우, 이동양을 구한다.
 	//-----------------------------
@@ -190,9 +197,9 @@ void AMonster::Tick(float DeltaTime)
 	//-----------------------------
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
 
-	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	AActor* target = Cast<AActor>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 	if (IsValid(target))
-		mTarget = target;
+		mTarget = Cast<ACharacter>(target);
 
 
 	//-----------------------------
@@ -203,6 +210,27 @@ void AMonster::Tick(float DeltaTime)
 
 	if (!mIsUsingSkill)
 		UseSkill(DeltaTime);
+
+
+	if (!target)
+		return;
+
+	float	capsuleHalfHeight = 0.f;
+
+	if (Cast<ACharacter>(target))
+		capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	FVector targetPosition = target->GetActorLocation();
+	targetPosition.Z -= capsuleHalfHeight;
+
+	FVector position = GetActorLocation();
+	position.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	float distance = (float)FVector::Distance(targetPosition, position);
+	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+	PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -212,6 +240,8 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 // 이 함수는 MonsterAIController 보다 먼저 호출된다.
+
+
 void AMonster::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -243,7 +273,9 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	if (damage < 1)
 		damage = 1;
 	
-	damage = 10;
+	int32 randomValue = FMath::RandRange(10, 20);
+
+	damage = randomValue;
 
 	mInfo.hp -= damage;
 
@@ -257,6 +289,13 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		if (IsValid(HPWidget))
 		{
 			HPWidget->SetTargetRatio((float)mInfo.hp / mInfo.maxHp);
+		}
+
+		if (Cast<AFengMao>(this))
+		{
+			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			UMainWidget* MainHUD = GameMode->GetMainWidget();
+			MainHUD->BossInfoOnOff(false);
 		}
 	}
 
@@ -383,7 +422,7 @@ void AMonster::UseSkill(float _deltaTime)
 			continue;
 
 
-		if (!mIsUsingSkill && distance >= mSkillInfoArray[i].distance)
+		if (!mIsUsingSkill && distance <= mSkillInfoArray[i].distance)
 		{
 			enableSkillIndexArray.Add(i);
 		}

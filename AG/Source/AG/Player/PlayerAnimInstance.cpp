@@ -249,6 +249,7 @@ void UPlayerAnimInstance::AnimNotify_AttackEnd()
 	if (IsValid(playerCharacter))
 	{
 		playerCharacter->SetWeaponTrailOnOff(false);
+		playerCharacter->SetGameModeGameOnly();
 	}
 }
 
@@ -378,10 +379,11 @@ void UPlayerAnimInstance::AnimNotify_LastNormalAttack()
 	if (IsValid(playerCharacter))
 	{
 		FVector playerPosition = playerCharacter->GetActorLocation();
-		FVector position = FVector(playerPosition.X+70.f, playerPosition.Y, 40.f);
+		playerPosition.Z -= (playerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
+
 		AParticleCascade* Particle =
 			GetWorld()->SpawnActor<AParticleCascade>(
-				position,
+				playerPosition,
 				playerCharacter->GetActorRotation(),
 				SpawnParam);
 

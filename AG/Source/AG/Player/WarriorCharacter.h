@@ -28,7 +28,7 @@ public:
 	void Skill3EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
 	UFUNCTION()
-	void Skill4EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
+		void Skill4EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
 protected:
 	virtual void BeginPlay() override;

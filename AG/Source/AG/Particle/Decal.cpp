@@ -18,7 +18,7 @@ ADecal::ADecal()
 
 	mRoot->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 
-	mRoot->bVisualizeComponent = true;
+	//mRoot->bVisualizeComponent = true;
 }
 
 // Called when the game starts or when spawned

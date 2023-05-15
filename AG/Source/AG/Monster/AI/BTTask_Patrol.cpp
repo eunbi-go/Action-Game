@@ -48,7 +48,7 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	//---------------
 	// Target 이 있거나 몬스터가 순찰할 수 없는 상태이면 종료시킨다.
 	//---------------
-	if (IsValid(target) /*|| !monster->GetPatrolEnable()*/)
+	if (IsValid(target) || !monster->GetPatrolEnable())
 		return EBTNodeResult::Succeeded;
 
 	
@@ -66,14 +66,14 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	monster->SetIsPatrolEnable(true);
 
 
-	// 회전.
-	FVector monsterPosition = monster->GetActorLocation();
-	FVector targetPosition = monster->GetPatrolPosition();
-	FVector direction = targetPosition - monsterPosition;
+	//// 회전.
+	//FVector monsterPosition = monster->GetActorLocation();
+	//FVector targetPosition = monster->GetPatrolPosition();
+	//FVector direction = targetPosition - monsterPosition;
 
-	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+	//FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
+	//monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
 
 	// 이동.
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller,
@@ -137,7 +137,7 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
+	//monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
 
 
 	//---------------
@@ -167,7 +167,7 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 		Distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-		if (Distance <= 20.f)
+		if (Distance <= 10.f)
 		{
 			//PrintViewport(5.f, FColor::Red, FString::Printf(TEXT("%d to next"), monster->GetPatrolIndex()));
 
@@ -197,6 +197,7 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 		if (distance <= 10.f)
 		{
+			monster->SetIsPatrolEnable(false);
 			controller->StopMovement();
 			monster->GoNextPatrolPoint();
 

@@ -57,8 +57,6 @@ EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& Owne
 	const FMonsterInfo& info = monster->GetMonsterInfo();
 
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-	monster->GetCharacterMovement()->MaxWalkSpeed = info.movingRunSpeed;
-
 	controller->StopMovement();
 	mProgressTime = 0.f;
 

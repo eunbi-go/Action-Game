@@ -53,7 +53,11 @@ public:
 
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
-	void SetIsAttackEnd(bool _value) { PrintViewport(3.f, FColor::Red, TEXT("setAttack")); mIsAttackEnd = _value; }
+	void SetIsAttackEnd(bool _value) 
+	{ 
+		PrintViewport(3.f, FColor::Red, TEXT("setAttack")); 
+		mIsAttackEnd = _value; 
+	}
 	
 	void SetPatrolPointPosition(const TArray<FVector>& _array) { mPatrolPointPositionArray = _array; }
 	void SetPatrolDirection(PATROL_END_DIRECTION _direction) { mPatrolDirection = _direction; }

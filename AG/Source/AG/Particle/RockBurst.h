@@ -43,4 +43,6 @@ public:
 protected:
 	UPROPERTY()
 	FTimerHandle mTimerHandle;
+
+	bool	mIsCollide;
 };

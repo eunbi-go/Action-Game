@@ -43,7 +43,8 @@ public:
 	void SetDamage(float _damage);
 	void SetHp(float _hp);
 	void SetMp(float _mp);
-	void SetCoin(int _coin);
+	void SetCoin(int32 _coin);
+	void InitCoin(int32 _coin);
 
 
 public:
