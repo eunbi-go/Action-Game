@@ -21,6 +21,8 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 	mIsHit = false;
 	mIsSkillEnd = true;
 	mCurSkillMontagIndex = -1;
+
+	mItemCount = 0;
 }
 
 void UMonsterAnimInstance::NativeInitializeAnimation()
@@ -36,38 +38,45 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
+	// 아이템 생성.
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
-	// 아이템 생성.
+	mItemCount = FMath::RandRange(1, 5);
 
-	for (int32 i = 0; i < 3; ++i)
+	for (int32 i = 0; i < mItemCount; ++i)
 	{
-		int32 randomValue = FMath::RandRange(1, 2);
-		float randomX = FMath::RandRange(10.0f, 100.0f);
-		float randomY = FMath::RandRange(10.0f, 100.0f);
+		int32 randomItemValue = FMath::RandRange(1, 2);
+		float randomXPlus = FMath::RandRange(10.0f, 100.0f);
+		float randomYPlus = FMath::RandRange(10.0f, 100.0f);
+
+		float randomXMinus = FMath::RandRange(10.0f, 100.0f);
+		float randomYMinus = FMath::RandRange(10.0f, 100.0f);
+
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
+
+		ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+		if (!IsValid(target))
+			break;
+
+		position.X += randomXPlus;
+		position.Y += randomYPlus;
+
+		position.X -= randomXMinus;
+		position.Y -= randomYMinus;
+
+		AItemActor* item = GetWorld()->SpawnActor<AItemActor>(
+			position,
+			rotation,
+			params);
 
 		// 코인.
-		if (randomValue == 1)
+		if (randomItemValue == 1)
 		{
-			FActorSpawnParameters	params;
-			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-			AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
-
-			ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-			if (!IsValid(target))
-				return;
-
-			position.X += randomX;
-			position.Y += randomY;
-
-			AItemActor* item = GetWorld()->SpawnActor<AItemActor>(
-				position,
-				rotation,
-				params);
-
 			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
 			item->GetMesh()->SetRelativeScale3D(FVector(10.f));
 			item->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
@@ -76,26 +85,8 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 		}
 
 		// 랜덤 아이템.
-		else if (randomValue == 2)
+		else if (randomItemValue == 2)
 		{
-			FActorSpawnParameters	params;
-			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-			AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
-
-			ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-			if (!IsValid(target))
-				return;
-
-			position.X -= randomX;
-			position.Y -= randomY;
-
-			AItemActor* item = GetWorld()->SpawnActor<AItemActor>(
-				position,
-				rotation,
-				params);
-
 			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
 			item->GetMesh()->SetRelativeScale3D(FVector(7.f));
 			item->GetBoxComponent()->SetBoxExtent(FVector(35.0f));

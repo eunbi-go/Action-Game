@@ -18,7 +18,8 @@ void UMonsterHpWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 {
 	Super::NativeTick(_geo, _DeltaTime);
 
-	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _DeltaTime, 5.f));
+	if (mHpBar->Percent >= mHpTargetRatio)
+		mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _DeltaTime, 5.f));
 }
 
 void UMonsterHpWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)

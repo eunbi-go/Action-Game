@@ -48,6 +48,8 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	//---------------
 	// monsterInfo.traceDistance 안에 객체가 있는지 확인한다.
 	//---------------
+
+
 	TArray<FOverlapResult>	resultArray;
 	FCollisionQueryParams	param(NAME_None, false, monster);
 
@@ -70,11 +72,6 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	//	0.3f);													// 0.3초동안 있다가 사라짐.
 #endif
 
-
-
-	//---------------
-	// 충돌한 객체가 있다면 BB의 Target 으로 값을 넘겨준다.
-	//---------------
 	if (isCollision)
 	{
 		//controller->StopMovement();

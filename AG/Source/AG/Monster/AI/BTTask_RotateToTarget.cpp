@@ -61,17 +61,12 @@ EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	//---------------
 	// Target 이 있으면 Target 을 향해 회전한다.
 	//---------------
-	//monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 
-	FVector monsterPosition = monster->GetActorLocation();
-	FVector targetPosition = target->GetActorLocation();
-	FVector direction = targetPosition - monsterPosition;
+	FVector direction = target->GetActorLocation() - monster->GetActorLocation();
 
 	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
-
-
 
 	return EBTNodeResult::InProgress;
 }
@@ -150,6 +145,8 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	//---------------
 	// Target 과의 각도가 일정 각도 이하가 되면 Target을 향해 바라보는 회전을 끝냈다고 판단 / Task 종료.
 	//---------------
+
+
 	direction = targetPosition - monsterPosition;
 	direction.Z = 0.f;
 	direction.Normalize();
@@ -157,20 +154,7 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	float innerProduct = FVector::DotProduct(monster->GetActorForwardVector(), direction);
 	float degree = UKismetMathLibrary::DegAcos(innerProduct);
 
-	FVector outProduct = FVector::CrossProduct(monster->GetActorForwardVector(), direction);
-	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
-
-	float angle = sign * degree;
-
-	
-	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("angle: %f"), (float)FMath::Abs((float)angle)));
-	
 	bool returnValue = false;
-
-	//if (sign <= 0.f)
-	//	returnValue = true;
-	//else
-	//	returnValue = false;
 
 	if (degree <= 10.f)
 		returnValue = true;
@@ -179,10 +163,8 @@ void UBTTask_RotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	if (returnValue)
 	{
-		PrintViewport(1.f, FColor::Red, TEXT("end rot"));
 		controller->StopMovement();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		//return;
 	}
 		
 }

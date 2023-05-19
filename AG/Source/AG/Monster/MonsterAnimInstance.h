@@ -103,4 +103,6 @@ protected:
 	bool		mIsHit;
 	bool		mIsSkillEnd;
 	int32		mCurSkillMontagIndex;
+
+	int32		mItemCount;
 };

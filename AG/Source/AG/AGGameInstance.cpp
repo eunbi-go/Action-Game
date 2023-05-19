@@ -51,7 +51,6 @@ const FPlayerTableInfo* UAGGameInstance::FindPlayerTable(const FName& _name)
 	// 실패할 경우 출력할 메시지를 FString 타입으로 전달한다.
 	return mPlayerInfoTable->FindRow<FPlayerTableInfo>(_name, TEXT(""));
 }
-
 FPlayerTableInfo* UAGGameInstance::FindPlayerTables(const FName& _name)
 {
 	return mPlayerInfoTable->FindRow<FPlayerTableInfo>(_name, TEXT(""));

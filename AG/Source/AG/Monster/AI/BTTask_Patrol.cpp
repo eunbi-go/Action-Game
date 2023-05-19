@@ -158,6 +158,7 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 			controller,
 			monster->GetPatrolPosition());
 
+
 		FVector	MonsterLoc = monster->GetActorLocation();
 
 		MonsterLoc = MonsterLoc -
@@ -169,8 +170,6 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 		if (Distance <= 10.f)
 		{
-			//PrintViewport(5.f, FColor::Red, FString::Printf(TEXT("%d to next"), monster->GetPatrolIndex()));
-
 			monster->SetIsPatrolEnable(false);
 			controller->StopMovement();
 			monster->GoNextPatrolPoint();
@@ -198,7 +197,9 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		if (distance <= 10.f)
 		{
 			monster->SetIsPatrolEnable(false);
+
 			controller->StopMovement();
+
 			monster->GoNextPatrolPoint();
 
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

@@ -568,12 +568,10 @@ void APlayerCharacter::RandomItem()
 
 	if (randomValue == 1)
 	{
-		PrintViewport(10.f, FColor::Blue, TEXT("hp min"));
 		mItemId = EITEM_ID::POTION_HP_MIN;
 	}
 	else if (randomValue == 2)
 	{
-		PrintViewport(10.f, FColor::Blue, TEXT("mp min"));
 		mItemId = EITEM_ID::POTION_MP_MIN;
 	}
 }
@@ -690,7 +688,6 @@ void APlayerCharacter::JumpKey()
 		Jump();
 		bPressedJump = true;
 
-		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JUMP")));
 		mAnimInst->JumpStart();
 	}
 }

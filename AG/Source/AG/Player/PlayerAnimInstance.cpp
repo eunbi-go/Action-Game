@@ -132,7 +132,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			// Run 상태이고, mSpeedValue 값이 3.0f 이상이 되어 보간을 할 필요가 없을 경우.
 			else
 			{
-				mSpeedValue = movement->Velocity.Size() / (movement->MaxWalkSpeed / 3.f);
+				mSpeedValue = movement->Velocity.Size() / (movement->MaxWalkSpeed / 3.f);// MaxWalkSpeed: 1000
 			}
 		}
 
@@ -206,7 +206,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UPlayerAnimInstance::AnimNotify_JumpEnd()
 {
-	PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("AnimNotify_JumpEnd")));
 	mPlayerState = PLAYER_MOTION::IDLE;
 }
 
@@ -269,8 +268,6 @@ void UPlayerAnimInstance::AnimNotify_Reset()
 void UPlayerAnimInstance::AnimNotify_SkillEnd()
 {
 	
-	PrintViewport(1.f, FColor::Orange, TEXT("AnimNotify_SkillEnd()"));
-
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 
 	if (IsValid(playerCharacter))
@@ -292,12 +289,10 @@ void UPlayerAnimInstance::AnimNotify_SkillEnd()
 		
 		++mSprintCount;
 		Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
-		PrintViewport(5.f, FColor::Red, FString::Printf(TEXT("sprintCount: %d"), mSprintCount));
 
 		// 스킬이 아예 끝났다> IDLE로 돌아감.
 		if (mSprintCount == 5)
 		{
-			PrintViewport(10.f, FColor::Black, TEXT("AnimNotify_SkillEnd() end"));
 			Cast<AWarriorCharacter>(playerCharacter)->FinishSprint();
 			
 			mSprintCount = 0;
@@ -424,19 +419,12 @@ void UPlayerAnimInstance::AnimNotify_TeleportEff()
 	}
 }
 
-void UPlayerAnimInstance::AnimNotify_ArriveSprintPoint()
-{
-	// 플레이어로부터 이동이 끝났는지 확인.
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-}
-
 void UPlayerAnimInstance::AnimNotify_ResetSpeed()
 {
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
 
 	if (IsValid(playerCharacter))
 	{
-		PrintViewport(10.f, FColor::Orange, TEXT("AnimNotify_ResetSpeed()"));
 		playerCharacter->GetCharacterMovement()->GravityScale = 5.f;
 		playerCharacter->GetCharacterMovement()->StopMovementImmediately();
 		Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.f);
@@ -460,38 +448,31 @@ void UPlayerAnimInstance::AnimNotify_EffectSpawn()
 
 	if (IsValid(playerCharacter))
 	{
-		playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
-		Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
-		Cast<AWarriorCharacter>(playerCharacter)->SprintLastAttackCheck();
+		if (mCurSkillType == SKILL_TYPE::SPRINT)
+		{
+			playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
+			Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
+			Cast<AWarriorCharacter>(playerCharacter)->SetIsSprintLast(true);
+			Cast<AWarriorCharacter>(playerCharacter)->NormalAttackCheck();
+		}
+
+		else if (mCurSkillType == SKILL_TYPE::CONTINUOUS)
+		{
+			Cast<AWarriorCharacter>(playerCharacter)->NormalAttackCheck();
+			playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
+		}
+
+		else if (mCurSkillType == SKILL_TYPE::SLASH)
+		{
+			playerCharacter->SpawnSkill(SKILL_TYPE::SLASH, mCurSkillPlayingIndex);
+		}
 	}
-}
-
-void UPlayerAnimInstance::AnimNotify_ContinuousEff()
-{
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
-	if (IsValid(playerCharacter))
-	{
-		Cast<AWarriorCharacter>(playerCharacter)->SprintAttackCheck();
-		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
-	}
-
-	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
 }
 
 void UPlayerAnimInstance::AnimNotify_SlowStop()
 {
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 0.8f);
-}
-
-void UPlayerAnimInstance::AnimNotify_SlashEff()
-{
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
-	if (IsValid(playerCharacter))
-	{
-		playerCharacter->SpawnSkill(SKILL_TYPE::SLASH, mCurSkillPlayingIndex);
-	}
 }
 
 void UPlayerAnimInstance::AnimNotify_SlashCS()
@@ -504,15 +485,6 @@ void UPlayerAnimInstance::AnimNotify_SlashCS()
 	}
 }
 
-void UPlayerAnimInstance::AnimNotify_ConEff()
-{
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
-	if (IsValid(playerCharacter))
-	{
-		playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
-	}
-}
 
 void UPlayerAnimInstance::AnimNotify_TarilOn()
 {
@@ -534,33 +506,11 @@ void UPlayerAnimInstance::AnimNotify_TarilOff()
 	}
 }
 
-void UPlayerAnimInstance::AnimNotify_NormalCS()
-{
-	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
-
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
-	if (IsValid(playerCharacter))
-	{
-		Cast<AWarriorCharacter>(playerCharacter)->SprintAttackCheck();
-	}
-}
-
 void UPlayerAnimInstance::AnimNotify_HitEnd()
 {
-	PrintViewport(1.f, FColor::Green, TEXT("hitend"));
 	mPlayerState = PLAYER_MOTION::IDLE;
 }
 
-void UPlayerAnimInstance::AnimNotify_SlashCheck()
-{
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-
-	if (IsValid(playerCharacter))
-	{
-		Cast<AWarriorCharacter>(playerCharacter)->SlashAttackCheck();
-	}
-}
 
 
 
@@ -628,7 +578,6 @@ void UPlayerAnimInstance::Evade(DIRECTION direction)
 
 void UPlayerAnimInstance::JumpStart()
 {
-	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JUMP")));
 	mPlayerState = PLAYER_MOTION::JUMP;
 	mIsLandStart = false;
 }

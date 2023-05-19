@@ -42,9 +42,9 @@ public:
 
 public:
 	virtual void NormalAttackCheck();
-	virtual void SprintAttackCheck();
-	void SprintLastAttackCheck();
-	void SlashAttackCheck();
+	//virtual void SprintAttackCheck();
+	//void SprintLastAttackCheck();
+	//void SlashAttackCheck();
 
 	virtual void Skill1();
 	virtual void Skill2();
@@ -69,6 +69,11 @@ public:
 	void StartSlashCameraShake();
 	void SpawnFresnel();
 	void ResetFresnel();
+
+	void SetIsSprintLast(bool _value)
+	{
+		mIsSprintLast = _value;
+	}
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
@@ -100,4 +105,7 @@ private:
 	
 	float	mFresnelCreateTime;
 	float	mFresnelCreateTimeEnd;
+
+	bool	mIsSprintLast;
+
 };

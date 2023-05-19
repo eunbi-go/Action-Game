@@ -77,7 +77,6 @@ void AFresnelActor::SetMesh(USkeletalMesh* _mesh)
 	if (mFresnelMaterial)
 	{
 		int32	count = mPoseableMesh->GetNumMaterials();
-		PrintViewport(10.f, FColor::White, FString::Printf(TEXT("count: %d"), count));
 
 		for (int32 i = 0; i < count; ++i)
 		{
@@ -85,7 +84,6 @@ void AFresnelActor::SetMesh(USkeletalMesh* _mesh)
 				mPoseableMesh->CreateDynamicMaterialInstance(i, mFresnelMaterial);
 			if (!IsValid(material))
 			{
-				PrintViewport(10.f, FColor::White, TEXT("No"));
 			}
 			mMaterialArray.Add(material);
 		}

@@ -114,12 +114,13 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	//---------------
 	// Target 이 없으면 patrolWaitTime 을 증가시키고, 시간이 다 됐으면 종료.
 	//---------------
+
+
 	monster->SetPatrolWaitTime(DeltaSeconds);
 
 	if (monster->GetPatrolWaitTime() >= mWaitTime)
 	{
 		monster->ClearPatrolWaitTime();
-		//PrintViewport(3.f, FColor::Yellow, TEXT("Wait Finish"));
 
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}

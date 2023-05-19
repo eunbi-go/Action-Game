@@ -93,9 +93,6 @@ public:
 		void AnimNotify_TeleportEff();
 
 	UFUNCTION()
-		void AnimNotify_ArriveSprintPoint();
-
-	UFUNCTION()
 		void AnimNotify_ResetSpeed();
 
 	UFUNCTION()
@@ -105,19 +102,10 @@ public:
 		void AnimNotify_EffectSpawn();
 
 	UFUNCTION()
-		void AnimNotify_ContinuousEff();
-
-	UFUNCTION()
 		void AnimNotify_SlowStop();
 
 	UFUNCTION()
-		void AnimNotify_SlashEff();
-
-	UFUNCTION()
 		void AnimNotify_SlashCS();
-
-	UFUNCTION()
-		void AnimNotify_ConEff();
 
 	UFUNCTION()
 		void AnimNotify_TarilOn();
@@ -126,13 +114,7 @@ public:
 		void AnimNotify_TarilOff();
 
 	UFUNCTION()
-		void AnimNotify_NormalCS();
-
-	UFUNCTION()
 		void AnimNotify_HitEnd();
-
-	UFUNCTION()
-		void AnimNotify_SlashCheck();
 
 
 public:

@@ -96,29 +96,27 @@ AWarriorCharacter::AWarriorCharacter()
 	mFresnelTimeEnd = 5.f;
 	mFresnelCreateTime = 0.f;
 	mFresnelCreateTimeEnd = 0.4f;
+
+	mIsSprintLast = false;
 }
 
 void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, UParticleSystemComponent* comp)
 {
-	PrintViewport(10.f, FColor::Yellow, TEXT("Skill1End"));
 	SkillActor->Destroy();
 }
 
 void AWarriorCharacter::Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp)
 {
-	PrintViewport(10.f, FColor::Yellow, TEXT("Skill2EndWithNiagara"));
 	SkillActor->Destroy();
 }
 
 void AWarriorCharacter::Skill3EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
 {
-	PrintViewport(10.f, FColor::Yellow, TEXT("Skill3EndWithNiagara"));
 	SkillActor->Destroy();
 }
 
 void AWarriorCharacter::Skill4EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
 {
-	PrintViewport(10.f, FColor::Yellow, TEXT("Skill4EndWithNiagara"));
 	SkillActor->Destroy();
 }
 
@@ -358,7 +356,6 @@ void AWarriorCharacter::NormalAttackCheck()
 
 	float capsuleRadius = 0.f;
 	float capsuletHeight = 0.f;
-	PrintViewport(2.f, FColor::Red, FString::Printf(TEXT("index: %d"), mAnimInst->GetNormalAttackIndex()));
 
 	switch (mAnimInst->GetPlayerMotion())
 	{
@@ -390,6 +387,31 @@ void AWarriorCharacter::NormalAttackCheck()
 		{
 			capsuleRadius = mInfo.attackDistance;
 			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f;
+
+			if (mIsSprintLast)
+			{
+				mIsSprintLast = false;
+				startPosition = GetActorLocation() - GetActorForwardVector() * 50.f;
+				endPosition = startPosition + GetActorForwardVector() * 200.f;
+				capsuleRadius = 280.0f;
+				capsuletHeight = 200.0f;
+			}
+		}
+
+		else if (mAnimInst->GetCurSkillType() == SKILL_TYPE::CONTINUOUS)
+		{
+			startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
+			endPosition = startPosition + GetActorForwardVector() * 100.f;
+			capsuleRadius = 100.0f;
+			capsuletHeight = 200.0f;
+		}
+
+		else if (mAnimInst->GetCurSkillType() == SKILL_TYPE::SLASH)
+		{
+			startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
+			endPosition = startPosition + GetActorForwardVector() * 300.f;
+			capsuleRadius = 400.0f;
+			capsuletHeight = 300.0f;
 		}
 		break;
 	}
@@ -407,13 +429,13 @@ void AWarriorCharacter::NormalAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 	
-	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-	//	capsuletHeight / 2.f,
-	//	capsuleRadius,
-	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-	//	DrawColor, false, 0.5f);
+	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+		capsuletHeight / 2.f,
+		capsuleRadius,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+		DrawColor, false, 0.5f);
 
 #endif
 
@@ -460,187 +482,6 @@ void AWarriorCharacter::NormalAttackCheck()
 	else
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
 	
-}
-
-void AWarriorCharacter::SprintAttackCheck()
-{
-	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
-	FVector endPosition = startPosition + GetActorForwardVector() * 100.f;
-
-	FCollisionQueryParams	param(NAME_None, false, this);
-
-	TArray<FHitResult>	collisionResult;
-
-	bool IsCollision = GetWorld()->SweepMultiByChannel(
-		collisionResult, startPosition,
-		endPosition, FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeCapsule(100.f, 200.f),
-		param);
-
-
-#if ENABLE_DRAW_DEBUG
-
-	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
-
-	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-	//	200.f,
-	//	100.f,
-	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-	//	DrawColor, false, 0.5f);
-
-#endif
-
-
-	if (IsCollision)
-	{
-		int32	Count = collisionResult.Num();
-
-		for (int32 i = 0; i < Count; ++i)
-		{
-			FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			// 나이아가라 렌더링.
-			AParticleNiagara* Particle =
-				GetWorld()->SpawnActor<AParticleNiagara>(
-					collisionResult[i].ImpactPoint,
-					collisionResult[i].ImpactNormal.Rotation(),
-					SpawnParam);
-
-			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
-
-			// 데미지 계산.
-			collisionResult[i].GetActor()->TakeDamage(
-				(float)mStat->GetAttack(),
-				FDamageEvent(),
-				GetController(),
-				this);
-		}
-	}
-}
-
-void AWarriorCharacter::SprintLastAttackCheck()
-{
-	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
-	FVector endPosition = startPosition + GetActorForwardVector() * 200.f;
-
-	FCollisionQueryParams	param(NAME_None, false, this);
-
-	TArray<FHitResult>	collisionResult;
-
-	bool IsCollision = GetWorld()->SweepMultiByChannel(
-		collisionResult, startPosition,
-		endPosition, FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeCapsule(200.f, 200.f),
-		param);
-
-
-#if ENABLE_DRAW_DEBUG
-
-	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
-
-	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-	//	200.f,
-	//	200.f,
-	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-	//	DrawColor, false, 0.5f);
-
-#endif
-
-
-	if (IsCollision)
-	{
-		int32	Count = collisionResult.Num();
-
-		for (int32 i = 0; i < Count; ++i)
-		{
-			FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			// 나이아가라 렌더링.
-			AParticleNiagara* Particle =
-				GetWorld()->SpawnActor<AParticleNiagara>(
-					collisionResult[i].ImpactPoint,
-					collisionResult[i].ImpactNormal.Rotation(),
-					SpawnParam);
-
-			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
-
-			// 데미지 계산.
-			collisionResult[i].GetActor()->TakeDamage(
-				(float)mStat->GetAttack(),
-				FDamageEvent(),
-				GetController(),
-				this);
-		}
-	}
-}
-
-void AWarriorCharacter::SlashAttackCheck()
-{
-	FVector startPosition = GetActorLocation() + GetActorForwardVector() * 10.f;
-	FVector endPosition = startPosition + GetActorForwardVector() * 300.f;
-
-	FCollisionQueryParams	param(NAME_None, false, this);
-
-	TArray<FHitResult>	collisionResult;
-
-	bool IsCollision = GetWorld()->SweepMultiByChannel(
-		collisionResult, startPosition,
-		endPosition, FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel4,
-		FCollisionShape::MakeCapsule(300.f, 300.f),
-		param);
-
-
-#if ENABLE_DRAW_DEBUG
-
-	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
-
-	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-	//	300.f,
-	//	300.f,
-	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-	//	DrawColor, false, 0.5f);
-
-#endif
-
-
-	if (IsCollision)
-	{
-		int32	Count = collisionResult.Num();
-
-		for (int32 i = 0; i < Count; ++i)
-		{
-			FActorSpawnParameters	SpawnParam;
-			//SpawnParam.Template = mHitActor;
-			SpawnParam.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-
-			// 나이아가라 렌더링.
-			AParticleNiagara* Particle =
-				GetWorld()->SpawnActor<AParticleNiagara>(
-					collisionResult[i].ImpactPoint,
-					collisionResult[i].ImpactNormal.Rotation(),
-					SpawnParam);
-
-			Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit_2.NS_BasicHit_2'"));
-
-			// 데미지 계산.
-			collisionResult[i].GetActor()->TakeDamage(
-				(float)mStat->GetAttack(),
-				FDamageEvent(),
-				GetController(),
-				this);
-		}
-	}
 }
 
 void AWarriorCharacter::Skill1()
@@ -1006,7 +847,6 @@ void AWarriorCharacter::NextSprint()
 	// 마지막 점프 공격.
 	if (mSprintCount == 5)
 	{
-		PrintViewport(10.f, FColor::Black, TEXT("NextSprint() last"));
 		mAnimInst->ReplaySprintMontage();
 	}
 
@@ -1017,7 +857,6 @@ void AWarriorCharacter::NextSprint()
 	// 스킬 끝.
 	else
 	{
-		PrintViewport(10.f, FColor::Black, TEXT("NextSprint() end"));
 		GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 		isSprint = false;
 		mSprintCount = 0;
@@ -1068,8 +907,6 @@ void AWarriorCharacter::SprintJumpStart()
 {
 	if (mAnimInst->GetCurSkillType() == SKILL_TYPE::SPRINT)
 	{
-		PrintViewport(1.f, FColor::Red, TEXT("Last"));
-
 		isSprint = true;
 		mSprintDirection = FVector(0.f, 0.f, 1.f);
 
