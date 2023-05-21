@@ -49,10 +49,7 @@ UPlayerAnimInstance::UPlayerAnimInstance()
 	if (cameraShake3.Succeeded())
 		mTel = cameraShake3.Class;
 
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack_C'"));
 
-	if (cameraShake.Succeeded())
-		mNormalCS = cameraShake.Class;
 
 	mSprintCount = 0;
 	mContinuousCount = 0;
@@ -449,24 +446,13 @@ void UPlayerAnimInstance::AnimNotify_EffectSpawn()
 	if (IsValid(playerCharacter))
 	{
 		if (mCurSkillType == SKILL_TYPE::SPRINT)
-		{
-			playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, 1);
-			Cast<AWarriorCharacter>(playerCharacter)->StartSlashCameraShake();
-			Cast<AWarriorCharacter>(playerCharacter)->SetIsSprintLast(true);
-			Cast<AWarriorCharacter>(playerCharacter)->NormalAttackCheck();
-		}
+			playerCharacter->SpawnSkill(SKILL_TYPE::SPRINT, mCurSkillPlayingIndex);
 
 		else if (mCurSkillType == SKILL_TYPE::CONTINUOUS)
-		{
-			Cast<AWarriorCharacter>(playerCharacter)->NormalAttackCheck();
 			playerCharacter->SpawnSkill(SKILL_TYPE::CONTINUOUS, mCurSkillPlayingIndex);
-			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalCS);
-		}
 
 		else if (mCurSkillType == SKILL_TYPE::SLASH)
-		{
 			playerCharacter->SpawnSkill(SKILL_TYPE::SLASH, mCurSkillPlayingIndex);
-		}
 	}
 }
 

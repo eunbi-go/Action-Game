@@ -61,7 +61,7 @@ EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	//---------------
 	// Target 이 있으면 Target 을 향해 회전한다.
 	//---------------
-
+	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 	FVector direction = target->GetActorLocation() - monster->GetActorLocation();
 
 	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();

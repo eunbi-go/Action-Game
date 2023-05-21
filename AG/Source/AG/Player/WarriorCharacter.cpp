@@ -57,6 +57,17 @@ AWarriorCharacter::AWarriorCharacter()
 		mNormalAttackShake = cameraShake.Class;
 
 
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake5(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack2.CS_PlayerNormalAttack2_C'"));
+
+	if (cameraShake5.Succeeded())
+		mNormalAttackShake2 = cameraShake5.Class;
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake4(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerSprintAttack.CS_PlayerSprintAttack'"));
+
+	if (cameraShake4.Succeeded())
+		mSprintAttackShake = cameraShake4.Class;
+
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake2(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Gontinuous.CS_Gontinuous_C'"));
 
 	if (cameraShake2.Succeeded())
@@ -183,8 +194,7 @@ void AWarriorCharacter::BeginPlay()
 		ASprintSkil::StaticClass());
 	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
 
-	//skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_ATTACK_3.NS_AOE_ATTACK_3'"));
-	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_AOE_Attack_1.NS_AOE_Attack_1'"));
+	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
 	skillActor2->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill2EndWithNiagara);
 	skillActor2->GetNiagara()->SetActive(true);
 	skillActor2->SetTarget(this);
@@ -377,6 +387,8 @@ void AWarriorCharacter::NormalAttackCheck()
 		}
 		else
 		{
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
+
 			capsuleRadius = mInfo.attackDistance;
 			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		}
@@ -387,9 +399,12 @@ void AWarriorCharacter::NormalAttackCheck()
 		{
 			capsuleRadius = mInfo.attackDistance;
 			capsuletHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f;
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mSprintAttackShake);
 
 			if (mIsSprintLast)
 			{
+				GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake2);
+
 				mIsSprintLast = false;
 				startPosition = GetActorLocation() - GetActorForwardVector() * 50.f;
 				endPosition = startPosition + GetActorForwardVector() * 200.f;
@@ -429,13 +444,13 @@ void AWarriorCharacter::NormalAttackCheck()
 
 #if ENABLE_DRAW_DEBUG
 	
-	FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
+	//FColor	DrawColor = IsCollision ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
-		capsuletHeight / 2.f,
-		capsuleRadius,
-		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
-		DrawColor, false, 0.5f);
+	//DrawDebugCapsule(GetWorld(), (startPosition + endPosition) / 2.f,
+	//	capsuletHeight / 2.f,
+	//	capsuleRadius,
+	//	FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+	//	DrawColor, false, 0.5f);
 
 #endif
 
@@ -449,7 +464,6 @@ void AWarriorCharacter::NormalAttackCheck()
 			if (IsValid(Cast<ACharacter>(collisionResult[i].GetActor())))
 			{
 				FActorSpawnParameters	SpawnParam;
-				//SpawnParam.Template = mHitActor;
 				SpawnParam.SpawnCollisionHandlingOverride =
 					ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -471,17 +485,6 @@ void AWarriorCharacter::NormalAttackCheck()
 			}
 		}
 	}
-
-
-
-	if (mAnimInst->GetNormalAttackIndex() == 3)
-	{
-		return;
-	}
-	
-	else
-		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
-	
 }
 
 void AWarriorCharacter::Skill1()
@@ -590,41 +593,27 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	float rand = (float)FMath::FRandRange((float)30.f, (float)50.f);
-
-	FActorSpawnParameters	SpawnParam2;
-	SpawnParam2.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	FVector pos = GetActorLocation();
 
 	switch (_skillType)
 	{
-	case SKILL_TYPE::TELEPORT:
-	{
-		ATeleportSkill* Skill =
-			GetWorld()->SpawnActor<ATeleportSkill>(
-				GetActorLocation() + GetActorForwardVector() * 100.f,
-				GetActorRotation(),
-				SpawnParam);
-	}
-	break;
-
 	case SKILL_TYPE::SPRINT:
 	{
-		FVector pos = GetActorLocation();
-
-		ADemonSlash* skill =
-			GetWorld()->SpawnActor<ADemonSlash>(
+		ASprintSkil* skill =
+			GetWorld()->SpawnActor<ASprintSkil>(
 				pos,
 				GetActorRotation(),
-				SpawnParam2);
+				SpawnParam);
 
-		//skill->mHitDelegate.AddDynamic(this, &AWarriorCharacter::SkillCollision);
-		
+		StartSlashCameraShake();
+		SetIsSprintLast(true);
+		NormalAttackCheck();
 	}
 	break;
 
 	case SKILL_TYPE::CONTINUOUS:
 	{
-		FVector pos = GetActorLocation();
-
 		FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(pos,
 			pos + GetActorForwardVector() * 100.f);
 
@@ -633,12 +622,15 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 				pos,
 				GetActorRotation(),
 				SpawnParam);
+
+		NormalAttackCheck();
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
 	}
 
 	case SKILL_TYPE::SLASH:
 	{
 
-		FVector pos = GetActorLocation() + GetActorForwardVector() * 100.f;
+		pos += (GetActorForwardVector() * 100.f);
 		pos.Z -= (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
 
 		ASlashSkill* Skill =

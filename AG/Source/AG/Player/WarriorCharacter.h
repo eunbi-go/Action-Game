@@ -80,6 +80,12 @@ private:
 	TSubclassOf<UCameraShakeBase> mNormalAttackShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mNormalAttackShake2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		TSubclassOf<UCameraShakeBase> mSprintAttackShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mContinuousShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

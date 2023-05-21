@@ -60,7 +60,7 @@ void AWraith::NormalAttackCheck()
 	fireParticle->SetParticle(TEXT("ParticleSystem'/Game/ParagonWraith/FX/Particles/Abilities/ScopedShot/FX/P_Wraith_Sniper_ExitWorld.P_Wraith_Sniper_ExitWorld'"));
 
 
-	FVector endPosition = gunPosition + GetActorForwardVector() * mInfo.attackDistance;
+	FVector endPosition = gunPosition + GetActorForwardVector() * 300.f;
 
 	FCollisionQueryParams params(NAME_None, false, this);
 	

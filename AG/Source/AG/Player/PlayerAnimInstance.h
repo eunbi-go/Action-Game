@@ -235,8 +235,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mTel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		TSubclassOf<UCameraShakeBase> mNormalCS;
 
 	//--------------------------
 	// Skill

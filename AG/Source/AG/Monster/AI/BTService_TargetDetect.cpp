@@ -55,7 +55,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	bool isCollision = GetWorld()->OverlapMultiByChannel(
 						resultArray,
-						monster->GetActorLocation(),	// 몬스터의 위치를 기준으로 탐색을 시작한다.
+						monster->GetActorLocation(),	
 						FQuat::Identity,
 						ECollisionChannel::ECC_GameTraceChannel5,
 						FCollisionShape::MakeSphere(monsterInfo.traceDistance),
@@ -74,7 +74,6 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (isCollision)
 	{
-		//controller->StopMovement();
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	}
 	
