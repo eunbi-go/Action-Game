@@ -38,7 +38,10 @@ public:
 
 
 public:
-	FVector GetPickingPosition() { return mPickingPosition; }
+	FVector GetPickingPosition()
+	{
+		return mPickingPosition; 
+	}
 
 
 public:

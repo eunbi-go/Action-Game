@@ -42,7 +42,10 @@ public:
 
 
 public:
-	void SetIsEnableMove(bool _value) { mIsEnableMove = _value; }
+	void SetIsEnableMove(bool _value)
+	{
+		mIsEnableMove = _value; 
+	}
 
 
 	UPROPERTY()

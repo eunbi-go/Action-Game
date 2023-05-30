@@ -118,16 +118,46 @@ public:
 
 
 public:
-	PLAYER_MOTION GetPlayerMotion() { return mPlayerState; }
-	bool GetIsRun() { return mIsRun; }
-	SKILL_TYPE GetCurSkillType() { return mCurSkillType; }
-	int GetNormalAttackIndex() { return mNormalAttackIndex; }
+	PLAYER_MOTION GetPlayerMotion()
+	{ 
+		return mPlayerState; 
+	}
+
+	bool GetIsRun() 
+	{
+		return mIsRun; 
+	}
+
+	SKILL_TYPE GetCurSkillType() 
+	{
+		return mCurSkillType; 
+	}
+
+	int GetNormalAttackIndex()
+	{
+		return mNormalAttackIndex; 
+	}
 
 public:
-	void SetPlayModeValue(float _value) { mPlayModeValue = _value; }
-	void SetSpeedValue(float _value) { mSpeedValue = _value; }
-	void SetIsLandStart(bool _value) { mIsLandStart = _value; }
-	void SetIsPlayerMotion(PLAYER_MOTION _value) { mPlayerState = _value; }
+	void SetPlayModeValue(float _value)
+	{ 
+		mPlayModeValue = _value; 
+	}
+
+	void SetSpeedValue(float _value) 
+	{
+		mSpeedValue = _value; 
+	}
+
+	void SetIsLandStart(bool _value) 
+	{
+		mIsLandStart = _value; 
+	}
+
+	void SetIsPlayerMotion(PLAYER_MOTION _value) 
+	{
+		mPlayerState = _value; 
+	}
 
 
 public:

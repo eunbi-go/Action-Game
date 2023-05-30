@@ -28,7 +28,10 @@ public:
 
 
 public:
-	UNiagaraComponent* GetNiagara() { return mParticle; }
+	UNiagaraComponent* GetNiagara() 
+	{
+		return mParticle; 
+	}
 
 
 

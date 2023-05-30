@@ -29,8 +29,15 @@ public:
 
 
 public:
-	TMap<EITEM_ID, class UItemData*> GetItemMap() { return mItemMap; }
-	class UTileView* GetTileView() { return mTileView; }
+	TMap<EITEM_ID, class UItemData*> GetItemMap() 
+	{
+		return mItemMap; 
+	}
+
+	class UTileView* GetTileView() 
+	{
+		return mTileView; 
+	}
 
 
 private:

@@ -43,10 +43,10 @@ public:
 	void AnimNotify_SkillEnd();
 
 	UFUNCTION()
-		void AnimNotify_Skill1();
+	void AnimNotify_Skill1();
 
 	UFUNCTION()
-		void AnimNotify_Skill1End();
+	void AnimNotify_Skill1End();
 
 	UFUNCTION()
 	void AnimNotify_Skill3();
@@ -57,10 +57,10 @@ public:
 
 public:
 	UFUNCTION()
-		void AnimNotify_PlayRataDown();
+	void AnimNotify_PlayRataDown();
 
 	UFUNCTION()
-		void AnimNotify_PlayRataReset();
+	void AnimNotify_PlayRataReset();
 
 
 public:
@@ -71,12 +71,26 @@ public:
 	
 public:
 	void SetMonsterMotionType(MONSTER_MOTION _motion);
-	void SetIsSkillEnd(bool _value) { mIsSkillEnd = _value; }
+	void SetIsSkillEnd(bool _value) 
+	{ 
+		mIsSkillEnd = _value; 
+	}
 
 public:
-	MONSTER_MOTION GetMonsterMotionType() { return mMonsterMotionType; }
-	bool GetIsHit() { return mIsHit; }
-	bool GetIsSkillEnd() { return mIsSkillEnd; }
+	MONSTER_MOTION GetMonsterMotionType()
+	{ 
+		return mMonsterMotionType; 
+	}
+
+	bool GetIsHit() 
+	{
+		return mIsHit; 
+	}
+
+	bool GetIsSkillEnd() 
+	{
+		return mIsSkillEnd; 
+	}
 
 
 protected:

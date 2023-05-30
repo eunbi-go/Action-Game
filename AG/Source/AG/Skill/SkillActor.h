@@ -49,7 +49,10 @@ public:
 
 
 public:
-	UNiagaraComponent* GetNiagara() { return mNiagara; }
+	UNiagaraComponent* GetNiagara()
+	{
+		return mNiagara; 
+	}
 
 
 public:

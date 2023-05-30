@@ -18,11 +18,25 @@ public:
 	ATemporaryfCameraActor();
 
 public:
-	void SetRatio(float _ratio) { mCamera->SetAspectRatio(_ratio); }
-	void SetCamera(UCameraComponent* _camera) { mCamera = _camera; }
-	void SetSpringArm(USpringArmComponent* _springArm) { mSpringArm = _springArm; }
+	void SetRatio(float _ratio) 
+	{
+		mCamera->SetAspectRatio(_ratio); 
+	}
 
-	UCameraComponent* GetCamera() { return mCamera; }
+	void SetCamera(UCameraComponent* _camera) 
+	{ 
+		mCamera = _camera; 
+	}
+
+	void SetSpringArm(USpringArmComponent* _springArm) 
+	{
+		mSpringArm = _springArm; 
+	}
+
+	UCameraComponent* GetCamera() 
+	{
+		return mCamera; 
+	}
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

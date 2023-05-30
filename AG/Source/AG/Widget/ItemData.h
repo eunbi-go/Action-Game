@@ -20,20 +20,55 @@ public:
 
 
 public:
-	void SetIconPath(const FString& _IconPath) { mIconPath = _IconPath; }
-	const FString& GetIconPath() { return mIconPath; }
+	void SetIconPath(const FString& _IconPath) 
+	{ 
+		mIconPath = _IconPath; 
+	}
 
-	void SetDescription(const FString& _Desc) { mDescription = _Desc; }
-	const FString& GetDescription() { return mDescription; }
+	const FString& GetIconPath() 
+	{
+		return mIconPath; 
+	}
 
-	void SetItemCount(int32 _Count) { mItemCount = _Count; }
-	int32 GetItemCount() { return mItemCount; }
+	void SetDescription(const FString& _Desc) 
+	{
+		mDescription = _Desc; 
+	}
 
-	void SetItemIndex(int32 _index) { mItemIndex = _index; }
-	int32 GetItemIndex() { return mItemIndex; }
+	const FString& GetDescription()
+	{
+		return mDescription; 
+	}
 
-	EITEM_ID GetItemId() { return mId; }
-	void SetItemId(EITEM_ID _id) { mId = _id; }
+	void SetItemCount(int32 _Count) 
+	{
+		mItemCount = _Count; 
+	}
+
+	int32 GetItemCount()
+	{
+		return mItemCount; 
+	}
+
+	void SetItemIndex(int32 _index) 
+	{
+		mItemIndex = _index; 
+	}
+
+	int32 GetItemIndex()
+	{
+		return mItemIndex; 
+	}
+
+	EITEM_ID GetItemId()
+	{
+		return mId; 
+	}
+
+	void SetItemId(EITEM_ID _id) 
+	{
+		mId = _id; 
+	}
 
 private:
 	FString		mIconPath;		// 아이콘 이미지 경로

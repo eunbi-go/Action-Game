@@ -27,7 +27,10 @@ public:
 
 
 public:
-	UParticleSystemComponent* GetParticle() { return mParticle; }
+	UParticleSystemComponent* GetParticle()
+	{
+		return mParticle; 
+	}
 
 
 

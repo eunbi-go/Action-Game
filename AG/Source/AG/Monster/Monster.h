@@ -52,42 +52,112 @@ public:
 	void DestroyMonster();
 
 public:
-	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) { mSpawnPoint = _spawnPoint; }
+	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) 
+	{
+		mSpawnPoint = _spawnPoint; 
+	}
+
 	void SetIsAttackEnd(bool _value) 
 	{ 
-		PrintViewport(3.f, FColor::Red, TEXT("setAttack")); 
+		//PrintViewport(3.f, FColor::Red, TEXT("setAttack")); 
 		mIsAttackEnd = _value; 
 	}
 	
-	void SetPatrolPointPosition(const TArray<FVector>& _array) { mPatrolPointPositionArray = _array; }
-	void SetPatrolDirection(PATROL_END_DIRECTION _direction) { mPatrolDirection = _direction; }
-	void ClearPatrolWaitTime() { mPatrolWaitTime = 0.f; }
-	void SetPatrolWaitTime(float _value) { mPatrolWaitTime += _value; }
-	void SetPatrolType(PATROL_TYPE _type) { mPatrolType = _type; }
+	void SetPatrolPointPosition(const TArray<FVector>& _array) 
+	{
+		mPatrolPointPositionArray = _array; 
+	}
 
-	void SetIsPatrolEnable(bool _value) { mIsPatrolEnable = _value; }
+	void SetPatrolDirection(PATROL_END_DIRECTION _direction)
+	{
+		mPatrolDirection = _direction; 
+	}
 
-	void SetPatrolSplineLength(float _value) { mPatrolSplineLength = _value; }
-	void SetPatrolCellDistance(float _value) { mPatrolCellDistance = _value; }
-	void SetPatrolSplineCount(int _value) { mPatrolSplineCount = _value; }
+	void ClearPatrolWaitTime()
+	{
+		mPatrolWaitTime = 0.f; 
+	}
+
+	void SetPatrolWaitTime(float _value) 
+	{
+		mPatrolWaitTime += _value; 
+	}
+
+	void SetPatrolType(PATROL_TYPE _type) 
+	{
+		mPatrolType = _type; 
+	}
+
+	void SetIsPatrolEnable(bool _value)
+	{
+		mIsPatrolEnable = _value; 
+	}
+
+	void SetPatrolSplineLength(float _value)
+	{
+		mPatrolSplineLength = _value; 
+	}
+
+	void SetPatrolCellDistance(float _value)
+	{
+		mPatrolCellDistance = _value; 
+	}
+
+	void SetPatrolSplineCount(int _value)
+	{
+		mPatrolSplineCount = _value; 
+	}
 
 public:
-	const FMonsterInfo&			GetMonsterInfo() const { return mInfo; }
-	class UMonsterAnimInstance* GetMonsterAnimInst() { return mAnimInst; }
-	bool						GetIsAttackEnd() { return mIsAttackEnd; }
+	const FMonsterInfo&	GetMonsterInfo()const 
+	{
+		return mInfo; 
+	}
 
-	float	GetPatrolWaitTime() { return mPatrolWaitTime; }
-	bool	GetPatrolEnable() { return mPatrolPointPositionArray.Num() >= 2; }
+	class UMonsterAnimInstance* GetMonsterAnimInst()
+	{
+		return mAnimInst; 
+	}
+
+	bool GetIsAttackEnd()
+	{
+		return mIsAttackEnd; 
+	}
+
+	float GetPatrolWaitTime()
+	{ 
+		return mPatrolWaitTime; 
+	}
+
+	bool GetPatrolEnable() 
+	{
+		return mPatrolPointPositionArray.Num() >= 2; 
+	}
 
 	FVector GetPatrolPosition() const;
 	FVector GetPatrolPointPosition() const;
 	bool	GetIsPatrolPointArrive();
 
-	int		GetPatrolIndex() { return mPatrolIndex; }
-	PATROL_TYPE GetPatrolType() { return mPatrolType; }
-	bool	GetIsPatrolEnable() { return mIsPatrolEnable; }
+	int	GetPatrolIndex() 
+	{ 
+		return mPatrolIndex; 
+	}
 
-	int32	GetUsingSkillIndex() { return mUsingSkillIndex; }
+	PATROL_TYPE GetPatrolType()
+	{
+		return mPatrolType; 
+	}
+
+	bool GetIsPatrolEnable()
+	{
+		return mIsPatrolEnable; 
+	}
+
+	int32	GetUsingSkillIndex() 
+	{ 
+		return mUsingSkillIndex; 
+	}
+
 	const FMonsterSkillInfo* GetSkillInfo();
 
 	ACharacter* GetBlackboardTarget();

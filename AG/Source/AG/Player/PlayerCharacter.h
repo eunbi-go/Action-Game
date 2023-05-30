@@ -65,23 +65,69 @@ public:
 
 
 public:
-	void SetRunStateSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1000.f; }
-	void SetWalkStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 600.f; }
-	void SetDashStsteSpeed() { GetCharacterMovement()->MaxWalkSpeed = 1500.f; }
-	void SetCustomTimeDilation(float _value) { CustomTimeDilation = _value; }
-	void SetIsDelay(bool _isDelay) { mIsDelay = _isDelay; }
-	void SetTargetPosition(FVector _position) { mTargetPosition = _position; }
-	void SetISEnableSprint(bool _value) { isSprint = _value; }
+	void SetRunStateSpeed() 
+	{ 
+		GetCharacterMovement()->MaxWalkSpeed = 1000.f; 
+	}
+
+	void SetWalkStsteSpeed()
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.f; 
+	}
+
+	void SetDashStsteSpeed() 
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 1500.f; 
+	}
+
+	void SetCustomTimeDilation(float _value)
+	{
+		CustomTimeDilation = _value; 
+	}
+
+	void SetIsDelay(bool _isDelay) 
+	{
+		mIsDelay = _isDelay; 
+	}
+
+	void SetTargetPosition(FVector _position) 
+	{
+		mTargetPosition = _position; 
+	}
+
+	void SetISEnableSprint(bool _value)
+	{
+		isSprint = _value; 
+	}
 	
 	void SetCoin(int32 _value);
-	void SetItemId(EITEM_ID _id) { mItemId = _id; }
+	
+	void SetItemId(EITEM_ID _id)
+	{
+		mItemId = _id; 
+	}
 
 
 public:
-	float GetTeleportGaueTime() { return mTeleportGauge; }
-	int GetSprintCount() { return mSprintCount; }
-	bool GetIsSprint() { return isSprint; }
-	class UPlayerAnimInstance* GetAnimInstance() { return mAnimInst; }
+	float GetTeleportGaueTime()
+	{
+		return mTeleportGauge; 
+	}
+
+	int GetSprintCount()
+	{
+		return mSprintCount; 
+	}
+
+	bool GetIsSprint()
+	{
+		return isSprint; 
+	}
+
+	class UPlayerAnimInstance* GetAnimInstance()
+	{
+		return mAnimInst; 
+	}
 
 public:
 	//---------------------

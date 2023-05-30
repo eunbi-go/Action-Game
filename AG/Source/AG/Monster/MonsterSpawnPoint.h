@@ -28,14 +28,32 @@ public:
 	void ComputeSpline();
 
 public:
-	void RemoveMonster(class AMonster* _monster) { mMonstersArray.Remove(_monster); }
+	void RemoveMonster(class AMonster* _monster)
+	{ 
+		mMonstersArray.Remove(_monster); 
+	}
 
 
 public:
-	float GetSplineLength() const { return mSplineLength; }
-	const TArray<FVector>& GetSplinePositionArray() const { return mSplinePosition; }
-	FVector GetSplinePosition(int32 _index) const { return mSplinePosition[_index]; }
-	FVector GetSplinePosition(float _cellDistance) { return mPatrolSpline->GetLocationAtDistanceAlongSpline(_cellDistance, ESplineCoordinateSpace::World); }
+	float GetSplineLength() const 
+	{ 
+		return mSplineLength; 
+	}
+
+	const TArray<FVector>& GetSplinePositionArray() const 
+	{
+		return mSplinePosition; 
+	}
+
+	FVector GetSplinePosition(int32 _index) const 
+	{
+		return mSplinePosition[_index]; 
+	}
+
+	FVector GetSplinePosition(float _cellDistance) 
+	{
+		return mPatrolSpline->GetLocationAtDistanceAlongSpline(_cellDistance, ESplineCoordinateSpace::World); 
+	}
 
 
 

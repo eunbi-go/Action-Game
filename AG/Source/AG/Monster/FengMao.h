@@ -69,7 +69,11 @@ public:
 		void Hit();
 
 public:
-	void EndSkill4() { isEnableSkill4Respawn = false; }
+	void EndSkill4() 
+	{ 
+		isEnableSkill4Respawn = false; 
+	}
+
 	void StartJump();
 	void StopJump();
 

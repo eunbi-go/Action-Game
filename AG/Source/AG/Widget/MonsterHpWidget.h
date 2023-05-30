@@ -26,7 +26,11 @@ public:
 
 public:
 	void SetCharacterStat(class UCharacterStatComponent* _characterStat);
-	void SetTargetRatio(float _ratio) { mHpTargetRatio = _ratio; }
+	
+	void SetTargetRatio(float _ratio) 
+	{
+		mHpTargetRatio = _ratio; 
+	}
 
 
 private:

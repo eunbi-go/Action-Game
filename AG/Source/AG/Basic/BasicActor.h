@@ -23,7 +23,10 @@ public:
 
 
 public:
-	USkeletalMeshComponent* GetMesh() { return mMesh; }
+	USkeletalMeshComponent* GetMesh() 
+	{ 
+		return mMesh;
+	}
 
 
 public:
@@ -33,7 +36,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		USkeletalMeshComponent* mMesh;
+	USkeletalMeshComponent* mMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* mBox;

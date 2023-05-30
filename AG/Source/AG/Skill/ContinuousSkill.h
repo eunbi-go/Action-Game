@@ -28,8 +28,15 @@ public:
 
 
 public:
-	void SetNiagaraOnOff(bool _value) { mIsNiagaraActive = _value; }
-	void Remove() { mNiagara->GetAsset()->FinishDestroy(); }
+	void SetNiagaraOnOff(bool _value) 
+	{ 
+		mIsNiagaraActive = _value; 
+	}
+
+	void Remove()
+	{
+		mNiagara->GetAsset()->FinishDestroy(); 
+	}
 	
 protected:
 	bool mIsNiagaraActive;

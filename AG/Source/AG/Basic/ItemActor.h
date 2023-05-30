@@ -31,12 +31,22 @@ public:
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
-	UStaticMeshComponent* GetMesh() { return mMesh; }
-	UBoxComponent* GetBoxComponent() { return mBox; }
+	UStaticMeshComponent* GetMesh()
+	{ 
+		return mMesh; 
+	}
+
+	UBoxComponent* GetBoxComponent() 
+	{
+		return mBox; 
+	}
 
 public:
 	void SetStaticMesh(const FString& _path);
-	void SetItemId(EITEM_ID _id) { mItemId = _id; }
+	void SetItemId(EITEM_ID _id) 
+	{
+		mItemId = _id; 
+	}
 
 	UPROPERTY(BlueprintAssignable)
 		FOnHited	mOnHitt;

@@ -27,8 +27,15 @@ public:
 	virtual void Tick(float DeltaTime)	override;
 
 public:
-	class UMainWidget* GetMainWidget() { return mMainWidget; }
-	class UAGSaveGame* GetSaveGame() { return mSaveGame; }
+	class UMainWidget* GetMainWidget()
+	{
+		return mMainWidget; 
+	}
+
+	class UAGSaveGame* GetSaveGame()
+	{
+		return mSaveGame; 
+	}
 
 
 private:

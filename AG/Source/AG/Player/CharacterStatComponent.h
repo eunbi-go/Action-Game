@@ -48,14 +48,35 @@ public:
 
 
 public:
-	const FPlayerTableInfo& GetCurrentInfo() { return *mCurrentData; }
-	FPlayerTableInfo& GetInfo() { return *mCurrentData; }
+	const FPlayerTableInfo& GetCurrentInfo() 
+	{ 
+		return *mCurrentData; 
+	}
 
-	float GetAttack() { return mCurrentData->attackPoint; }
+	FPlayerTableInfo& GetInfo()
+	{
+		return *mCurrentData; 
+	}
+
+	float GetAttack() 
+	{
+		return mCurrentData->attackPoint; 
+	}
+
 	float GetHpRatio();
-	float GetHp() { return mCurrentHp; }
+	
+	float GetHp() 
+	{
+		return mCurrentHp; 
+	}
+
 	float GetMpRatio();
-	float GetMp() { return mCurrentMp; }
+	
+	float GetMp() 
+	{
+		return mCurrentMp; 
+	}
+
 
 private:
 	struct FPlayerTableInfo* mCurrentData;
