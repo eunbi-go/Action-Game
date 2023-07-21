@@ -18,7 +18,8 @@ public class AG : ModuleRules
             "GameplayTasks",
             "UMG",
             "NavigationSystem",
-            "PhysicsCore"
+            "PhysicsCore",
+            "MotionWarping"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

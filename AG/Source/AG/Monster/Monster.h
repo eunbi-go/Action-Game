@@ -4,10 +4,11 @@
 
 #include "../BasicInfo.h"
 #include "GameFramework/Character.h"
+#include "../Interface/HitInterface.h"
 #include "Monster.generated.h"
 
 UCLASS()
-class AG_API AMonster : public ACharacter
+class AG_API AMonster : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -25,8 +26,12 @@ public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
+	virtual void GetHit(const FVector& _impactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
+
+private:
+	void PlayHitMontage(const FVector& _impactPoint);
 
 
 public:

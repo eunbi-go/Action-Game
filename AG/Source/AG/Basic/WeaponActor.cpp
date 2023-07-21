@@ -28,7 +28,7 @@ void AWeaponActor::BeginPlay()
 	Super::BeginPlay();
 
 	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
-		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Ribbon.NS_Ribbon'"));
+		nullptr, TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Flameslash_3.NS_Flameslash_3'"));
 
 	if (IsValid(Particle))
 		mTrail->SetAsset(Particle);
@@ -37,9 +37,11 @@ void AWeaponActor::BeginPlay()
 	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	
 
-
-	UNiagaraSystem* gauge = LoadObject<UNiagaraSystem>(
-		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash2.NS_Dash2'"));
+	
+	/*UNiagaraSystem* gauge = LoadObject<UNiagaraSystem>(
+		nullptr, TEXT("NiagaraSystem'/Game/Assets/Niagara/NS_Dash2.NS_Dash2'"));*/
+	UNiagaraSystem * gauge = LoadObject<UNiagaraSystem>(
+		nullptr, TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Dash_Fire.NS_Dash_Fire'"));
 
 	if (IsValid(gauge))
 		mGauge->SetAsset(gauge);

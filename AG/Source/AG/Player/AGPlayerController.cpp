@@ -80,7 +80,7 @@ void AAGPlayerController::SpawnDecalOnMousePick()
 
 void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
 {
-	switch (_type)
+	/*switch (_type)
 	{
 	case INPUT_MODE_TYPE::GAME_ONLY:
 	{
@@ -95,5 +95,5 @@ void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
 		SetInputMode(Mode);
 	}
 	break;
-	}
+	}*/
 }

@@ -5,6 +5,8 @@
 
 #include "Player/WarriorCharacter.h"
 #include "Player/AGPlayerController.h"
+#include "Player/AGPlayer.h"
+#include "Player/Valkyrie.h"
 #include "Widget/MainWidget.h"
 #include "AGGameInstance.h"
 #include "AGSaveGame.h"
@@ -12,16 +14,16 @@
 
 AAGGameModeBase::AAGGameModeBase()
 {
-	DefaultPawnClass = AWarriorCharacter::StaticClass();
-	PlayerControllerClass = AAGPlayerController::StaticClass();
+	DefaultPawnClass = AValkyrie::StaticClass();
+	//PlayerControllerClass = AAGPlayerController::StaticClass();
 
-	ConstructorHelpers::FClassFinder<UUserWidget>
-		mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
+	//ConstructorHelpers::FClassFinder<UUserWidget>
+	//	mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
 
-	if (mainWidget.Succeeded())
-	{
-		mMainWidgetClass = mainWidget.Class;
-	}
+	//if (mainWidget.Succeeded())
+	//{
+	//	mMainWidgetClass = mainWidget.Class;
+	//}
 }
 
 void AAGGameModeBase::BeginPlay()
@@ -32,12 +34,12 @@ void AAGGameModeBase::BeginPlay()
 
 	if (IsValid(mMainWidgetClass))
 	{
-		mMainWidget = Cast<UMainWidget>(CreateWidget(GetWorld(), mMainWidgetClass));
-		if (IsValid(mMainWidget))
-		{
-			mMainWidget->AddToViewport();
-			mMainWidget->SetHp(1.f);
-		}
+		//mMainWidget = Cast<UMainWidget>(CreateWidget(GetWorld(), mMainWidgetClass));
+		//if (IsValid(mMainWidget))
+		//{
+		//	mMainWidget->AddToViewport();
+		//	mMainWidget->SetHp(1.f);
+		//}
 	}
 }
 
@@ -45,7 +47,7 @@ void AAGGameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	switch (EndPlayReason)
+	/*switch (EndPlayReason)
 	{
 	case EEndPlayReason::Destroyed:
 		LOG(TEXT("Destroyed"));
@@ -67,19 +69,19 @@ void AAGGameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	case EEndPlayReason::Quit:
 		LOG(TEXT("Quit"));
 		break;
-	}
+	}*/
 }
 
 void AAGGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	UAGGameInstance* GameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
+	//UAGGameInstance* GameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
 
-	if (IsValid(GameInst))
-	{
-		DefaultPawnClass = AWarriorCharacter::StaticClass();
-	}
+	//if (IsValid(GameInst))
+	//{
+	//	DefaultPawnClass = AWarriorCharacter::StaticClass();
+	//}
 }
 
 void AAGGameModeBase::PostLogin(APlayerController* NewPlayer)
