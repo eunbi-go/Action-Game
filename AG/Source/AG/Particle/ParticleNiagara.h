@@ -24,7 +24,7 @@ protected:
 public:
 	virtual void SetParticle(UNiagaraSystem* _particle);
 	virtual void SetParticle(const FString& _path);
-
+	void SetNiagaraScale(const FVector& _scale);
 
 
 public:

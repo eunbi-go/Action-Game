@@ -3,6 +3,7 @@
 
 #include "ParticleCascade.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+
 AParticleCascade::AParticleCascade()
 {
 	mParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));

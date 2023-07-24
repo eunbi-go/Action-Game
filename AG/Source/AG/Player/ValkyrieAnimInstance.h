@@ -9,6 +9,9 @@
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackCheckStartDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnLaunchDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSkillEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnChangeCameraDelegate);
 
 /**
  * 
@@ -34,6 +37,18 @@ public:
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
 
+	UFUNCTION()
+	void AnimNotify_SkillEnd();
+
+	UFUNCTION()
+	void AnimNotify_Launch();
+
+	UFUNCTION()
+	void AnimNotify_SpawnEffect();
+
+	UFUNCTION()
+	void AnimNotify_ChangeCamera();
+
 	UPROPERTY(BlueprintReadOnly)
 	class AValkyrie* mCharacter;
 
@@ -43,6 +58,9 @@ public:
 	FOnNextAttackCheckDelegate	mOnNextAttackCheck;
 	FOnAttackEndDelegate		mOnAttackEnd;
 	FOnAttackCheckStartDelegate	mOnAttackCheckStart;
+	FOnLaunchDelegate			mOnLaunch;
+	FOnSkillEndDelegate			mSkillEnd;
+	FOnChangeCameraDelegate		mChangeCamera;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

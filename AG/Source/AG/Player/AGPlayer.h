@@ -20,6 +20,14 @@ enum class EActionState : uint8
 	EAS_Move UMETA(DisplayName = "Move"),
 	EAS_Dash UMETA(DisplayName = "Dash"),
 	EAS_Attack UMETA(DisplayName = "Attack"),
+	EAS_Skill UMETA(DisplayName = "Skill"),
+};
+
+UENUM(BlueprintType)
+enum class ESkillState : uint8
+{
+	ESS_None UMETA(DisplayName = "None"),
+	ESS_Sprint UMETA(DisplayName = "Sprint"),
 };
 
 UCLASS()
@@ -50,6 +58,7 @@ protected:
 	virtual void NormalAttackKey();
 
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
+	virtual void SpawnEffect();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* mSpringArmComp;
@@ -66,12 +75,14 @@ protected:
 	float mDirection = 0.f;
 
 	ECharacterState mCharacterState;
-
 	EActionState	mActionState;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	ESkillState		mSkillState;
+	
+		UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
 	bool mIsAttacking;
 
+	UPROPERTY()
+	FTimerHandle	mTimer;
 
 
 public:

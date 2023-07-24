@@ -31,3 +31,9 @@ void AParticleNiagara::SetParticle(const FString& _path)
 	if (IsValid(particle))
 		mParticle->SetAsset(particle);
 }
+
+void AParticleNiagara::SetNiagaraScale(const FVector& _scale)
+{
+	if (mParticle)
+		mParticle->SetWorldScale3D(_scale);
+}

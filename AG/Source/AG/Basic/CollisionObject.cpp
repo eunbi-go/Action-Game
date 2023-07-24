@@ -42,7 +42,6 @@ void ACollisionObject::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 	if (!mIsEnd)
 	{
 		mIsEnd = true;
-
 		mOnHit.Broadcast(this, Hit, OtherActor);
 	}
 }

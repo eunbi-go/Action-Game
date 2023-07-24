@@ -17,14 +17,13 @@ public:
 	AParticleCascade();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
 	virtual void SetParticle(UParticleSystem* _particle);
 	virtual void SetParticle(const FString& _path);
 
-
+	void SpawnAtLocation(const FVector& _location);
 
 public:
 	UParticleSystemComponent* GetParticle()

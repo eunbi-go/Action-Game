@@ -22,6 +22,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void UnequipSword();
+	
+	virtual void SpawnEffect() override;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,6 +36,10 @@ protected:
 
 	void NormalAttackStart();
 	void NormalAttackEnd();
+
+	UFUNCTION()
+	void SetMontagePlayRate();
+
 
 	class ASword* mWeapon;
 
@@ -54,8 +61,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraOne;
 
-	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
-		AActor* mCameraTwo;
 
-	float timeToNextCameraChange = 1.f;
+private:
+	void SetAnimDelegate();
+
+	FVector tempLocation;
 };

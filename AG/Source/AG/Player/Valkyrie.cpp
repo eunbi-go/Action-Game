@@ -6,6 +6,8 @@
 #include "Sword.h"
 #include "MotionWarpingComponent.h"
 #include "RootMotionModifier.h"
+#include "../Particle/ParticleCascade.h"
+#include "../Particle/ParticleNiagara.h"
 
 AValkyrie::AValkyrie()
 {
@@ -63,6 +65,9 @@ AValkyrie::AValkyrie()
 	mCameraOne = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraOne"));
 	mCameraOne->SetupAttachment(mSpringArmComp);
 	mCameraOne->SetActive(false);
+
+
+	tempLocation = FVector(0.f);
 }
 
 void AValkyrie::BeginPlay()
@@ -80,36 +85,17 @@ void AValkyrie::BeginPlay()
 	mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
 
 
-	mAnimInst->mOnNextAttackCheck.AddLambda([this]() -> void {
-		mIsCanNextAttack = false;
-		if (mIsAttackInputOn)
-		{
-			NormalAttackStart();
-			PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
-		}
-		});
-
-	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
-		mIsAttacking = false;
-		NormalAttackEnd();
-		if (mWeapon)
-		{
-			mWeapon->ClearIgnoreActors();
-			mWeapon->SetTrailOnOff(false);
-		}
-		});
-
-	mAnimInst->mOnAttackCheckStart.AddLambda([this]() -> void {
-		if (mWeapon)
-		{
-			mWeapon->SetTrailOnOff(true);
-		}
-		});
+	SetAnimDelegate();
 }
 
 void AValkyrie::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+}
+
+void AValkyrie::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -168,28 +154,12 @@ void AValkyrie::NormalAttackKey()
 
 void AValkyrie::Skill1Key()
 {
-	//PlayMontage(FName("Sprint"));
-	//FVector targetLocation = GetActorLocation();
-	//targetLocation += GetActorForwardVector() * 500.f;
-	//targetLocation.Z += 500.f;
-	//mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget"), targetLocation);
-
-
-	/// <summary>
-	const float timeBetweenCameraChanges = 2.f;
-	const float smoothBlendTime = 0.75f;
-
-		APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0);
-
-		if (controller)
-		{
-			
-			mCameraComp->SetActive(false);
-			mCameraOne->SetActive(true);
-			mSpringArmComp->TargetOffset = FVector(0.f, 120.f, 0.f);
-			mCameraOne->SetRelativeLocation(FVector(0.f, -120.f, 0.f));
-			mSpringArmComp->TargetArmLength = 100.f;
-		}
+	mSkillState = ESkillState::ESS_Sprint;
+	PlayMontage(FName("Sprint"));
+	FVector targetLocation = GetActorLocation();
+	tempLocation = targetLocation;
+	targetLocation += GetActorForwardVector() * 1000.f;
+	mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
 }
 
 void AValkyrie::NormalAttackStart()
@@ -209,9 +179,106 @@ void AValkyrie::NormalAttackEnd()
 	mCurrentAttackIndex = 0;
 }
 
-void AValkyrie::Tick(float DeltaTime)
+void AValkyrie::SetMontagePlayRate()
 {
-	Super::Tick(DeltaTime);
+	UAnimMontage* montage;
+
+	switch (mSkillState)
+	{
+	case ESkillState::ESS_Sprint:
+		montage = *mMontages.Find(FName("Sprint"));
+		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+		break;
+	}
+}
+
+void AValkyrie::SetAnimDelegate()
+{
+	mAnimInst->mOnNextAttackCheck.AddLambda([this]() -> void {
+		mIsCanNextAttack = false;
+	if (mIsAttackInputOn)
+	{
+		NormalAttackStart();
+		PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
+	}
+		});
+
+	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
+		mIsAttacking = false;
+	NormalAttackEnd();
+	if (mWeapon)
+	{
+		mWeapon->ClearIgnoreActors();
+		mWeapon->SetTrailOnOff(false);
+	}
+		});
+
+	mAnimInst->mOnAttackCheckStart.AddLambda([this]() -> void {
+		if (mWeapon)
+		{
+			mWeapon->SetTrailOnOff(true);
+		}
+		});
+
+	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
+		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+
+	if (mSkillState == ESkillState::ESS_Sprint)
+	{
+		LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
+
+		GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
+	}
+		});
+
+	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
+		if (mSkillState == ESkillState::ESS_Sprint)
+		{
+			mCameraOne->SetActive(false);
+			mCameraComp->SetActive(true);
+			mSpringArmComp->TargetArmLength = 400.f;
+		}
+	});
+
+	mAnimInst->mChangeCamera.AddLambda([this]() -> void {
+		UAnimMontage* montage;
+
+		if (mSkillState == ESkillState::ESS_Sprint)
+		{
+			montage = *mMontages.Find(FName("Sprint"));
+			mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+
+			if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
+			{
+				mCameraComp->SetActive(false);
+				mCameraOne->SetActive(true);
+				mSpringArmComp->TargetArmLength = 150.f;
+			}
+		}
+	});
+}
+
+void AValkyrie::SpawnEffect()
+{
+	//AParticleCascade* particle;
+	AParticleNiagara* niagara;
+
+	FActorSpawnParameters	SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	switch (mSkillState)
+	{
+	case ESkillState::ESS_Sprint:
+		niagara = GetWorld()->SpawnActor<AParticleNiagara>(
+				GetActorLocation() + GetActorForwardVector() * 300.f,
+				FRotator::ZeroRotator,
+				SpawnParam
+				);
+		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LightningAttactOnPoint_2.NS_LightningAttactOnPoint_2'"));
+		niagara->SetNiagaraScale(FVector(0.1f));
+		break;
+	}
 }
 
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -31,6 +31,7 @@ AAGPlayer::AAGPlayer()
 
 	mCharacterState = ECharacterState::ECS_Unequipped;
 	mActionState = EActionState::EAS_Idle;
+	mSkillState = ESkillState::ESS_None;
 }
 
 void AAGPlayer::BeginPlay()
@@ -89,6 +90,10 @@ void AAGPlayer::NormalAttackKey()
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)
 {
 	
+}
+
+void AAGPlayer::SpawnEffect()
+{
 }
 
 void AAGPlayer::Tick(float DeltaTime)

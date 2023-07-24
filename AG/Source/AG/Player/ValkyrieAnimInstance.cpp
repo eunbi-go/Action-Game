@@ -50,3 +50,23 @@ void UValkyrieAnimInstance::AnimNotify_AttackEnd()
 {
 	mOnAttackEnd.Broadcast();
 }
+
+void UValkyrieAnimInstance::AnimNotify_SkillEnd()
+{
+	mSkillEnd.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_Launch()
+{
+	mOnLaunch.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_SpawnEffect()
+{
+	mCharacter->SpawnEffect();
+}
+
+void UValkyrieAnimInstance::AnimNotify_ChangeCamera()
+{
+	mChangeCamera.Broadcast();
+}

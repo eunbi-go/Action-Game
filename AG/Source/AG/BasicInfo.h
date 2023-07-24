@@ -23,6 +23,7 @@
 #include "Components/SplineComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include <Components\WidgetComponent.h>
 #include <Components\Image.h>
