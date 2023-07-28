@@ -21,6 +21,8 @@ enum class EActionState : uint8
 	EAS_Dash UMETA(DisplayName = "Dash"),
 	EAS_Attack UMETA(DisplayName = "Attack"),
 	EAS_Skill UMETA(DisplayName = "Skill"),
+	EAS_Jump UMETA(DisplayName = "Jump"),
+	EAS_JumpAttack UMETA(DisplayName = "JumpAttack"),
 };
 
 UENUM(BlueprintType)
@@ -28,6 +30,7 @@ enum class ESkillState : uint8
 {
 	ESS_None UMETA(DisplayName = "None"),
 	ESS_Sprint UMETA(DisplayName = "Sprint"),
+	ESS_Ribbon UMETA(DisplayName = "Ribbon"),
 };
 
 UCLASS()

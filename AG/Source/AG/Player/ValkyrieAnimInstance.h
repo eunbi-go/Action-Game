@@ -4,6 +4,7 @@
 
 #include "../BasicInfo.h"
 #include "Animation/AnimInstance.h"
+#include "Valkyrie.h"
 #include "ValkyrieAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
@@ -12,6 +13,8 @@ DECLARE_MULTICAST_DELEGATE(FOnAttackCheckStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnLaunchDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSkillEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnChangeCameraDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEnableDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnJumpEndDelegate);
 
 /**
  * 
@@ -49,8 +52,17 @@ public:
 	UFUNCTION()
 	void AnimNotify_ChangeCamera();
 
+	UFUNCTION()
+	void AnimNotify_JumpAttackEnable();
+
+	UFUNCTION()
+	void AnimNotify_JumpEnd();
+
+	UFUNCTION()
+	void AnimNotify_JumpAttackEnd();
+
 	UPROPERTY(BlueprintReadOnly)
-	class AValkyrie* mCharacter;
+	AValkyrie* mCharacter;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	class UCharacterMovementComponent* mMovementComp;
@@ -61,6 +73,10 @@ public:
 	FOnLaunchDelegate			mOnLaunch;
 	FOnSkillEndDelegate			mSkillEnd;
 	FOnChangeCameraDelegate		mChangeCamera;
+	FOnJumpAttackEnableDelegate	mJumpAttackEnable;
+	FOnJumpEndDelegate			mOnJumpEnd;
+
+	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -69,9 +85,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float mDirection = 0.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool mIsJumpAttackEnable = false;
+
 	
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool	mIsInAir;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EActionState	mActionState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	int32	mJumpAttackIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	bool	mIsJumpAttackEnd;
 };

@@ -43,7 +43,7 @@ void ASword::BeginPlay()
 
 	if (IsValid(Particle))
 		mTrail->SetAsset(Particle);
-	mTrail->SetVisibility(false);
+	mTrail->SetVisibility(true);
 
 	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 

@@ -77,6 +77,7 @@ void AAGPlayer::LookUp(float _value)
 void AAGPlayer::JumpKey()
 {
 	Jump();
+	//mActionState = EActionState::EAS_Jump;
 }
 
 void AAGPlayer::EquipWeaponKey()

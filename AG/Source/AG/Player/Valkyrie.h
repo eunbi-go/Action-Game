@@ -61,9 +61,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraOne;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	int32	mJumpAttackIndex;
+
 
 private:
 	void SetAnimDelegate();
 
 	FVector tempLocation;
+
+	bool	mIsJumpAttack = false;
+
+public:
+	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }
+	EActionState GetActionState() { return mActionState; }
+	int32 GetJumpAttackIndex() { return mJumpAttackIndex; }
 };

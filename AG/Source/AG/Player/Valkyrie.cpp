@@ -54,6 +54,22 @@ AValkyrie::AValkyrie()
 	}
 	mMontages.Add(FName("Sprint"), montage3);
 
+	UAnimMontage* montage4;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Ribbon.AM_Valkyrie_Ribbon'"));
+	if (ribbonMontage.Succeeded())
+	{
+		montage4 = ribbonMontage.Object;
+	}
+	mMontages.Add(FName("Ribbon"), montage4);
+
+	UAnimMontage* montage5;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> jumpAttackMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_JumpAttack.AM_Valkyrie_JumpAttack'"));
+	if (jumpAttackMontage.Succeeded())
+	{
+		montage5 = jumpAttackMontage.Object;
+	}
+	mMontages.Add(FName("JumpAttack"), montage5);
+
 
 	mAttackMaxIndex = 4;
 	NormalAttackEnd();
@@ -68,6 +84,9 @@ AValkyrie::AValkyrie()
 
 
 	tempLocation = FVector(0.f);
+
+	JumpMaxCount = 2;
+	GetCharacterMovement()->JumpZVelocity = 500.f;
 }
 
 void AValkyrie::BeginPlay()
@@ -96,6 +115,11 @@ void AValkyrie::PostInitializeComponents()
 void AValkyrie::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (mActionState != EActionState::EAS_JumpAttack)
+	//	mIsJumpAttack = false;
+	//if (mActionState == EActionState::EAS_JumpAttack)
+	//	PrintViewport(1.f, FColor::Red, TEXT("Ffff"));
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -103,7 +127,7 @@ void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
 	UAnimMontage* montage = *mMontages.Find(_montageName);
 
 	mAnimInst->Montage_Play(montage);
-	if (_montageName == FName("Equip") || _montageName == FName("Attack"))
+	if (_montageName == FName("Equip") || _montageName == FName("Attack") || _montageName == FName("JumpAttack"))
 	{
 		mAnimInst->Montage_JumpToSection(_sectionName, montage);
 	}
@@ -139,6 +163,16 @@ void AValkyrie::NormalAttackKey()
 	if (mCharacterState == ECharacterState::ECS_Unequipped)
 		return;
 
+	if (mIsJumpAttack)
+	{
+		LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
+		mActionState = EActionState::EAS_JumpAttack;
+		if(mAnimInst->GetIsJumpAttackEnd())
+			mJumpAttackIndex = FMath::RandRange(0, 2);
+		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JumpAttack: %d"), mJumpAttackIndex));
+		return;
+	}
+
 	if (mIsAttacking)
 	{
 		if (mIsCanNextAttack)
@@ -148,28 +182,92 @@ void AValkyrie::NormalAttackKey()
 	{
 		mIsAttacking = true;
 		NormalAttackStart();
-		PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
+		if (mActionState != EActionState::EAS_JumpAttack)
+			PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
 	}
+
+
 }
 
 void AValkyrie::Skill1Key()
 {
-	mSkillState = ESkillState::ESS_Sprint;
-	PlayMontage(FName("Sprint"));
-	FVector targetLocation = GetActorLocation();
-	tempLocation = targetLocation;
-	targetLocation += GetActorForwardVector() * 1000.f;
-	mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
+	//mSkillState = ESkillState::ESS_Sprint;
+	//PlayMontage(FName("Sprint"));
+	//FVector targetLocation = GetActorLocation();
+	//tempLocation = targetLocation;
+	//targetLocation += GetActorForwardVector() * 1000.f;
+	//mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
+
+
+	mSkillState = ESkillState::ESS_Ribbon;
+	PlayMontage(FName("Ribbon"));
+
+	FVector location = GetActorLocation();
+	FRotator rotation = GetActorRotation();
+
+	{
+		FVector dir = GetActorForwardVector() + GetActorRightVector();	// 1
+		FVector targetLocation = GetActorLocation() + dir * 500.f;
+		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+			targetLocation);
+
+		location = targetLocation;
+		rotation = targetRotation;
+
+		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon1"), targetLocation, targetRotation);
+	}
+	
+	{
+		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
+		FVector targetLocation = location + dir * 500.f;
+		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
+			targetLocation);
+
+		location = targetLocation;
+		rotation = targetRotation;
+
+		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon2"), targetLocation, targetRotation);
+	}
+
+	{
+		FVector right = UKismetMathLibrary::GetRightVector(rotation);
+		FVector targetLocation = location + right * 500.f;
+		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
+			targetLocation);
+
+		location = targetLocation;
+		rotation = targetRotation;
+
+		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon3"), targetLocation, targetRotation);
+	}
+
+	{
+		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
+		FVector targetLocation = location + dir * 500.f;
+		
+		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
+			targetLocation);
+
+		location = targetLocation;
+		rotation = targetRotation;
+
+		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon4"), targetLocation, targetRotation);
+	}
 }
 
 void AValkyrie::NormalAttackStart()
 {
 	if (mCurrentAttackIndex == 4)
-		mCurrentAttackIndex = 1;
+		mCurrentAttackIndex = 1;	
 	mIsCanNextAttack = true;
 	mIsAttackInputOn = false;
 	//if (FMath::IsWithinInclusive<int32>(mCurrentAttackIndex, 0, mAttackMaxIndex))
 	mCurrentAttackIndex = FMath::Clamp<int32>(mCurrentAttackIndex + 1, 1, mAttackMaxIndex);
+	
+	if (mIsJumpAttack)
+		mActionState = EActionState::EAS_JumpAttack;
+	else
+		mActionState = EActionState::EAS_Attack;
 }
 
 void AValkyrie::NormalAttackEnd()
@@ -177,6 +275,7 @@ void AValkyrie::NormalAttackEnd()
 	mIsAttackInputOn = false;
 	mIsCanNextAttack = false;
 	mCurrentAttackIndex = 0;
+	mActionState = EActionState::EAS_Idle;
 }
 
 void AValkyrie::SetMontagePlayRate()
@@ -189,73 +288,11 @@ void AValkyrie::SetMontagePlayRate()
 		montage = *mMontages.Find(FName("Sprint"));
 		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
 		break;
+	case ESkillState::ESS_Ribbon:
+		montage = *mMontages.Find(FName("Ribbon"));
+		mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+		break;
 	}
-}
-
-void AValkyrie::SetAnimDelegate()
-{
-	mAnimInst->mOnNextAttackCheck.AddLambda([this]() -> void {
-		mIsCanNextAttack = false;
-	if (mIsAttackInputOn)
-	{
-		NormalAttackStart();
-		PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
-	}
-		});
-
-	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
-		mIsAttacking = false;
-	NormalAttackEnd();
-	if (mWeapon)
-	{
-		mWeapon->ClearIgnoreActors();
-		mWeapon->SetTrailOnOff(false);
-	}
-		});
-
-	mAnimInst->mOnAttackCheckStart.AddLambda([this]() -> void {
-		if (mWeapon)
-		{
-			mWeapon->SetTrailOnOff(true);
-		}
-		});
-
-	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
-		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-
-	if (mSkillState == ESkillState::ESS_Sprint)
-	{
-		LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
-
-		GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
-	}
-		});
-
-	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
-		if (mSkillState == ESkillState::ESS_Sprint)
-		{
-			mCameraOne->SetActive(false);
-			mCameraComp->SetActive(true);
-			mSpringArmComp->TargetArmLength = 400.f;
-		}
-	});
-
-	mAnimInst->mChangeCamera.AddLambda([this]() -> void {
-		UAnimMontage* montage;
-
-		if (mSkillState == ESkillState::ESS_Sprint)
-		{
-			montage = *mMontages.Find(FName("Sprint"));
-			mAnimInst->Montage_SetPlayRate(montage, 0.5f);
-
-			if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
-			{
-				mCameraComp->SetActive(false);
-				mCameraOne->SetActive(true);
-				mSpringArmComp->TargetArmLength = 150.f;
-			}
-		}
-	});
 }
 
 void AValkyrie::SpawnEffect()
@@ -297,4 +334,89 @@ void AValkyrie::UnequipSword()
 		mCharacterState = ECharacterState::ECS_Unequipped;
 		mDirection = 0.f;
 	}
+}
+
+void AValkyrie::SetAnimDelegate()
+{
+	mAnimInst->mOnNextAttackCheck.AddLambda([this]() -> void {
+		mIsCanNextAttack = false;
+		if (mIsAttackInputOn)
+		{
+			NormalAttackStart();
+			PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
+		}
+	});
+
+	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
+		mIsAttacking = false;
+		mIsJumpAttack = false;
+		NormalAttackEnd();
+		if (mWeapon)
+		{
+			mWeapon->ClearIgnoreActors();
+			mWeapon->SetTrailOnOff(false);
+		}
+	});
+
+	mAnimInst->mOnAttackCheckStart.AddLambda([this]() -> void {
+		if (mWeapon)
+		{
+			mWeapon->SetTrailOnOff(true);
+		}
+	});
+
+	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
+		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+
+	if (mSkillState == ESkillState::ESS_Sprint)
+	{
+		LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
+		GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
+	}
+	else if (mSkillState == ESkillState::ESS_Ribbon)
+	{
+		LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
+		SetMontagePlayRate();
+	}
+		});
+
+	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
+		if (mSkillState == ESkillState::ESS_Sprint)
+		{
+			mCameraOne->SetActive(false);
+			mCameraComp->SetActive(true);
+			mSpringArmComp->TargetArmLength = 400.f;
+			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+		}
+		else if (mSkillState == ESkillState::ESS_Ribbon)
+		{
+			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+		}
+	});
+
+	mAnimInst->mChangeCamera.AddLambda([this]() -> void {
+		UAnimMontage* montage;
+
+	if (mSkillState == ESkillState::ESS_Sprint)
+	{
+		montage = *mMontages.Find(FName("Sprint"));
+		mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+
+		if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
+		{
+			mCameraComp->SetActive(false);
+			mCameraOne->SetActive(true);
+			mSpringArmComp->TargetArmLength = 150.f;
+		}
+	}
+		});
+
+	mAnimInst->mJumpAttackEnable.AddLambda([this]() -> void {
+		mIsJumpAttack = true;
+	});
+
+	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
+		mIsJumpAttack = false;
+		mActionState = EActionState::EAS_Idle;
+	});
 }

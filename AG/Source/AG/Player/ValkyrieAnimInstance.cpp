@@ -2,7 +2,7 @@
 
 
 #include "ValkyrieAnimInstance.h"
-#include "Valkyrie.h"
+
 
 void UValkyrieAnimInstance::NativeInitializeAnimation()
 {
@@ -15,6 +15,7 @@ void UValkyrieAnimInstance::NativeInitializeAnimation()
 	}
 
 	mIsInAir = false;
+	mIsJumpAttackEnd = true;
 }
 
 void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
@@ -28,6 +29,9 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		mDirection = mCharacter->GetDirection();
 		//mCharacterState = mCharacter->GetCharacterState();
 		mIsInAir = mMovementComp->IsFalling();
+		mIsJumpAttackEnable = mCharacter->GetIsJumpAttackEnable();
+		mActionState = mCharacter->GetActionState();
+		mJumpAttackIndex = mCharacter->GetJumpAttackIndex();
 	}
 }
 
@@ -69,4 +73,19 @@ void UValkyrieAnimInstance::AnimNotify_SpawnEffect()
 void UValkyrieAnimInstance::AnimNotify_ChangeCamera()
 {
 	mChangeCamera.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_JumpAttackEnable()
+{
+	mJumpAttackEnable.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_JumpEnd()
+{
+	mOnJumpEnd.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_JumpAttackEnd()
+{
+	mIsJumpAttackEnd = true;
 }
