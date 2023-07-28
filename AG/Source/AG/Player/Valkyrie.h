@@ -33,6 +33,8 @@ protected:
 	virtual void EquipWeaponKey() override;
 	virtual void NormalAttackKey() override;
 	void Skill1Key();
+	void Skill2Key();
+	void Skill3Key();
 
 	void NormalAttackStart();
 	void NormalAttackEnd();

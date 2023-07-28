@@ -8,6 +8,7 @@
 #include "RootMotionModifier.h"
 #include "../Particle/ParticleCascade.h"
 #include "../Particle/ParticleNiagara.h"
+#include "../Particle/ValkyrieSlash.h"
 
 AValkyrie::AValkyrie()
 {
@@ -63,12 +64,12 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Ribbon"), montage4);
 
 	UAnimMontage* montage5;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> jumpAttackMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_JumpAttack.AM_Valkyrie_JumpAttack'"));
-	if (jumpAttackMontage.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Slash.AM_Valkyrie_Slash'"));
+	if (slashMontage.Succeeded())
 	{
-		montage5 = jumpAttackMontage.Object;
+		montage5 = slashMontage.Object;
 	}
-	mMontages.Add(FName("JumpAttack"), montage5);
+	mMontages.Add(FName("Slash"), montage5);
 
 
 	mAttackMaxIndex = 4;
@@ -191,14 +192,16 @@ void AValkyrie::NormalAttackKey()
 
 void AValkyrie::Skill1Key()
 {
-	//mSkillState = ESkillState::ESS_Sprint;
-	//PlayMontage(FName("Sprint"));
-	//FVector targetLocation = GetActorLocation();
-	//tempLocation = targetLocation;
-	//targetLocation += GetActorForwardVector() * 1000.f;
-	//mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
+	mSkillState = ESkillState::ESS_Sprint;
+	PlayMontage(FName("Sprint"));
+	FVector targetLocation = GetActorLocation();
+	tempLocation = targetLocation;
+	targetLocation += GetActorForwardVector() * 1000.f;
+	mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
+}
 
-
+void AValkyrie::Skill2Key()
+{
 	mSkillState = ESkillState::ESS_Ribbon;
 	PlayMontage(FName("Ribbon"));
 
@@ -253,6 +256,12 @@ void AValkyrie::Skill1Key()
 
 		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon4"), targetLocation, targetRotation);
 	}
+}
+
+void AValkyrie::Skill3Key()
+{
+	mSkillState = ESkillState::ESS_Slash;
+	PlayMontage(FName("Slash"));
 }
 
 void AValkyrie::NormalAttackStart()
@@ -315,6 +324,19 @@ void AValkyrie::SpawnEffect()
 		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LightningAttactOnPoint_2.NS_LightningAttactOnPoint_2'"));
 		niagara->SetNiagaraScale(FVector(0.1f));
 		break;
+
+	case ESkillState::ESS_Slash:
+	{
+		FRotator rotation = FRotator(0.f, GetControlRotation().Yaw-90.f, 0.f);
+		AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+			GetActorLocation() + GetActorForwardVector() * 100.f,
+			rotation,
+			SpawnParam
+			);
+		slash->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Fire_Slash.NS_Fire_Slash'"));
+		slash->SetDirection(GetActorForwardVector());
+	}
+	break;
 	}
 }
 
@@ -324,6 +346,10 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Released,
 		this, &AValkyrie::Skill1Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
+		this, &AValkyrie::Skill2Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Released,
+		this, &AValkyrie::Skill3Key);
 }
 
 void AValkyrie::UnequipSword()
