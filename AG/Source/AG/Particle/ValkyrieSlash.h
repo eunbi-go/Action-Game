@@ -30,4 +30,7 @@ private:
 
 	UPROPERTY()
 	FTimerHandle	mTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class ACollisionActor* mCollisionActor;
 };

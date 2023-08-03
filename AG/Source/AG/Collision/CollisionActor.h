@@ -41,11 +41,7 @@ public:
 
 	void ClearTimer();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		UBoxComponent* mCollisionBox;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		UCapsuleComponent* mCollisionCapsule;
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,26 +50,21 @@ private:
 	void GetHit(AActor* _hitActor);
 
 public:
+	void SetCollisionProfileName(const FName& _value)
+	{
+		mCollisionBox->SetCollisionProfileName(_value);
+		mCollisionCapsule->SetCollisionProfileName(_value);
+	}
+
+	void SetCollisionEnabled(ECollisionEnabled::Type _value)
+	{
+		mCollisionBox->SetCollisionEnabled(_value);
+		mCollisionCapsule->SetCollisionEnabled(_value);
+	}
+
 	void SetCollisionShape(ECollisionType _value)
 	{
 		mCollisionShape = _value;
-
-		if (mCollisionShape == ECollisionType::ECS_Capsule)
-		{
-		}
-		else
-		{
-		}
-	}
-
-	void SetCollisionProfileName(FName _value)
-	{
-		mCollisionProfileName = _value;
-
-		if (mCollisionShape == ECollisionType::ECS_Capsule)
-			mCollisionCapsule->SetCollisionProfileName(mCollisionProfileName);
-		else if (mCollisionShape == ECollisionType::ECS_Box)
-			mCollisionBox->SetCollisionProfileName(mCollisionProfileName);
 	}
 
 	void SetCapsuleHalfHeight(float _value)
@@ -106,6 +97,13 @@ public:
 	}
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UBoxComponent* mCollisionBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UCapsuleComponent* mCollisionCapsule;
+
+
 	ECollisionType	mCollisionShape;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -115,10 +113,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	USceneComponent* mRoot;
-
-
-
-	FName	mCollisionProfileName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<AActor*> mActorsToIgnoreArray;

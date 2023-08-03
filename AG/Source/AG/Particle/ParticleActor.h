@@ -35,4 +35,6 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UAudioComponent* mAudio;
+
+	
 };

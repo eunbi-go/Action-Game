@@ -16,6 +16,12 @@ AParticleNiagara::AParticleNiagara()
 void AParticleNiagara::BeginPlay()
 {
 	Super::BeginPlay();
+
+	mParticle->OnSystemFinished.AddDynamic(this, &AParticleNiagara::OnSystemFinish);
+}
+
+void AParticleNiagara::OnSystemFinish(UNiagaraComponent* PSystem)
+{
 }
 
 void AParticleNiagara::SetParticle(UNiagaraSystem* _particle)

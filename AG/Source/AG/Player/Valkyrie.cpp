@@ -9,6 +9,7 @@
 #include "../Particle/ParticleCascade.h"
 #include "../Particle/ParticleNiagara.h"
 #include "../Particle/ValkyrieSlash.h"
+#include "../Particle/ValkyrieLightning.h"
 
 AValkyrie::AValkyrie()
 {
@@ -210,7 +211,7 @@ void AValkyrie::Skill2Key()
 
 	{
 		FVector dir = GetActorForwardVector() + GetActorRightVector();	// 1
-		FVector targetLocation = GetActorLocation() + dir * 500.f;
+		FVector targetLocation = GetActorLocation() + dir * 300.f;
 		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
 			targetLocation);
 
@@ -222,7 +223,7 @@ void AValkyrie::Skill2Key()
 	
 	{
 		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + dir * 500.f;
+		FVector targetLocation = location + dir * 300.f;
 		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
 			targetLocation);
 
@@ -234,7 +235,7 @@ void AValkyrie::Skill2Key()
 
 	{
 		FVector right = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + right * 500.f;
+		FVector targetLocation = location + right * 300.f;
 		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
 			targetLocation);
 
@@ -246,7 +247,7 @@ void AValkyrie::Skill2Key()
 
 	{
 		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + dir * 500.f;
+		FVector targetLocation = location + dir * 300.f;
 		
 		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
 			targetLocation);
@@ -299,16 +300,13 @@ void AValkyrie::SetMontagePlayRate()
 		break;
 	case ESkillState::ESS_Ribbon:
 		montage = *mMontages.Find(FName("Ribbon"));
-		mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+		mAnimInst->Montage_SetPlayRate(montage, 1.5f);
 		break;
 	}
 }
 
 void AValkyrie::SpawnEffect()
 {
-	//AParticleCascade* particle;
-	AParticleNiagara* niagara;
-
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -316,14 +314,27 @@ void AValkyrie::SpawnEffect()
 	switch (mSkillState)
 	{
 	case ESkillState::ESS_Sprint:
-		niagara = GetWorld()->SpawnActor<AParticleNiagara>(
-				GetActorLocation() + GetActorForwardVector() * 300.f,
-				FRotator::ZeroRotator,
-				SpawnParam
-				);
+	{
+		AValkyrieLightning* niagara = GetWorld()->SpawnActor<AValkyrieLightning>(
+			GetActorLocation() + GetActorForwardVector() * 300.f,
+			FRotator::ZeroRotator,
+			SpawnParam
+			);
 		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LightningAttactOnPoint_2.NS_LightningAttactOnPoint_2'"));
 		niagara->SetNiagaraScale(FVector(0.1f));
+	}
 		break;
+
+	case ESkillState::ESS_Ribbon:
+	{
+		AParticleNiagara* niagara = GetWorld()->SpawnActor<AParticleNiagara>(
+			GetActorLocation(),
+			FRotator::ZeroRotator,
+			SpawnParam
+			);
+		niagara->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
+	}
+	break;
 
 	case ESkillState::ESS_Slash:
 	{
@@ -394,17 +405,17 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 
-	if (mSkillState == ESkillState::ESS_Sprint)
-	{
-		LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
-		GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
-	}
-	else if (mSkillState == ESkillState::ESS_Ribbon)
-	{
-		LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
-		SetMontagePlayRate();
-	}
-		});
+		if (mSkillState == ESkillState::ESS_Sprint)
+		{
+			LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
+			GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
+		}
+		else if (mSkillState == ESkillState::ESS_Ribbon)
+		{
+			LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
+			SetMontagePlayRate();
+		}
+	});
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
 		if (mSkillState == ESkillState::ESS_Sprint)

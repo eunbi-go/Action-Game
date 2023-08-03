@@ -17,6 +17,9 @@ class AG_API AParticleNiagara : public AParticleActor
 public:
 	AParticleNiagara();
 
+	UFUNCTION()
+	virtual void OnSystemFinish(class UNiagaraComponent* PSystem);
+
 protected:
 	virtual void BeginPlay() override;
 

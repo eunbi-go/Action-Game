@@ -12,8 +12,6 @@ void AValkyrieLightning::OnSystemFinish(UNiagaraComponent* PSystem)
 {
 	Super::OnSystemFinish(PSystem);
 
-	PrintViewport(1.f, FColor::Red, TEXT("³¡"));
-
 	mCollisionActor->ClearTimer();
 	PSystem->DestroyComponent();
 	Destroy();
@@ -42,6 +40,7 @@ void AValkyrieLightning::SpawnCollisionActor()
 
 	mCollisionActor->SetActorLocation(GetActorLocation());
 	mCollisionActor->SetCollisionShape(ECollisionType::ECS_Box);
-	mCollisionActor->mCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	mCollisionActor->mCollisionBox->SetBoxExtent(FVector(50.f));
+	mCollisionActor->SetCollisionProfileName(FName("PlayerSword"));
+	mCollisionActor->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	mCollisionActor->SetBoxExtent(FVector(50.f));
 }

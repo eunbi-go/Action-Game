@@ -14,12 +14,12 @@ ACollisionActor::ACollisionActor()
 
 	mCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	mCollisionBox->SetupAttachment(mRoot);
-	mCollisionBox->SetCollisionProfileName(TEXT("PlayerSword"));
+	//mCollisionBox->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
 	mCollisionCapsule->SetupAttachment(mRoot);
-	mCollisionCapsule->SetCollisionProfileName(TEXT("PlayerSword"));
+	//mCollisionCapsule->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
