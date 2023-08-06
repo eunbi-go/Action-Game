@@ -10,7 +10,7 @@ UE 5.0.3을 활용한 Action Game 개발
 
 3) 목표: 언리얼 엔진5를 활용한 1인 RPG 게임 개발  
 
-4) 주요 개발 내용:  
+4) 주요 개발 내용:
 Niagara System 과 Material 을 활용해 Ribbon Trail
 
 (Basic / WeaponActor.cpp, WeaponActor.h)  
