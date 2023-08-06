@@ -31,6 +31,18 @@ ASword::ASword()
 	mBoxTraceEnd->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
 }
 
+void ASword::SetCollisionOnOff(bool _value)
+{
+	if (_value)
+	{
+		mBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else
+	{
+		mBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
 void ASword::BeginPlay()
 {
 	Super::BeginPlay();

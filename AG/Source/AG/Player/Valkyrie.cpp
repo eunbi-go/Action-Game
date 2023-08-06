@@ -89,6 +89,7 @@ AValkyrie::AValkyrie()
 
 	JumpMaxCount = 2;
 	GetCharacterMovement()->JumpZVelocity = 500.f;
+	mJumpAttackIndex = -1;
 }
 
 void AValkyrie::BeginPlay()
@@ -104,7 +105,7 @@ void AValkyrie::BeginPlay()
 	mWeapon = GetWorld()->SpawnActor<ASword>(ASword::StaticClass(), SpawnParam);
 	mWeapon->SetSkeletalMesh(TEXT("SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_HeroSword11/SK_Blade_HeroSword11.SK_Blade_HeroSword11'"));
 	mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
-
+	mWeapon->SetCollisionOnOff(false);
 
 	SetAnimDelegate();
 }
@@ -165,12 +166,22 @@ void AValkyrie::NormalAttackKey()
 	if (mCharacterState == ECharacterState::ECS_Unequipped)
 		return;
 
+	mWeapon->SetCollisionOnOff(true);
+
 	if (mIsJumpAttack)
 	{
-		LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
+		
 		mActionState = EActionState::EAS_JumpAttack;
-		if(mAnimInst->GetIsJumpAttackEnd())
-			mJumpAttackIndex = FMath::RandRange(0, 2);
+		
+		if (mAnimInst->GetIsJumpAttackEnd())
+		{
+			if (mJumpAttackIndex == 2)
+				mJumpAttackIndex = 0;
+			else
+				mJumpAttackIndex = FMath::Clamp<int32>(mJumpAttackIndex + 1, 0, 2);
+			LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
+			PrintViewport(0.5f, FColor::Blue, TEXT("Jump!"));
+		}
 		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JumpAttack: %d"), mJumpAttackIndex));
 		return;
 	}
@@ -194,6 +205,7 @@ void AValkyrie::NormalAttackKey()
 void AValkyrie::Skill1Key()
 {
 	mSkillState = ESkillState::ESS_Sprint;
+	mWeapon->SetCollisionOnOff(false);
 	PlayMontage(FName("Sprint"));
 	FVector targetLocation = GetActorLocation();
 	tempLocation = targetLocation;
@@ -205,6 +217,7 @@ void AValkyrie::Skill2Key()
 {
 	mSkillState = ESkillState::ESS_Ribbon;
 	PlayMontage(FName("Ribbon"));
+	mWeapon->SetCollisionOnOff(false);
 
 	FVector location = GetActorLocation();
 	FRotator rotation = GetActorRotation();
@@ -263,6 +276,7 @@ void AValkyrie::Skill3Key()
 {
 	mSkillState = ESkillState::ESS_Slash;
 	PlayMontage(FName("Slash"));
+	mWeapon->SetCollisionOnOff(false);
 }
 
 void AValkyrie::NormalAttackStart()
@@ -368,6 +382,7 @@ void AValkyrie::UnequipSword()
 	if (mWeapon)
 	{
 		mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
+		mWeapon->SetCollisionOnOff(false);
 		mCharacterState = ECharacterState::ECS_Unequipped;
 		mDirection = 0.f;
 	}
@@ -399,6 +414,7 @@ void AValkyrie::SetAnimDelegate()
 		if (mWeapon)
 		{
 			mWeapon->SetTrailOnOff(true);
+			mWeapon->SetCollisionOnOff(true);
 		}
 	});
 
@@ -455,5 +471,6 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
 		mIsJumpAttack = false;
 		mActionState = EActionState::EAS_Idle;
+		mJumpAttackIndex = -1;
 	});
 }

@@ -48,7 +48,7 @@ void ACollisionActor::Tick(float DeltaTime)
 
 void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//PrintViewport(1.f, FColor::Black, TEXT("OnBoxOverlapBegin"));
+	PrintViewport(1.f, FColor::Black, TEXT("OnBoxOverlapBegin"));
 
 
 	if (mHitType == EHitType::EHT_Once)

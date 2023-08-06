@@ -339,6 +339,9 @@ void AMonster::PlayHitMontage(const FVector& _impactPoint)
 	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
 
 	float angle = sign * degree;
+
+
+
 	FString angleString = TEXT("");
 
 	// ¿À¸¥ÂÊ.

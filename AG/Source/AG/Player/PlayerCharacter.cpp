@@ -399,27 +399,26 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		if (mAnimInst->GetPlayerMotion() != PLAYER_MOTION::NORMAL_ATTACK
 			&& mAnimInst->GetPlayerMotion() != PLAYER_MOTION::SKILL)
 		{ 
-			FVector targetPosition = DamageCauser->GetActorLocation();
 			FVector position = GetActorLocation();
-			FVector direction = targetPosition - position;
+			FVector impactPosition = FVector(DamageCauser->GetActorLocation().X, DamageCauser->GetActorLocation().Y, position.Z);
+			FVector direction = (impactPosition - position).GetSafeNormal();
 
-			direction.Z = 0.f;
-			direction.GetSafeNormal2D();
 
 			float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
-			float degree = UKismetMathLibrary::DegAcos(innerProduct);
+			float degree = UKismetMathLibrary::Acos(innerProduct);
+			degree = FMath::RadiansToDegrees(degree);
 
 			FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
 			float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
 
-
-
 			float angle = sign * degree;
+
 
 
 			FString angleString = TEXT("");
 
-			if (sign >= 0.f)
+			// ¿À¸¥ÂÊ.
+			if (angle >= 0.f)
 			{
 				if (degree >= 50.f && angle <= 130.f)
 					angleString = TEXT("Right");
@@ -429,7 +428,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 					angleString = TEXT("Back");
 			}
 
-			else if (sign < 0.f)
+			// ¿ÞÂÊ
+			else if (angle < 0.f)
 			{
 				if (degree <= -50.f && angle >= -130.f)
 					angleString = TEXT("Left");

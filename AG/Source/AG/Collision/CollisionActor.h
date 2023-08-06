@@ -41,7 +41,14 @@ public:
 
 	void ClearTimer();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		UBoxComponent* mCollisionBox;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		UCapsuleComponent* mCollisionCapsule;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		USceneComponent* mRoot;
 
 protected:
 	virtual void BeginPlay() override;
@@ -97,11 +104,7 @@ public:
 	}
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UBoxComponent* mCollisionBox;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UCapsuleComponent* mCollisionCapsule;
 
 
 	ECollisionType	mCollisionShape;
@@ -111,8 +114,7 @@ private:
 
 	float	mHitSeconds;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	USceneComponent* mRoot;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<AActor*> mActorsToIgnoreArray;

@@ -21,6 +21,8 @@ public:
 
 	void SetTrailOnOff(bool _value) { mTrail->SetVisibility(_value); }
 
+	void SetCollisionOnOff(bool _value);
+
 protected:
 	virtual void BeginPlay() override;
 

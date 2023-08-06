@@ -61,6 +61,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_JumpAttackEnd();
 
+	UFUNCTION()
+	void AnimNotify_JumpAttackStart();
+
 	UPROPERTY(BlueprintReadOnly)
 	AValkyrie* mCharacter;
 

@@ -78,14 +78,21 @@ void UValkyrieAnimInstance::AnimNotify_ChangeCamera()
 void UValkyrieAnimInstance::AnimNotify_JumpAttackEnable()
 {
 	mJumpAttackEnable.Broadcast();
+	mIsJumpAttackEnd = true;
 }
 
 void UValkyrieAnimInstance::AnimNotify_JumpEnd()
 {
 	mOnJumpEnd.Broadcast();
+	mIsJumpAttackEnd = true;
 }
 
 void UValkyrieAnimInstance::AnimNotify_JumpAttackEnd()
 {
-	mIsJumpAttackEnd = true;
+	mIsJumpAttackEnd = false;
+}
+
+void UValkyrieAnimInstance::AnimNotify_JumpAttackStart()
+{
+	//mIsJumpAttackEnd = false;
 }

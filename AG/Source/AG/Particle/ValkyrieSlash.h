@@ -20,6 +20,9 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	void SetDirection(const FVector& _value) { mDirection = _value; }
 
 	void Stop();
@@ -32,5 +35,11 @@ private:
 	FTimerHandle	mTimer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	class ACollisionActor* mCollisionActor;
+	class ACollisionActor* mLeftCollisionActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class ACollisionActor* mCenterCollisionActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class ACollisionActor* mRightCollisionActor;
 };
