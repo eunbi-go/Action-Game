@@ -14,6 +14,9 @@ class AG_API AValkyrieSlash : public AParticleNiagara
 {
 	GENERATED_BODY()
 
+public:
+	AValkyrieSlash();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -23,10 +26,21 @@ public:
 	UFUNCTION()
 	void OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void SetDirection(const FVector& _value) { mDirection = _value; }
+	void SetDirection(const FVector& _value);
+	
 
 	void Stop();
 	void Start();
+
+	void SetIsHit(bool _value)
+	{
+		mIsHit = _value;
+	}
+
+	bool GetIsHit()
+	{
+		return mIsHit;
+	}
 
 private:
 	FVector mDirection;
@@ -42,4 +56,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class ACollisionActor* mRightCollisionActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		UBoxComponent* mCollisionBox;
+
+	bool mIsHit = false;
 };

@@ -103,6 +103,27 @@ public:
 		onColl = _value;
 	}
 
+	void SetMoveDirection(const FVector& _value)
+	{
+		mMoveDirection = _value;
+		mIsMove = true;
+	}
+
+	void SetInitLocation(const FVector& _value)
+	{
+		mInitLocation = _value;
+	}
+
+	FVector GetInitLocation()
+	{
+		return mInitLocation;
+	}
+
+	void SetParent(AActor* _value)
+	{
+		mParent = _value;
+	}
+
 private:
 
 
@@ -122,4 +143,12 @@ private:
 	FTimerHandle mTimer;
 
 	bool onColl = false;
+
+	FVector mMoveDirection;
+	FVector mInitLocation;
+
+	bool mIsMove = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	AActor* mParent;
 };

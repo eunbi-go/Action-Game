@@ -4,6 +4,7 @@
 #include "CollisionActor.h"
 #include "../Interface/HitInterface.h"
 #include "../Particle/ValkyrieLightning.h"
+#include "../Particle/ValkyrieSlash.h"
 
 ACollisionActor::ACollisionActor()
 {
@@ -21,6 +22,8 @@ ACollisionActor::ACollisionActor()
 	mCollisionCapsule->SetupAttachment(mRoot);
 	//mCollisionCapsule->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	mMoveDirection = FVector(0.f);
 }
 
 void ACollisionActor::BeginPlay()
@@ -44,6 +47,14 @@ void ACollisionActor::GetHit(AActor* _hitActor)
 void ACollisionActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (mIsMove)
+	{
+		/*if (mCollisionShape == ECollisionType::ECS_Box)
+			mCollisionBox->SetWorldLocation(mInitLocation + mMoveDirection * DeltaTime * 1000.f);
+		if (mCollisionShape == ECollisionType::ECS_Capsule)
+			mCollisionCapsule->SetWorldLocation(mInitLocation + mMoveDirection * DeltaTime * 1000.f);*/
+	}
 }
 
 void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -53,6 +64,9 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 
 	if (mHitType == EHitType::EHT_Once)
 	{
+		if (Cast<AValkyrieSlash>(mParent)->GetIsHit())
+			return;
+
 		// 한 번에 한 액터를 2번 이상 hit 하지 않도록.
 		for (AActor* actor : mActorsToIgnoreArray)
 			mActorsToIgnoreArray.AddUnique(actor);
@@ -79,11 +93,20 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 	{
 		if (hitInfo.GetActor())
 		{
-			//IHitInterface* hitInterface = Cast<IHitInterface>(hitInfo.GetActor());
-			//hitInterface->GetHit(hitInfo.ImpactPoint);
+			IHitInterface* hitInterface = Cast<IHitInterface>(hitInfo.GetActor());
 
 			if (mHitType == EHitType::EHT_Once)
 			{
+				if (hitInterface)
+				{
+					hitInterface->GetHit(hitInfo.ImpactPoint);
+				}
+				hitInfo.GetActor()->TakeDamage(
+					damage,
+					FDamageEvent(),
+					GetWorld()->GetFirstPlayerController(),
+					this);
+				Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
 				//actorsToIgnoreArray.AddUnique(hitInfo.GetActor());
 			}
 			else if (mHitType == EHitType::EHT_Continuous)
