@@ -23,6 +23,11 @@ ACollisionActor::ACollisionActor()
 	//mCollisionCapsule->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	mCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	mCollisionSphere->SetupAttachment(mRoot);
+	//mCollisionSphere->SetCollisionProfileName(TEXT("PlayerSword"));
+	mCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	mMoveDirection = FVector(0.f);
 }
 
@@ -35,6 +40,9 @@ void ACollisionActor::BeginPlay()
 
 	mCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &ACollisionActor::OnCapsuleOverlapBegin);
 	mCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &ACollisionActor::OnCapsuleOverlapEnd);
+
+	mCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACollisionActor::OnBoxOverlapBegin);
+	mCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ACollisionActor::OnBoxOverlapEnd);
 
 	mActorsToIgnoreArray.Add(this);
 }
@@ -107,21 +115,25 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 					GetWorld()->GetFirstPlayerController(),
 					this);
 				Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
-				//actorsToIgnoreArray.AddUnique(hitInfo.GetActor());
 			}
 			else if (mHitType == EHitType::EHT_Continuous)
 			{
 				GetWorld()->GetTimerManager().SetTimer(
 					mTimer,
-					FTimerDelegate::CreateLambda([this, hitInfo, damage]() {
+					FTimerDelegate::CreateLambda([this, hitInfo, damage, hitInterface]() {
+						
 						PrintViewport(1.f, FColor::Black, TEXT("GetHit"));
-						//UGameplayStatics::ApplyDamage(
-						//	hitInfo.GetActor(),
-						//	damage,
-						//	GetInstigator()->GetController(),
-						//	this,
-						//	UDamageType::StaticClass()
-						//);
+						if (hitInterface)
+						{
+							hitInterface->GetHit(hitInfo.ImpactPoint);
+						}
+						hitInfo.GetActor()->TakeDamage(
+							damage,
+							FDamageEvent(),
+							GetWorld()->GetFirstPlayerController(),
+							this);
+						Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
+
 						}),
 					0.5f,
 					true

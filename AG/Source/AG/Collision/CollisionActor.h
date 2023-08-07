@@ -8,7 +8,8 @@ UENUM()
 enum class ECollisionType : uint8
 {
 	ECS_Capsule,
-	ECS_Box
+	ECS_Box,
+	ECS_Sphere
 };
 
 UENUM()
@@ -48,6 +49,9 @@ public:
 		UCapsuleComponent* mCollisionCapsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		USphereComponent* mCollisionSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		USceneComponent* mRoot;
 
 protected:
@@ -61,12 +65,14 @@ public:
 	{
 		mCollisionBox->SetCollisionProfileName(_value);
 		mCollisionCapsule->SetCollisionProfileName(_value);
+		mCollisionSphere->SetCollisionProfileName(_value);
 	}
 
 	void SetCollisionEnabled(ECollisionEnabled::Type _value)
 	{
 		mCollisionBox->SetCollisionEnabled(_value);
 		mCollisionCapsule->SetCollisionEnabled(_value);
+		mCollisionSphere->SetCollisionEnabled(_value);
 	}
 
 	void SetCollisionShape(ECollisionType _value)
@@ -122,6 +128,11 @@ public:
 	void SetParent(AActor* _value)
 	{
 		mParent = _value;
+	}
+
+	void SetSphereRadius(float _value)
+	{
+		mCollisionSphere->SetSphereRadius(_value);
 	}
 
 private:

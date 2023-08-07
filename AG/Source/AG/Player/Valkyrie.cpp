@@ -10,6 +10,7 @@
 #include "../Particle/ParticleNiagara.h"
 #include "../Particle/ValkyrieSlash.h"
 #include "../Particle/ValkyrieLightning.h"
+#include "../Particle/ValkyrieDemonSlash.h"
 
 AValkyrie::AValkyrie()
 {
@@ -314,7 +315,7 @@ void AValkyrie::SetMontagePlayRate()
 		break;
 	case ESkillState::ESS_Ribbon:
 		montage = *mMontages.Find(FName("Ribbon"));
-		mAnimInst->Montage_SetPlayRate(montage, 1.5f);
+		mAnimInst->Montage_SetPlayRate(montage, 0.6f);
 		break;
 	}
 }
@@ -341,7 +342,7 @@ void AValkyrie::SpawnEffect()
 
 	case ESkillState::ESS_Ribbon:
 	{
-		AParticleNiagara* niagara = GetWorld()->SpawnActor<AParticleNiagara>(
+		AValkyrieDemonSlash* niagara = GetWorld()->SpawnActor<AValkyrieDemonSlash>(
 			GetActorLocation(),
 			FRotator::ZeroRotator,
 			SpawnParam
@@ -428,7 +429,7 @@ void AValkyrie::SetAnimDelegate()
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
-			LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
+			LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
 			SetMontagePlayRate();
 		}
 	});
