@@ -207,7 +207,7 @@ void UMonsterAnimInstance::Hit()
 
 	if (!Montage_IsPlaying(mHitMontageArray[mHitMontageIndex]))
 	{
-		PrintViewport(10.f, FColor::Purple, TEXT("hitttttttt"));
+		//PrintViewport(10.f, FColor::Purple, TEXT("hitttttttt"));
 		Montage_SetPosition(mHitMontageArray[mHitMontageIndex], 0.f);
 		Montage_Play(mHitMontageArray[mHitMontageIndex]);
 	}

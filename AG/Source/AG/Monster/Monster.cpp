@@ -16,6 +16,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "../Basic/ItemActor.h"
 #include "FengMao.h"
+#include "../Player/Valkyrie.h"
 
 AMonster::AMonster()
 {
@@ -268,6 +269,12 @@ void AMonster::GetHit(const FVector& _impactPoint)
 {
 	//PrintViewport(1.f, FColor::Orange, TEXT("GetHit"));
 	PlayHitMontage(_impactPoint);
+}
+
+void AMonster::PlayJumpAction(const FVector& _impactPoint)
+{
+	PrintViewport(1.f, FColor::Orange, TEXT("PlayJumpAction"));
+	LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
 }
 
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

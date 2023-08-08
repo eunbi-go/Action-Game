@@ -5,6 +5,7 @@
 #include "../Interface/HitInterface.h"
 #include "../Particle/ValkyrieLightning.h"
 #include "../Particle/ValkyrieSlash.h"
+#include "../Particle/ValkyrieDemonSlash.h"
 
 ACollisionActor::ACollisionActor()
 {
@@ -41,7 +42,7 @@ void ACollisionActor::BeginPlay()
 	mCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &ACollisionActor::OnCapsuleOverlapBegin);
 	mCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &ACollisionActor::OnCapsuleOverlapEnd);
 
-	mCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACollisionActor::OnBoxOverlapBegin);
+	mCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACollisionActor::OnSphereOverlapBegin);
 	mCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ACollisionActor::OnBoxOverlapEnd);
 
 	mActorsToIgnoreArray.Add(this);
@@ -72,7 +73,7 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 
 	if (mHitType == EHitType::EHT_Once)
 	{
-		if (Cast<AValkyrieSlash>(mParent)->GetIsHit())
+		if (Cast<AValkyrieSlash>(mParent) && Cast<AValkyrieSlash>(mParent)->GetIsHit())
 			return;
 
 		// 한 번에 한 액터를 2번 이상 hit 하지 않도록.
@@ -114,8 +115,13 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 					FDamageEvent(),
 					GetWorld()->GetFirstPlayerController(),
 					this);
-				Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
-			}
+				if (Cast<AValkyrieSlash>(mParent))
+					Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
+				if (Cast<AValkyrieDemonSlash>(mParent))
+				{
+					hitInterface->PlayJumpAction(hitInfo.ImpactPoint);
+				}
+			}	
 			else if (mHitType == EHitType::EHT_Continuous)
 			{
 				GetWorld()->GetTimerManager().SetTimer(
@@ -132,10 +138,11 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 							FDamageEvent(),
 							GetWorld()->GetFirstPlayerController(),
 							this);
-						Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
+						if (Cast<AValkyrieSlash>(mParent))
+							Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
 
 						}),
-					0.5f,
+					0.7f,
 					true
 					);
 			}
@@ -153,6 +160,35 @@ void ACollisionActor::OnCapsuleOverlapBegin(UPrimitiveComponent* OverlappedCompo
 
 void ACollisionActor::OnCapsuleOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+}
+
+void ACollisionActor::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IHitInterface* hitInterface = Cast<IHitInterface>(OtherActor);
+	float damage = 10.f;
+	
+	if (mHitType == EHitType::EHT_Once)
+	{
+		if (hitInterface)
+		{
+			hitInterface->GetHit(SweepResult.ImpactPoint);
+		}
+
+		OtherActor->TakeDamage(
+			damage,
+			FDamageEvent(),
+			GetWorld()->GetFirstPlayerController(),
+			this);
+
+		if (Cast<AValkyrieSlash>(mParent))
+		{
+			Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
+		}
+		if (Cast<AValkyrieDemonSlash>(mParent) && hitInterface)
+		{
+			hitInterface->PlayJumpAction(SweepResult.ImpactPoint);
+		}
+	}
 }
 
 void ACollisionActor::ClearTimer()

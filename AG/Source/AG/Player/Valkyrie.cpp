@@ -11,7 +11,9 @@
 #include "../Particle/ValkyrieSlash.h"
 #include "../Particle/ValkyrieLightning.h"
 #include "../Particle/ValkyrieDemonSlash.h"
+#include "../Particle/ValkyrieBlinkFire.h"
 #include "../Skill/FresnelActor.h"
+#include "CharacterStatComponent.h"
 
 AValkyrie::AValkyrie()
 {
@@ -218,6 +220,7 @@ void AValkyrie::NormalAttackKey()
 void AValkyrie::Skill1Key()
 {
 	mSkillState = ESkillState::ESS_Sprint;
+	mStat->SetMp(mStat->GetMp() - 100.f);
 	mWeapon->SetCollisionOnOff(false);
 	PlayMontage(FName("Sprint"));
 	FVector targetLocation = GetActorLocation();
@@ -229,6 +232,7 @@ void AValkyrie::Skill1Key()
 void AValkyrie::Skill2Key()
 {
 	mSkillState = ESkillState::ESS_Ribbon;
+	mStat->SetMp(mStat->GetMp() - 100.f);
 	PlayMontage(FName("Ribbon"));
 	mWeapon->SetCollisionOnOff(false);
 
@@ -291,6 +295,7 @@ void AValkyrie::Skill2Key()
 void AValkyrie::Skill3Key()
 {
 	mSkillState = ESkillState::ESS_Slash;
+	mStat->SetMp(mStat->GetMp() - 100.f);
 	PlayMontage(FName("Slash"));
 	mWeapon->SetCollisionOnOff(false);
 }
@@ -420,6 +425,18 @@ void AValkyrie::SpawnEffect()
 	}
 	break;
 	}
+
+	switch (mActionState)
+	{
+	case EActionState::EAS_Attack:
+		AValkyrieBlinkFire* slash = GetWorld()->SpawnActor<AValkyrieBlinkFire>(
+			GetActorLocation(),
+			GetActorRotation(),
+			SpawnParam
+			);
+		slash->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Blink_Fire.NS_Blink_Fire'"));
+		break;
+	}
 }
 
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -520,7 +537,7 @@ void AValkyrie::SetAnimDelegate()
 			mSpringArmComp->TargetArmLength = 150.f;
 		}
 	}
-		});
+	});
 
 	mAnimInst->mJumpAttackEnable.AddLambda([this]() -> void {
 		mIsJumpAttack = true;

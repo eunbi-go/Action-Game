@@ -17,13 +17,13 @@ AAGGameModeBase::AAGGameModeBase()
 	DefaultPawnClass = AValkyrie::StaticClass();
 	//PlayerControllerClass = AAGPlayerController::StaticClass();
 
-	//ConstructorHelpers::FClassFinder<UUserWidget>
-	//	mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
+	ConstructorHelpers::FClassFinder<UUserWidget>
+		mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
 
-	//if (mainWidget.Succeeded())
-	//{
-	//	mMainWidgetClass = mainWidget.Class;
-	//}
+	if (mainWidget.Succeeded())
+	{
+		mMainWidgetClass = mainWidget.Class;
+	}
 }
 
 void AAGGameModeBase::BeginPlay()
@@ -34,12 +34,12 @@ void AAGGameModeBase::BeginPlay()
 
 	if (IsValid(mMainWidgetClass))
 	{
-		//mMainWidget = Cast<UMainWidget>(CreateWidget(GetWorld(), mMainWidgetClass));
-		//if (IsValid(mMainWidget))
-		//{
-		//	mMainWidget->AddToViewport();
-		//	mMainWidget->SetHp(1.f);
-		//}
+		mMainWidget = Cast<UMainWidget>(CreateWidget(GetWorld(), mMainWidgetClass));
+		if (IsValid(mMainWidget))
+		{
+			mMainWidget->AddToViewport();
+			mMainWidget->SetHp(1.f);
+		}
 	}
 }
 

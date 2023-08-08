@@ -93,9 +93,10 @@ private:
 	bool	mIsJumpAttack = false;
 
 	FresnelInfo mFresnelInfo;
-
+	
 public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }
 	EActionState GetActionState() { return mActionState; }
+	ESkillState GetSkillState() { return mSkillState; }
 	int32 GetJumpAttackIndex() { return mJumpAttackIndex; }
 };

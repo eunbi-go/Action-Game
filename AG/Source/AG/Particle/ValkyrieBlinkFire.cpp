@@ -1,14 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ValkyrieDemonSlash.h"
+#include "ValkyrieBlinkFire.h"
 #include "../Collision/CollisionActor.h"
 
-AValkyrieDemonSlash::AValkyrieDemonSlash()
+AValkyrieBlinkFire::AValkyrieBlinkFire()
 {
 }
 
-void AValkyrieDemonSlash::BeginPlay()
+void AValkyrieBlinkFire::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AValkyrieBlinkFire::OnSystemFinish(UNiagaraComponent* PSystem)
+{
+	mCollisionActor->Destroy();
+	Destroy();
+}
+
+void AValkyrieBlinkFire::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -16,11 +27,8 @@ void AValkyrieDemonSlash::BeginPlay()
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FVector location = GetActorLocation();
-	location.Z = 50.f;
-
 	mCollisionActor = GetWorld()->SpawnActor<ACollisionActor>(
-		location,
+		GetActorLocation(),
 		GetActorRotation(),
 		SpawnParam
 		);
@@ -31,16 +39,3 @@ void AValkyrieDemonSlash::BeginPlay()
 	mCollisionActor->SetHitType(EHitType::EHT_Once);
 	mCollisionActor->SetParent(this);
 }
-
-
-void AValkyrieDemonSlash::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AValkyrieDemonSlash::OnSystemFinish(UNiagaraComponent* PSystem)
-{
-	mCollisionActor->Destroy();
-	Destroy();
-}
-

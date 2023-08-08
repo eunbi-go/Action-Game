@@ -3,6 +3,14 @@
 
 #include "AGPlayer.h"
 #include "ValkyrieAnimInstance.h"
+#include "CharacterStatComponent.h"
+#include "../AGGameModeBase.h"
+#include "../Widget/MainWidget.h"
+#include "../Manager/InventoryManager.h"
+#include "../Widget/InventoryWidget.h"
+#include "../Widget/ItemQuickSlot.h"
+#include "../AGSaveGame.h"
+#include "../AGGameInstance.h"
 
 AAGPlayer::AAGPlayer()
 {
@@ -26,17 +34,82 @@ AAGPlayer::AAGPlayer()
 	mCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	mCameraComp->SetupAttachment(mSpringArmComp);
 	
+	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
 
 	mIsAttacking = false;
 
 	mCharacterState = ECharacterState::ECS_Unequipped;
 	mActionState = EActionState::EAS_Idle;
 	mSkillState = ESkillState::ESS_None;
+
+	mPlayerTableRowName = TEXT("Player");
 }
 
 void AAGPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UInventoryManager::GetInst(GetWorld())->InventoryOnOff(false);
+	//GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+
+
+	//---------------------------
+	// Data Table 을 활용해 PlayerInfo 세팅.
+	//---------------------------
+	UAGGameInstance* gameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
+
+	FString FullPath = FPaths::ProjectSavedDir() + TEXT("SaveGames/Save.txt");
+
+	TSharedPtr<FArchive>	Reader = MakeShareable(IFileManager::Get().CreateFileReader(*FullPath));
+	const FPlayerTableInfo* info = gameInst->FindPlayerTable(mPlayerTableRowName);
+
+	if (Reader.IsValid())
+	{
+		*Reader.Get() << mStat->GetInfo().name;
+		*Reader.Get() << mStat->GetInfo().attackPoint;
+		*Reader.Get() << mStat->GetInfo().defensePoint;
+		*Reader.Get() << mStat->GetInfo().hp;
+		*Reader.Get() << mStat->GetInfo().maxHp;
+		*Reader.Get() << mStat->GetInfo().mp;
+		*Reader.Get() << mStat->GetInfo().maxMp;
+		*Reader.Get() << mStat->GetInfo().level;
+		*Reader.Get() << mStat->GetInfo().exp;
+		*Reader.Get() << mStat->GetInfo().gold;
+		*Reader.Get() << mStat->GetInfo().movingWalkSpeed;
+		*Reader.Get() << mStat->GetInfo().movingRunSpeed;
+		*Reader.Get() << mStat->GetInfo().movingDashSpeed;
+		*Reader.Get() << mStat->GetInfo().attackDistance;
+
+		mStat->SetHp(mStat->GetInfo().hp);
+		mStat->SetMp(mStat->GetInfo().mp);
+		mStat->SetCoin(mStat->GetInfo().gold);
+	}
+	else
+	{
+
+		if (info)
+		{
+			mStat->GetInfo().name = info->name;
+			mStat->GetInfo().attackPoint = info->attackPoint;
+			mStat->GetInfo().defensePoint = info->defensePoint;
+			mStat->GetInfo().hp = info->hp;
+			mStat->GetInfo().maxHp = info->maxHp;
+			mStat->GetInfo().mp = info->mp;
+			mStat->GetInfo().maxMp = info->maxMp;
+			mStat->GetInfo().level = info->level;
+			mStat->GetInfo().exp = info->exp;
+			mStat->GetInfo().gold = info->gold;
+			mStat->GetInfo().movingWalkSpeed = info->movingWalkSpeed;
+			mStat->GetInfo().movingRunSpeed = info->movingRunSpeed;
+			mStat->GetInfo().movingDashSpeed = info->movingDashSpeed;
+			mStat->GetInfo().attackDistance = info->attackDistance;
+		}
+	}
+
+
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	UMainWidget* mainWidget = gameMode->GetMainWidget();
+	mainWidget->SetCharacterStat(mStat);
 }
 
 void AAGPlayer::MoveForward(float _value)
@@ -118,6 +191,29 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::NormalAttackKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Jump"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::JumpKey);
+}
+
+float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	damage -= mStat->GetCurrentInfo().defensePoint;
+	if (damage < 1)
+		damage = 1;
+
+	// death
+	if (mStat->GetHp() - damage <= 0)
+	{
+
+	}
+	// hit
+	else
+	{
+		mStat->SetHp(mStat->GetHp() - damage);
+
+
+	}
+
+	return 0.0f;
 }
 
 

@@ -8,3 +8,7 @@
 void IHitInterface::GetHit(const FVector& _impactPoint)
 {
 }
+
+void IHitInterface::PlayJumpAction(const FVector& _impactPoint)
+{
+}

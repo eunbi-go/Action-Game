@@ -7,6 +7,13 @@
 #include "../Interface/HitInterface.h"
 #include "Monster.generated.h"
 
+UENUM()
+enum class EHitActionType : uint8
+{
+	EHAT_Idle,
+	EHAT_Jump
+};
+
 UCLASS()
 class AG_API AMonster : public ACharacter, public IHitInterface
 {
@@ -27,8 +34,8 @@ public:
 	virtual void UnPossessed();
 
 	virtual void GetHit(const FVector& _impactPoint) override;
+	virtual void PlayJumpAction(const FVector& _impactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
-
 
 private:
 	void PlayHitMontage(const FVector& _impactPoint);
@@ -185,7 +192,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UWidgetComponent* mWidgetComopnent;
 
-	
+	EHitActionType	mHitActionType;
 
 
 protected:
