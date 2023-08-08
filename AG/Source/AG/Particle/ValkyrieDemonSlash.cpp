@@ -34,3 +34,9 @@ void AValkyrieDemonSlash::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AValkyrieDemonSlash::OnSystemFinish(UNiagaraComponent* PSystem)
+{
+	mCollisionActor->Destroy();
+	Destroy();
+}
+

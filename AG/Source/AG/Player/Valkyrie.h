@@ -8,6 +8,20 @@
 
 class UMotionWarpingComponent;
 
+USTRUCT(BlueprintType)
+struct FresnelInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	bool	mFresnelEnable;
+	float	mFresnelTime;
+	float	mFresnelTimeEnd;
+
+	float	mFresnelCreateTime;
+	float	mFresnelCreateTimeEnd;
+};
+
 UCLASS()
 class AG_API AValkyrie : public AAGPlayer
 {
@@ -42,6 +56,9 @@ protected:
 	UFUNCTION()
 	void SetMontagePlayRate();
 
+	void SpawnFresnel();
+	void ResetFresnel();
+
 
 	class ASword* mWeapon;
 
@@ -66,6 +83,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mJumpAttackIndex;
 
+	USkeletalMesh* mGhostMesh;
 
 private:
 	void SetAnimDelegate();
@@ -73,6 +91,8 @@ private:
 	FVector tempLocation;
 
 	bool	mIsJumpAttack = false;
+
+	FresnelInfo mFresnelInfo;
 
 public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }

@@ -15,6 +15,8 @@ DECLARE_MULTICAST_DELEGATE(FOnSkillEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnChangeCameraDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnJumpEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
 
 /**
  * 
@@ -64,6 +66,12 @@ public:
 	UFUNCTION()
 	void AnimNotify_JumpAttackStart();
 
+	UFUNCTION()
+	void AnimNotify_SpawnFresnel();
+
+	UFUNCTION()
+	void AnimNotify_ResetFresnel();
+
 	UPROPERTY(BlueprintReadOnly)
 	AValkyrie* mCharacter;
 
@@ -78,6 +86,8 @@ public:
 	FOnChangeCameraDelegate		mChangeCamera;
 	FOnJumpAttackEnableDelegate	mJumpAttackEnable;
 	FOnJumpEndDelegate			mOnJumpEnd;
+	FOnSpawnFresnelDelegate		mSpawnFresnel;
+	FOnResetFresnelDelegate		mResetFresnel;
 
 	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
 

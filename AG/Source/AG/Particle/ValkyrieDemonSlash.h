@@ -19,6 +19,8 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void OnSystemFinish(class UNiagaraComponent* PSystem) override;
+
 protected:
 	virtual void BeginPlay() override;
 

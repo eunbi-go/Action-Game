@@ -114,6 +114,14 @@ void AValkyrieSlash::OnParticleOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	}
 }
 
+void AValkyrieSlash::OnSystemFinish(UNiagaraComponent* PSystem)
+{
+	mLeftCollisionActor->Destroy();
+	mCenterCollisionActor->Destroy();
+	mRightCollisionActor->Destroy();
+	Destroy();
+}
+
 void AValkyrieSlash::SetDirection(const FVector& _value)
 {
 	mDirection = _value;

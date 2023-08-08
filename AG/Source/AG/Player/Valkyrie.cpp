@@ -11,6 +11,7 @@
 #include "../Particle/ValkyrieSlash.h"
 #include "../Particle/ValkyrieLightning.h"
 #include "../Particle/ValkyrieDemonSlash.h"
+#include "../Skill/FresnelActor.h"
 
 AValkyrie::AValkyrie()
 {
@@ -21,6 +22,7 @@ AValkyrie::AValkyrie()
 	if (characterAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(characterAsset.Object);
+		mGhostMesh = characterAsset.Object;
 	}
 	GetMesh()->SetRelativeLocation(FVector(0.0, 0.0, -90.0));
 	GetMesh()->SetRelativeRotation(FRotator(0.0, -90.0, 0.0));
@@ -91,6 +93,13 @@ AValkyrie::AValkyrie()
 	JumpMaxCount = 2;
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	mJumpAttackIndex = -1;
+
+
+	mFresnelInfo.mFresnelEnable = false;
+	mFresnelInfo.mFresnelTime = 0.f;
+	mFresnelInfo.mFresnelTimeEnd = 1.f;
+	mFresnelInfo.mFresnelCreateTime = 0.f;
+	mFresnelInfo.mFresnelCreateTimeEnd = 0.4f;
 }
 
 void AValkyrie::BeginPlay()
@@ -119,6 +128,9 @@ void AValkyrie::PostInitializeComponents()
 void AValkyrie::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (mFresnelInfo.mFresnelEnable)
+		SpawnFresnel();
 
 	//if (mActionState != EActionState::EAS_JumpAttack)
 	//	mIsJumpAttack = false;
@@ -222,6 +234,9 @@ void AValkyrie::Skill2Key()
 
 	FVector location = GetActorLocation();
 	FRotator rotation = GetActorRotation();
+	
+
+	
 
 	{
 		FVector dir = GetActorForwardVector() + GetActorRightVector();	// 1
@@ -318,6 +333,47 @@ void AValkyrie::SetMontagePlayRate()
 		mAnimInst->Montage_SetPlayRate(montage, 0.6f);
 		break;
 	}
+}
+
+void AValkyrie::SpawnFresnel()
+{
+	mFresnelInfo.mFresnelTime += GetWorld()->DeltaTimeSeconds;
+	mFresnelInfo.mFresnelCreateTime += GetWorld()->DeltaTimeSeconds;
+
+	if (mFresnelInfo.mFresnelCreateTime >= mFresnelInfo.mFresnelCreateTimeEnd)
+	{
+		mFresnelInfo.mFresnelCreateTime -= mFresnelInfo.mFresnelCreateTimeEnd;
+		PrintViewport(0.5f, FColor::Black, TEXT("Fresnel"));
+		// ÀÜ»ó »ý¼º
+		FActorSpawnParameters	SpawnParam;
+		//SpawnParam.Template = mHitActor;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AFresnelActor* ghost =
+			GetWorld()->SpawnActor<AFresnelActor>(
+				GetMesh()->GetComponentLocation(),
+				GetMesh()->GetComponentRotation(),
+				SpawnParam);
+
+		ghost->SetMesh(mGhostMesh);
+		ghost->CopyPoseFromSkeletalComp(GetMesh());
+	}
+
+	if (mFresnelInfo.mFresnelTime >= mFresnelInfo.mFresnelTimeEnd)
+	{
+		mFresnelInfo.mFresnelTime = 0.f;
+		mFresnelInfo.mFresnelEnable = false;
+	}
+}
+
+void AValkyrie::ResetFresnel()
+{
+	mFresnelInfo.mFresnelEnable = false;
+	mFresnelInfo.mFresnelTime = 0.f;
+	mFresnelInfo.mFresnelTimeEnd = 1.f;
+	mFresnelInfo.mFresnelCreateTime = 0.f;
+	mFresnelInfo.mFresnelCreateTimeEnd = 0.4f;
 }
 
 void AValkyrie::SpawnEffect()
@@ -445,6 +501,7 @@ void AValkyrie::SetAnimDelegate()
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+			ResetFresnel();
 		}
 	});
 
@@ -474,4 +531,21 @@ void AValkyrie::SetAnimDelegate()
 		mActionState = EActionState::EAS_Idle;
 		mJumpAttackIndex = -1;
 	});
+
+	mAnimInst->mSpawnFresnel.AddLambda([this]() -> void {
+		if (mSkillState == ESkillState::ESS_Ribbon)
+		{
+			mFresnelInfo.mFresnelEnable = true;
+			mFresnelInfo.mFresnelCreateTimeEnd = 0.1f;
+			SpawnFresnel();
+		}
+		});
+
+	mAnimInst->mResetFresnel.AddLambda([this]() -> void {
+		if (mSkillState == ESkillState::ESS_Ribbon)
+		{
+			mFresnelInfo.mFresnelEnable = false;
+			ResetFresnel();
+		}
+		});
 }

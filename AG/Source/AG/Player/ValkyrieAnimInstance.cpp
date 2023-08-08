@@ -96,3 +96,13 @@ void UValkyrieAnimInstance::AnimNotify_JumpAttackStart()
 {
 	//mIsJumpAttackEnd = false;
 }
+
+void UValkyrieAnimInstance::AnimNotify_SpawnFresnel()
+{
+	mSpawnFresnel.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_ResetFresnel()
+{
+	mResetFresnel.Broadcast();
+}
