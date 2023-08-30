@@ -39,7 +39,7 @@ AValkyrie::AValkyrie()
 
 
 	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
-	mTargetingComp->owner = this;
+	mTargetingComp->SetOwner(this);
 
 
 	UAnimMontage* montage;
@@ -307,8 +307,7 @@ void AValkyrie::Skill3Key()
 
 void AValkyrie::TargetingKey()
 {
-	PrintViewport(1.f, FColor::Black, FString("tete"));
-	mTargetingComp->CheckTarget();
+	mTargetingComp->SetTargetLock();
 }
 
 void AValkyrie::NormalAttackStart()
@@ -454,13 +453,13 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Released,
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill1Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill2Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Released,
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill3Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Released,
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
 }
 

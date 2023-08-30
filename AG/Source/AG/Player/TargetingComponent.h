@@ -19,6 +19,28 @@ public:
 	void CheckTarget();
 	AActor* GetClosetActor(TArray<AActor*> actors, FName targetTag);
 
+	void SetTargetLock()
+	{
+		mIsTargetLock = !mIsTargetLock;
+
+		if (mIsTargetLock)
+		{
+			CheckTarget();
+		}
+		else
+		{
+			mOwner->bUseControllerRotationYaw = false;
+			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
+			mOwner->SetActorTickEnabled(true);
+		}
+	}
+
+	void SetOwner(ACharacter* _value)
+	{
+		if (_value)
+			mOwner = _value;
+	}
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,13 +49,17 @@ private:
 
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	ACharacter* owner;
+	ACharacter* mOwner;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	ACharacter* mTarget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	bool mIsLock = false;
+	bool mIsTargetLock = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	bool mIsYaw = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	bool mIsControl = false;
 };

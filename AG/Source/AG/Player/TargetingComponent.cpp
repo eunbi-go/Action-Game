@@ -18,18 +18,20 @@ void UTargetingComponent::BeginPlay()
 void UTargetingComponent::LockingCamera(float DeltaTime)
 {
 	//PrintViewport(1.f, FColor::Black, FString("Lockinggggggg"));
-	FRotator rot = owner->GetController()->GetControlRotation();
-	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), mTarget->GetActorLocation());
-	FRotator interpRot = UKismetMathLibrary::RInterpTo(rot, targetRot, DeltaTime, 2.f);
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(interpRot.Pitch, interpRot.Yaw, rot.Roll));
+	//FRotator rot = mOwner->GetController()->GetControlRotation();
+	//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(mOwner->GetActorLocation(), mTarget->GetActorLocation());
+	//FRotator interpRot = UKismetMathLibrary::RInterpTo(rot, targetRot, DeltaTime, 2.f);
+	//UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(interpRot.Pitch, interpRot.Yaw, rot.Roll));
 
-	/*FRotator rot = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation();
+
+
+	FRotator rot = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation();
 	FRotator dstRotator;
 	dstRotator.Roll = 0.f;
-	dstRotator.Pitch = UKismetMathLibrary::MapRangeClamped(mTarget->GetDistanceTo(owner), 1500.f, 150.f, 0.f, -35.f);
-	dstRotator.Yaw = UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), mTarget->GetActorLocation()).Yaw;
+	dstRotator.Pitch = UKismetMathLibrary::MapRangeClamped(mTarget->GetDistanceTo(mOwner), 1500.f, 150.f, 0.f, -35.f);
+	dstRotator.Yaw = UKismetMathLibrary::FindLookAtRotation(mOwner->GetActorLocation(), mTarget->GetActorLocation()).Yaw;
 	FRotator newRotator = FMath::RInterpTo(rot, dstRotator, DeltaTime, 6.f);
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(newRotator.Pitch, newRotator.Yaw, rot.Roll));*/
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(newRotator.Pitch, newRotator.Yaw, rot.Roll));
 }
 
 
@@ -37,9 +39,12 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (mIsLock)
+	if (mIsTargetLock)
 	{
-		LockingCamera(DeltaTime);
+		if (mTarget)
+			LockingCamera(DeltaTime);
+		else
+			CheckTarget();
 	}
 }
 
@@ -52,12 +57,12 @@ void UTargetingComponent::CheckTarget()
 	//AActor* target;
 
 	objectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
-	ignoreActors.Add(owner);
+	ignoreActors.Add(mOwner);
 
 	bool isOverlapped = UKismetSystemLibrary::SphereOverlapActors(
 							GetWorld(),
 							location,
-							3000.f,	// sphere radius
+							5000.f,	// sphere radius
 							objectTypes,
 							nullptr,
 							ignoreActors,
@@ -70,12 +75,20 @@ void UTargetingComponent::CheckTarget()
 		if (mTarget)
 		{
 			PrintViewport(1.f, FColor::Black, FString("Find Character Target"));
-			mIsLock = true;
+			mIsTargetLock = true;
 			mIsYaw = true;
 			mIsControl = false;
-			owner->bUseControllerRotationYaw = true;
-			owner->GetCharacterMovement()->bOrientRotationToMovement = false;
-			owner->SetActorTickEnabled(false);
+			mOwner->bUseControllerRotationYaw = true;
+			mOwner->GetCharacterMovement()->bOrientRotationToMovement = false;
+			mOwner->SetActorTickEnabled(false);
+		}
+		else
+		{
+			PrintViewport(1.f, FColor::Black, FString("Target Unlock"));
+			mIsTargetLock = false;
+			mOwner->bUseControllerRotationYaw = false;
+			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
+			mOwner->SetActorTickEnabled(true);
 		}
 	}
 }
@@ -83,17 +96,17 @@ void UTargetingComponent::CheckTarget()
 AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors, FName targetTag)
 {
 	int num = actors.Num();
-	float distance = 1000.f;
+	float distance = 10000.f;
 	AActor* closetActor = nullptr;
 	TArray<AActor*> ignoreActors;
-	ignoreActors.Add(owner);
+	ignoreActors.Add(mOwner);
 	for (int i = 0; i < num; ++i)
 	{
 		FHitResult res;
 		UKismetSystemLibrary::LineTraceSingle(
 			GetWorld(),
 			actors[i]->GetActorLocation(),
-			owner->GetActorLocation(),
+			mOwner->GetActorLocation(),
 			ETraceTypeQuery::TraceTypeQuery1,	// Visibility
 			false,
 			ignoreActors,
@@ -104,7 +117,7 @@ AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors, FName target
 
 		if (res.GetActor())
 		{
-			float dis = res.GetActor()->GetDistanceTo(owner);
+			float dis = res.GetActor()->GetDistanceTo(mOwner);
 			if (dis < distance)
 			{
 				PrintViewport(1.f, FColor::Black, FString("Find"));
