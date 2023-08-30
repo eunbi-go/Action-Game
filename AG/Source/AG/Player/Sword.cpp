@@ -49,13 +49,13 @@ void ASword::BeginPlay()
 
 	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
 		nullptr, 
-		/*TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Flameslash_3.NS_Flameslash_3'")*/
-		TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Star_2.NS_Star_2'")
+		TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Flameslash_3.NS_Flameslash_3'")
+		/*TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Star_2.NS_Star_2'")*/
 	);
 
 	if (IsValid(Particle))
 		mTrail->SetAsset(Particle);
-	mTrail->SetVisibility(true);
+	mTrail->SetVisibility(false);
 	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 
 	mBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnBoxOverlap);

@@ -168,9 +168,6 @@ void AMonster::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-
-
-
 	//-----------------------------
 	// 순찰 상태일 경우, 이동양을 구한다.
 	//-----------------------------
@@ -231,7 +228,7 @@ void AMonster::Tick(float DeltaTime)
 	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
 	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-	PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
+	//PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

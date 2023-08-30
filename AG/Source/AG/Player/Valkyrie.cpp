@@ -14,6 +14,7 @@
 #include "../Particle/ValkyrieBlinkFire.h"
 #include "../Skill/FresnelActor.h"
 #include "CharacterStatComponent.h"
+#include "TargetingComponent.h"
 
 AValkyrie::AValkyrie()
 {
@@ -35,6 +36,10 @@ AValkyrie::AValkyrie()
 	{
 		GetMesh()->SetAnimClass(animInst.Class);
 	}
+
+
+	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
+	mTargetingComp->owner = this;
 
 
 	UAnimMontage* montage;
@@ -300,6 +305,12 @@ void AValkyrie::Skill3Key()
 	mWeapon->SetCollisionOnOff(false);
 }
 
+void AValkyrie::TargetingKey()
+{
+	PrintViewport(1.f, FColor::Black, FString("tete"));
+	mTargetingComp->CheckTarget();
+}
+
 void AValkyrie::NormalAttackStart()
 {
 	if (mCurrentAttackIndex == 4)
@@ -449,6 +460,8 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill2Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Released,
 		this, &AValkyrie::Skill3Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Released,
+		this, &AValkyrie::TargetingKey);
 }
 
 void AValkyrie::UnequipSword()
@@ -534,6 +547,7 @@ void AValkyrie::SetAnimDelegate()
 		{
 			mCameraComp->SetActive(false);
 			mCameraOne->SetActive(true);
+			mCameraOne->SetupAttachment(mSpringArmComp);
 			mSpringArmComp->TargetArmLength = 150.f;
 		}
 	}

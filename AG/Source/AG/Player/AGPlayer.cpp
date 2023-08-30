@@ -16,8 +16,6 @@ AAGPlayer::AAGPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	
-
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -30,6 +28,18 @@ AAGPlayer::AAGPlayer()
 	mSpringArmComp->SetupAttachment(GetRootComponent());
 	mSpringArmComp->TargetArmLength = 300.f;
 	mSpringArmComp->bUsePawnControlRotation = true;
+	
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	
+	// 데미지 수신 가능.
+	SetCanBeDamaged(true);
+
 
 	mCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	mCameraComp->SetupAttachment(mSpringArmComp);

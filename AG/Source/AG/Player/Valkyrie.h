@@ -7,6 +7,7 @@
 #include "Valkyrie.generated.h"
 
 class UMotionWarpingComponent;
+class UTargetingComponent;
 
 USTRUCT(BlueprintType)
 struct FresnelInfo
@@ -49,6 +50,7 @@ protected:
 	void Skill1Key();
 	void Skill2Key();
 	void Skill3Key();
+	void TargetingKey();
 
 	void NormalAttackStart();
 	void NormalAttackEnd();
@@ -80,10 +82,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraOne;
 
+	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
+	UTargetingComponent* mTargetingComp;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mJumpAttackIndex;
 
 	USkeletalMesh* mGhostMesh;
+
 
 private:
 	void SetAnimDelegate();

@@ -172,7 +172,7 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// - 공격을 한다. 하지만 이때, 몬스터가 이동을 멈추고, Target 을 바라보도록 한다.
 		else
 		{
-			PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("attack start distance: %f"), distance));
+			//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("attack start distance: %f"), distance));
 			
 			controller->StopMovement();
 
