@@ -17,6 +17,7 @@ DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnJumpEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDelayDelegate);
 
 /**
  * 
@@ -72,6 +73,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_ResetFresnel();
 
+	UFUNCTION()
+	void AnimNotify_Delay();
+
 	UPROPERTY(BlueprintReadOnly)
 	AValkyrie* mCharacter;
 
@@ -88,6 +92,7 @@ public:
 	FOnJumpEndDelegate			mOnJumpEnd;
 	FOnSpawnFresnelDelegate		mSpawnFresnel;
 	FOnResetFresnelDelegate		mResetFresnel;
+	FOnDelayDelegate			mOnDelay;
 
 	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
 
@@ -115,4 +120,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	bool	mIsJumpAttackEnd;
+	
+	UPROPERTY()
+	FTimerHandle	mTimer;
 };

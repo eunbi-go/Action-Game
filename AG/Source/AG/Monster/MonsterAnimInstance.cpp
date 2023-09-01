@@ -38,6 +38,8 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
+	Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
+
 	// 아이템 생성.
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();

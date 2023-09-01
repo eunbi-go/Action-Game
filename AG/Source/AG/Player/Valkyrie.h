@@ -51,6 +51,7 @@ protected:
 	void Skill2Key();
 	void Skill3Key();
 	void TargetingKey();
+	void CameraKey();
 
 	void NormalAttackStart();
 	void NormalAttackEnd();
@@ -83,12 +84,17 @@ protected:
 	UCameraComponent* mCameraOne;
 
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
+	UCameraComponent* mTempCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UTargetingComponent* mTargetingComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mJumpAttackIndex;
 
 	USkeletalMesh* mGhostMesh;
+
+	bool mCameraChangeFlag = true;
 
 
 private:

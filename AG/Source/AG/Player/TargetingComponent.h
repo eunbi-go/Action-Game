@@ -7,6 +7,8 @@
 #include "TargetingComponent.generated.h"
 
 
+class AMonster;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AG_API UTargetingComponent : public UActorComponent
 {
@@ -52,7 +54,7 @@ public:
 	ACharacter* mOwner;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	ACharacter* mTarget;
+	AMonster* mTarget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	bool mIsTargetLock = false;

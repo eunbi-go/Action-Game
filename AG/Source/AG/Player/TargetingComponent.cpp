@@ -41,6 +41,18 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	if (mIsTargetLock)
 	{
+
+		if (mTarget && mTarget->GetIsDead())
+		{
+			mTarget = nullptr;
+			CheckTarget();
+			if (!mTarget)
+			{
+				mIsTargetLock = false;
+				return;
+			}
+		}
+
 		if (mTarget)
 			LockingCamera(DeltaTime);
 		else
@@ -71,10 +83,10 @@ void UTargetingComponent::CheckTarget()
 
 	if (isOverlapped)
 	{
-		mTarget = Cast<ACharacter>(GetClosetActor(outActors, FName("Monster")));
+		mTarget = Cast<AMonster>(GetClosetActor(outActors, FName("Monster")));
 		if (mTarget)
 		{
-			PrintViewport(1.f, FColor::Black, FString("Find Character Target"));
+			//PrintViewport(1.f, FColor::Black, FString("Find Character Target"));
 			mIsTargetLock = true;
 			mIsYaw = true;
 			mIsControl = false;
@@ -84,7 +96,7 @@ void UTargetingComponent::CheckTarget()
 		}
 		else
 		{
-			PrintViewport(1.f, FColor::Black, FString("Target Unlock"));
+			//PrintViewport(1.f, FColor::Red, FString("Target Unlock"));
 			mIsTargetLock = false;
 			mOwner->bUseControllerRotationYaw = false;
 			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;

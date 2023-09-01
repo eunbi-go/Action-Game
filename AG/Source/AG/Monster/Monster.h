@@ -174,8 +174,18 @@ public:
 
 	ACharacter* GetBlackboardTarget();
 	
+	void SetIsDead(bool _value)
+	{
+		mIsDead = _value;
+	}
+
+	bool GetIsDead()
+	{
+		return mIsDead;
+	}
 
 protected:
+	bool	mIsDead = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FMonsterInfo	mInfo;
 

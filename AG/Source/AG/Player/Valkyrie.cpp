@@ -95,6 +95,13 @@ AValkyrie::AValkyrie()
 	mCameraOne->SetActive(false);
 
 
+	mTempCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TempCamera"));
+	mTempCamera->SetActive(false);
+	mTempCamera->SetupAttachment(GetMesh());
+	mTempCamera->SetRelativeLocation(FVector(-50.f, -30.f, 160.f));
+	mTempCamera->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	mTempCamera->bAutoActivate = false;
+
 	tempLocation = FVector(0.f);
 
 	JumpMaxCount = 2;
@@ -310,6 +317,23 @@ void AValkyrie::TargetingKey()
 	mTargetingComp->SetTargetLock();
 }
 
+void AValkyrie::CameraKey()
+{
+	if (mCameraChangeFlag)
+	{
+		mTempCamera->SetActive(true);
+		mCameraComp->SetActive(false);
+		mCameraOne->SetActive(false);
+	}
+	else
+	{
+		mTempCamera->SetActive(false);
+		mCameraComp->SetActive(true);
+		mCameraOne->SetActive(true);
+	}
+	mCameraChangeFlag = !mCameraChangeFlag;
+}
+
 void AValkyrie::NormalAttackStart()
 {
 	if (mCurrentAttackIndex == 4)
@@ -461,6 +485,8 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill3Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Camera"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::CameraKey);
 }
 
 void AValkyrie::UnequipSword()
@@ -486,6 +512,7 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
+		CustomTimeDilation = 1.f;
 		mIsAttacking = false;
 		mIsJumpAttack = false;
 		NormalAttackEnd();
@@ -577,5 +604,12 @@ void AValkyrie::SetAnimDelegate()
 			mFresnelInfo.mFresnelEnable = false;
 			ResetFresnel();
 		}
+		});
+
+	mAnimInst->mOnDelay.AddLambda([this]() -> void {
+		CustomTimeDilation = 0.2f;
+		GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
+		CustomTimeDilation = 1.f;
+		}), 0.3f, false);
 		});
 }
