@@ -40,6 +40,8 @@ public:
 	
 	virtual void SpawnEffect() override;
 
+	void Delay(float _customTimeDilation, float _timeRate, bool _isLoop);
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -96,6 +98,8 @@ protected:
 
 	bool mCameraChangeFlag = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> mCameraShake;
 
 private:
 	void SetAnimDelegate();

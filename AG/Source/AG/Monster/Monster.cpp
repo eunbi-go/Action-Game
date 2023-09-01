@@ -265,6 +265,11 @@ void AMonster::UnPossessed()
 void AMonster::GetHit(const FVector& _impactPoint)
 {
 	//PrintViewport(1.f, FColor::Orange, TEXT("GetHit"));
+	//CustomTimeDilation = 0.3f;
+	//GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
+	//	CustomTimeDilation = 1.f;
+	//	}), 0.1f, false);
+
 	PlayHitMontage(_impactPoint);
 }
 
@@ -287,7 +292,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	damage = randomValue;
 
-	mInfo.hp -= damage;
+	//mInfo.hp -= damage;
 
 	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
 

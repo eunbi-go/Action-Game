@@ -29,6 +29,11 @@ public:
 
 	void SetCollisionOnOff(bool _value);
 
+	void SetSwordOwner(ACharacter* _value)
+	{
+		mOwner = _value;
+	}
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -52,6 +57,9 @@ protected:
 	USceneComponent* mBoxTraceEnd;
 
 	TArray<AActor*> mIgnoreActors;
+
+	UPROPERTY(VisibleAnywhere)
+	ACharacter* mOwner;
 
 public:	
 	virtual void Tick(float DeltaTime) override;

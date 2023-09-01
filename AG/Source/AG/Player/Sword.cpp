@@ -3,6 +3,7 @@
 
 #include "Sword.h"
 #include "../Interface/HitInterface.h"
+#include "Valkyrie.h"
 
 // Sets default values
 ASword::ASword()

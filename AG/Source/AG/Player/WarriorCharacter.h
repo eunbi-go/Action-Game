@@ -77,7 +77,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> mNormalAttackShake;
+	TSubclassOf<UCameraShakeBase> mNormalAttackShake;	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mNormalAttackShake2;

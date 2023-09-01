@@ -114,6 +114,12 @@ AValkyrie::AValkyrie()
 	mFresnelInfo.mFresnelTimeEnd = 1.f;
 	mFresnelInfo.mFresnelCreateTime = 0.f;
 	mFresnelInfo.mFresnelCreateTimeEnd = 0.4f;
+
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack_C'"));
+
+	if (cameraShake.Succeeded())
+		mCameraShake = cameraShake.Class;
 }
 
 void AValkyrie::BeginPlay()
@@ -130,6 +136,7 @@ void AValkyrie::BeginPlay()
 	mWeapon->SetSkeletalMesh(TEXT("SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_HeroSword11/SK_Blade_HeroSword11.SK_Blade_HeroSword11'"));
 	mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
 	mWeapon->SetCollisionOnOff(false);
+	mWeapon->SetSwordOwner(this);
 
 	SetAnimDelegate();
 }
@@ -473,6 +480,19 @@ void AValkyrie::SpawnEffect()
 	}
 }
 
+void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
+{
+	CustomTimeDilation = _customTimeDilation;
+	GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() 
+		{
+			CustomTimeDilation = 1.f;
+		}), 
+		_timeRate, 
+		_isLoop
+		);
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake);
+}
+
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -609,7 +629,8 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnDelay.AddLambda([this]() -> void {
 		CustomTimeDilation = 0.2f;
 		GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
+			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake);
 		CustomTimeDilation = 1.f;
-		}), 0.3f, false);
+		}), 0.2f, false);
 		});
 }
