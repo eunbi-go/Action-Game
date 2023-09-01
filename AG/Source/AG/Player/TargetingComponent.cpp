@@ -17,14 +17,6 @@ void UTargetingComponent::BeginPlay()
 
 void UTargetingComponent::LockingCamera(float DeltaTime)
 {
-	//PrintViewport(1.f, FColor::Black, FString("Lockinggggggg"));
-	//FRotator rot = mOwner->GetController()->GetControlRotation();
-	//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(mOwner->GetActorLocation(), mTarget->GetActorLocation());
-	//FRotator interpRot = UKismetMathLibrary::RInterpTo(rot, targetRot, DeltaTime, 2.f);
-	//UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(interpRot.Pitch, interpRot.Yaw, rot.Roll));
-
-
-
 	FRotator rot = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation();
 	FRotator dstRotator;
 	dstRotator.Roll = 0.f;
@@ -48,6 +40,8 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 			CheckTarget();
 			if (!mTarget)
 			{
+				mOwner->bUseControllerRotationYaw = false;
+				mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
 				mIsTargetLock = false;
 				return;
 			}
@@ -62,7 +56,7 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UTargetingComponent::CheckTarget()
 {
-	FVector location;
+	FVector location = mOwner->GetActorLocation();
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	TArray<AActor*> ignoreActors;
 	TArray<AActor*> outActors;

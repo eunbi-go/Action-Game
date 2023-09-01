@@ -219,11 +219,53 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	else
 	{
 		mStat->SetHp(mStat->GetHp() - damage);
-
-
 	}
 
 	return 0.0f;
+}
+
+bool AAGPlayer::AddItem(EITEM_ID _itemID)
+{
+	if (_itemID == EITEM_ID::COIN)
+	{
+		mStat->SetCoin(mStat->GetCoin() + 10);
+	}
+	else if (_itemID == EITEM_ID::END)	// random
+	{
+		// randomItem
+		_itemID = SelectItem();
+
+		if (_itemID != EITEM_ID::END)
+		{
+			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (nullptr == GameMode)
+				return false;
+			UMainWidget* MainHUD = GameMode->GetMainWidget();
+			UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
+			InveotyrWidget->AddItemByKey(_itemID);
+			PrintViewport(3.f, FColor::Black, FString("Add Item"));
+		}
+	}
+	else
+		return false;
+
+
+	return true;
+}
+
+EITEM_ID AAGPlayer::SelectItem()
+{
+	int32 randomValue = FMath::RandRange(1, 2);
+
+	if (randomValue == 1)
+	{
+		return EITEM_ID::POTION_HP_MIN;
+	}
+	else if (randomValue == 2)
+	{
+		return EITEM_ID::POTION_MP_MIN;
+	}
+	return EITEM_ID::END;
 }
 
 

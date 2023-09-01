@@ -10,38 +10,40 @@
 #include "../Widget/ItemData.h"
 #include "../AGGameInstance.h"
 #include "../AGGameModeBase.h"
+#include "../Player/AGPlayer.h"
 
 AItemActor::AItemActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	mBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	mBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 
 	mBox->BodyInstance.SetCollisionProfileName(TEXT("Item"));
-	mBox->SetNotifyRigidBodyCollision(true);
-	mBox->SetSimulatePhysics(true);
-	
+	mBox->SetActive(true);
+	mBox->SetGenerateOverlapEvents(true);
+
 	SetRootComponent(mBox);
 
 	mMesh->SetupAttachment(mBox);
-
 	mItemId = EITEM_ID::END;
 }
 
 void AItemActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//mBox->OnComponentHit.AddDynamic(this, &AItemActor::OnHit);
-	mBox->OnComponentBeginOverlap.AddDynamic(this, &AItemActor::OnOverlap);
-
-	//mBox->SetBoxExtent(FVector(15.0f));
 }
 
 void AItemActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	runningTime += DeltaTime;
+	AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+}
+
+float AItemActor::TransformedSin()
+{
+	return amplitude * FMath::Sin(runningTime * timeConstant);
 }
 
 void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -54,16 +56,20 @@ void AItemActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	if (Cast<APlayerCharacter>(OtherActor))
 	{
 		Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
-		mOnHitt.Broadcast(this, Hit, OtherActor);
 	}
 }
 
 void AItemActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<APlayerCharacter>(OtherActor))
+	//if (Cast<APlayerCharacter>(OtherActor))
+	//{
+	//	Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
+	//	mOnHitt.Broadcast(this, SweepResult, OtherActor);
+	//}
+	if (Cast<AAGPlayer>(OtherActor))
 	{
-		Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
-		mOnHitt.Broadcast(this, SweepResult, OtherActor);
+		if (Cast<AAGPlayer>(OtherActor)->AddItem(mItemId))
+			Destroy();
 	}
 }
 

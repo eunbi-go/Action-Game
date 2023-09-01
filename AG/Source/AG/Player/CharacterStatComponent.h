@@ -77,6 +77,10 @@ public:
 		return mCurrentMp; 
 	}
 
+	float GetCoin()
+	{
+		return mCurrentCoin;
+	}
 
 private:
 	struct FPlayerTableInfo* mCurrentData;

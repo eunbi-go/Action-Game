@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AGPlayer.generated.h"
 
+
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
@@ -46,6 +47,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	bool AddItem(EITEM_ID _itemID);
+	EITEM_ID SelectItem();
+
 protected:
 	virtual void BeginPlay() override;
 

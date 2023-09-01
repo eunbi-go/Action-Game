@@ -8,7 +8,7 @@
 
 
 
-
+class AItemActor;
 
 UCLASS()
 class AG_API UMonsterAnimInstance : public UAnimInstance
@@ -26,6 +26,9 @@ public:
 public:
 	UFUNCTION()
 	void AnimNotify_DeathEnd();
+
+	UFUNCTION()
+	void AnimNotify_SpawnItem();
 
 	UFUNCTION()
 	void AnimNotify_HitEnd();
@@ -119,4 +122,6 @@ protected:
 	int32		mCurSkillMontagIndex;
 
 	int32		mItemCount;
+
+	TArray<AItemActor*>	mItems;
 };

@@ -7,6 +7,8 @@
 #include "../AGGameModeBase.h"
 #include "../Widget/MainWidget.h"
 #include "../Widget/InventoryWidget.h"
+#include "../Basic/ItemActor.h"
+
 UWorld* UInventoryManager::mWorld = nullptr;
 
 

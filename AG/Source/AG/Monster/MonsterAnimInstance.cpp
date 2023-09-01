@@ -8,7 +8,7 @@
 #include "FengMao.h"
 #include "../Basic/ItemActor.h"
 #include "../Player/PlayerCharacter.h"
-
+#include "../Manager/InventoryManager.h"
 
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
@@ -38,9 +38,14 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
+	for (int i = 0; i < mItemCount; ++i)
+		mItems[i]->SetOverlapEnable();
 	Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
+	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
+}
 
-	// 아이템 생성.
+void UMonsterAnimInstance::AnimNotify_SpawnItem()
+{
 	FVector position = TryGetPawnOwner()->GetActorLocation();
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
@@ -58,13 +63,6 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 		FActorSpawnParameters	params;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-		AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(TryGetPawnOwner()->GetController());
-
-		ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-		if (!IsValid(target))
-			break;
-
 		position.X += randomXPlus;
 		position.Y += randomYPlus;
 
@@ -77,28 +75,26 @@ void UMonsterAnimInstance::AnimNotify_DeathEnd()
 			params);
 
 		// 코인.
-		if (randomItemValue == 1)
+		if (item && randomItemValue == 1)
 		{
 			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
 			item->GetMesh()->SetRelativeScale3D(FVector(10.f));
 			item->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
+			item->GetBoxComponent()->SetActive(false);
 			item->SetItemId(EITEM_ID::COIN);
-			item->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
 		}
 
 		// 랜덤 아이템.
-		else if (randomItemValue == 2)
+		else if (item && randomItemValue == 2)
 		{
 			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
-			item->GetMesh()->SetRelativeScale3D(FVector(7.f));
+			item->GetMesh()->SetRelativeScale3D(FVector(3.f));
 			item->GetBoxComponent()->SetBoxExtent(FVector(35.0f));
 			item->SetItemId(EITEM_ID::END);
-			item->mOnHitt.AddDynamic(Cast<APlayerCharacter>(target), &APlayerCharacter::AddItem);
 		}
-	}
 
-	// 몬스터 삭제.
-	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
+		mItems.Add(item);
+	}
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()

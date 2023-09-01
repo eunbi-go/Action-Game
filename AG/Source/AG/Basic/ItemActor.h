@@ -48,9 +48,13 @@ public:
 		mItemId = _id; 
 	}
 
-	UPROPERTY(BlueprintAssignable)
-		FOnHited	mOnHitt;
 
+	float TransformedSin();
+
+	void SetOverlapEnable()
+	{
+		mBox->OnComponentBeginOverlap.AddDynamic(this, &AItemActor::OnOverlap);
+	}
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -63,4 +67,14 @@ protected:
 	FTimerHandle mTimerHandle;
 
 	EITEM_ID	mItemId;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine params")
+		float	amplitude = 0.25f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine params")
+		float	timeConstant = 5.f;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		float	runningTime = 0.f;
 };

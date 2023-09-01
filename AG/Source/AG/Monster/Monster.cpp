@@ -292,7 +292,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	damage = randomValue;
 
-	//mInfo.hp -= damage;
+	mInfo.hp -= damage;
 
 	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
 
