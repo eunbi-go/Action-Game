@@ -13,6 +13,8 @@ class AG_API ASword : public AActor
 	
 public:	
 	ASword();
+	virtual void Tick(float DeltaTime) override;
+
 	void Equip(USceneComponent* _parent, FName _socketName, AActor* _newOwner, APawn* _newInstigator);
 	void SetSkeletalMesh(const FString& _path);
 	void AttachMeshToSocket(USceneComponent* _parent, const FName& _socketName);
@@ -27,7 +29,17 @@ public:
 		mTrail->SetVisibility(_value); 
 	}
 
-	void SetCollisionOnOff(bool _value);
+	void SetCollisionOnOff(bool _value)
+	{
+		if (_value)
+		{
+			mBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			mBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
 
 	void SetSwordOwner(ACharacter* _value)
 	{
@@ -62,5 +74,4 @@ protected:
 	ACharacter* mOwner;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
 };

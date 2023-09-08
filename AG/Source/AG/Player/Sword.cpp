@@ -4,11 +4,10 @@
 #include "Sword.h"
 #include "../Interface/HitInterface.h"
 #include "Valkyrie.h"
+#include "../Player/CharacterStatComponent.h"
 
-// Sets default values
 ASword::ASword()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	mMesh->SetupAttachment(GetRootComponent());
@@ -30,18 +29,6 @@ ASword::ASword()
 	mBoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("BoxTraceEnd"));
 	mBoxTraceEnd->SetupAttachment(mMesh);
 	mBoxTraceEnd->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
-}
-
-void ASword::SetCollisionOnOff(bool _value)
-{
-	if (_value)
-	{
-		mBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
-	else
-	{
-		mBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
 }
 
 void ASword::BeginPlay()
@@ -86,38 +73,29 @@ void ASword::AttachMeshToSocket(USceneComponent* _parent, const FName& _socketNa
 
 void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	PrintViewport(1.f, FColor::Black, TEXT("overlap"));
-
 	const FVector start = mBoxTraceStart->GetComponentLocation();
 	const FVector end = mBoxTraceEnd->GetComponentLocation();
+	float damage = Cast<AValkyrie>(mOwner)->GetStat()->GetCurrentInfo().attackPoint;
 
 	TArray<AActor*> actorsToIgnoreArray;
 	actorsToIgnoreArray.Add(this);
-
-	// 한 번에 한 액터를 2번 이상 hit 하지 않도록.
-	// ignoreActors 배열은 공격 몽타주가 끝날 때 초기화.
 	for (AActor* actor : mIgnoreActors)
 		actorsToIgnoreArray.AddUnique(actor);
 
 	FHitResult boxHit;
-
 	UKismetSystemLibrary::BoxTraceSingle(
 		this, start, end, FVector(5.f),
 		mBoxTraceStart->GetComponentRotation(),
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
-		actorsToIgnoreArray,	// 추적에서 무시할 액터들의 배열
-		EDrawDebugTrace::ForOneFrame,	// None: 디버깅 박스를 보지 않겠다, ForDuration: 몇 초 동안 보겠다.
+		actorsToIgnoreArray,	
+		EDrawDebugTrace::None,	
 		boxHit,
-		true	// 자기 자신은 무시한다.
+		true	
 	);
-	float damage = 10.f;
 
-	// 충돌한 객체가 IHitInterface 를 상속받았을 경우, 해당 클래스의 GetHit() 함수 호출.
 	if (boxHit.GetActor())
 	{
-		//PrintViewport(1.f, FColor::Black, TEXT("overlap!!"));
-
 		UGameplayStatics::ApplyDamage(
 			boxHit.GetActor(),
 			damage,
@@ -132,7 +110,6 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 			hitInterface->GetHit(boxHit.ImpactPoint);
 		}
 
-		// AddUnique(): ignoreActors 배열에 넣으려는 액터가 이미 존재하는지 확인.
 		mIgnoreActors.AddUnique(boxHit.GetActor());
 	}
 }

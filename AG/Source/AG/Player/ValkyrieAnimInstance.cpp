@@ -110,8 +110,4 @@ void UValkyrieAnimInstance::AnimNotify_ResetFresnel()
 void UValkyrieAnimInstance::AnimNotify_Delay()
 {
 	mOnDelay.Broadcast();
-	/*mCharacter->CustomTimeDilation = 0.5f;
-	GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
-		mCharacter->CustomTimeDilation = 1.f;
-		}), 0.3f, false);*/
 }

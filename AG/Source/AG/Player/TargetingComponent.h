@@ -19,23 +19,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void CheckTarget();
-	AActor* GetClosetActor(TArray<AActor*> actors, FName targetTag);
-
-	void SetTargetLock()
-	{
-		mIsTargetLock = !mIsTargetLock;
-
-		if (mIsTargetLock)
-		{
-			CheckTarget();
-		}
-		else
-		{
-			mOwner->bUseControllerRotationYaw = false;
-			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
-			mOwner->SetActorTickEnabled(true);
-		}
-	}
+	void SetTargetLock();
 
 	void SetOwner(ACharacter* _value)
 	{
@@ -48,6 +32,7 @@ protected:
 
 private:
 	void LockingCamera(float DeltaTime);
+	AActor* GetClosetActor(TArray<AActor*> actors, FName targetTag);
 
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

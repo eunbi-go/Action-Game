@@ -19,9 +19,6 @@ DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDelayDelegate);
 
-/**
- * 
- */
 UCLASS()
 class AG_API UValkyrieAnimInstance : public UAnimInstance
 {

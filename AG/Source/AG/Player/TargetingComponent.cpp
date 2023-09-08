@@ -17,13 +17,17 @@ void UTargetingComponent::BeginPlay()
 
 void UTargetingComponent::LockingCamera(float DeltaTime)
 {
-	FRotator rot = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation();
-	FRotator dstRotator;
-	dstRotator.Roll = 0.f;
-	dstRotator.Pitch = UKismetMathLibrary::MapRangeClamped(mTarget->GetDistanceTo(mOwner), 1500.f, 150.f, 0.f, -35.f);
-	dstRotator.Yaw = UKismetMathLibrary::FindLookAtRotation(mOwner->GetActorLocation(), mTarget->GetActorLocation()).Yaw;
-	FRotator newRotator = FMath::RInterpTo(rot, dstRotator, DeltaTime, 6.f);
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(newRotator.Pitch, newRotator.Yaw, rot.Roll));
+	FRotator rotation = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation();
+	FRotator interpDstRotator;
+	interpDstRotator.Roll = 0.f;
+	interpDstRotator.Pitch =
+		UKismetMathLibrary::MapRangeClamped(mTarget->GetDistanceTo(mOwner), 1000.f, 150.f, 0.f, -35.f);
+	interpDstRotator.Yaw =
+		UKismetMathLibrary::FindLookAtRotation(mOwner->GetActorLocation(), mTarget->GetActorLocation()).Yaw;
+	FRotator newRotator = 
+		FMath::RInterpTo(rotation, interpDstRotator, DeltaTime, 6.f);
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->
+		SetControlRotation(FRotator(newRotator.Pitch, newRotator.Yaw, rotation.Roll));
 }
 
 
@@ -134,5 +138,21 @@ AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors, FName target
 	}
 
 	return closetActor;
+}
+
+void UTargetingComponent::SetTargetLock()
+{
+	mIsTargetLock = !mIsTargetLock;
+
+	if (mIsTargetLock)
+	{
+		CheckTarget();
+	}
+	else
+	{
+		mOwner->bUseControllerRotationYaw = false;
+		mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
+		mOwner->SetActorTickEnabled(true);
+	}
 }
 
