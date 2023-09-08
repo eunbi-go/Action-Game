@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AGPlayer.generated.h"
 
+class UCharacterStatComponent;
 
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
@@ -50,6 +51,13 @@ public:
 
 	bool AddItem(EITEM_ID _itemID);
 	EITEM_ID SelectItem();
+	UCharacterStatComponent* GetStat()
+	{
+		return mStat;
+	}
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	UCameraComponent* mCameraComp;
 
 protected:
 	virtual void BeginPlay() override;
@@ -72,8 +80,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* mSpringArmComp;
 
-	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
-	UCameraComponent* mCameraComp;
+
 
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	class UValkyrieAnimInstance* mAnimInst;
@@ -82,7 +89,7 @@ protected:
 	TMap<FName, UAnimMontage*>	mMontages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	class UCharacterStatComponent* mStat;
+	UCharacterStatComponent* mStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FName			mPlayerTableRowName;

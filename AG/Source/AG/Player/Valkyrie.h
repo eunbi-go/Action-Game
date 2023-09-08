@@ -64,6 +64,25 @@ protected:
 	void SpawnFresnel();
 	void ResetFresnel();
 
+	bool mToCameraComp = true;
+	FTransform mTempCameraTrans;
+	FTransform mCameraCompTrans;
+	UPROPERTY()
+	UTimelineComponent* mTimeLine;
+
+	FOnTimelineFloat mTimelineUpdateDelegate;
+	
+	UFUNCTION()
+		void TimeLineUpdate();
+
+	UFUNCTION()
+		void CurveUpdate(float value);
+
+	FTransform newTrans;
+
+	FOnTimelineFloat timelineFloat;
+
+	UCurveFloat* mTimeLineCurveStart;
 
 	class ASword* mWeapon;
 
@@ -85,7 +104,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraOne;
 
-	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	//UCameraComponent* FPPCamera;
 	UCameraComponent* mTempCamera;
 
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))

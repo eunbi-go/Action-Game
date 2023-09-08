@@ -24,7 +24,8 @@ AAGPlayer::AAGPlayer()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 450.f;
 
-	mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	//mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	mSpringArmComp->SetupAttachment(GetRootComponent());
 	mSpringArmComp->TargetArmLength = 300.f;
 	mSpringArmComp->bUsePawnControlRotation = true;
@@ -42,6 +43,7 @@ AAGPlayer::AAGPlayer()
 
 
 	mCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	//TPPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TPPCamera"));
 	mCameraComp->SetupAttachment(mSpringArmComp);
 	
 	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
