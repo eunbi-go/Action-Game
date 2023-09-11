@@ -73,6 +73,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_Delay();
 
+	UFUNCTION()
+	void AnimNotify_Dash();
+
 	UPROPERTY(BlueprintReadOnly)
 	AValkyrie* mCharacter;
 

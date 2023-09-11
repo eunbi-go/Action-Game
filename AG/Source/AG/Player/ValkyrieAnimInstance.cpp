@@ -2,7 +2,7 @@
 
 
 #include "ValkyrieAnimInstance.h"
-
+#include "../Particle/ParticleNiagara.h"
 
 void UValkyrieAnimInstance::NativeInitializeAnimation()
 {
@@ -110,4 +110,20 @@ void UValkyrieAnimInstance::AnimNotify_ResetFresnel()
 void UValkyrieAnimInstance::AnimNotify_Delay()
 {
 	mOnDelay.Broadcast();
+}
+
+void UValkyrieAnimInstance::AnimNotify_Dash()
+{
+	FActorSpawnParameters	SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	FVector location = mCharacter->GetActorLocation() - mCharacter->GetActorForwardVector() * 300.f;
+	location.Z -= (mCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.f);
+
+	AParticleNiagara* niagara = GetWorld()->SpawnActor<AParticleNiagara>(
+		location,
+		mCharacter->GetActorRotation(),
+		SpawnParam
+		);
+	niagara->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Dash_Fire.NS_Dash_Fire'"));
 }

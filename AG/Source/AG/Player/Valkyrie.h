@@ -33,15 +33,12 @@ public:
 
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void UnequipSword();
-	
 	virtual void SpawnEffect() override;
 
 	void Delay(float _customTimeDilation, float _timeRate, bool _isLoop);
-
+	void UnequipSword();
 
 protected:
 	virtual void BeginPlay() override;
@@ -53,7 +50,6 @@ protected:
 	void Skill2Key();
 	void Skill3Key();
 	void TargetingKey();
-	void CameraKey();
 
 	void NormalAttackStart();
 	void NormalAttackEnd();
@@ -65,67 +61,75 @@ protected:
 	void ResetFresnel();
 
 	bool mToCameraComp = true;
-	FTransform mTempCameraTrans;
-	FTransform mCameraCompTrans;
-	UPROPERTY()
-	UTimelineComponent* mTimeLine;
 
-	FOnTimelineFloat mTimelineUpdateDelegate;
-	FOnTimelineEvent mTimelineFinishDelegate;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
-	UCameraComponent* tppRef;
 
 	UFUNCTION()
-		void TimeLineFinish();
+	void TimeLineFinish();
 
 	UFUNCTION()
-		void CurveUpdate(float value);
+	void CurveUpdate(float value);
 
 	void CameraSwitch(bool _value);
 
-	FTransform newTrans;
-
-	FOnTimelineFloat timelineFloat;
-	bool isFlag = false;
-
-	UCurveFloat* mTimeLineCurveStart;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
 	class ASword* mWeapon;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-	bool mIsCanNextAttack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	USkeletalMesh* mGhostMesh;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-		bool mIsAttackInputOn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> mCameraShake;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-		int32 mCurrentAttackIndex;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-		int32 mAttackMaxIndex;
-
+	// Components..
 	UPROPERTY();
 	TObjectPtr<UMotionWarpingComponent> mMotionWarpComp;
-
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	//UCameraComponent* FPPCamera;
-	UCameraComponent* mTempCamera;
 
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UTargetingComponent* mTargetingComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UTimelineComponent* mTimeLineComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	UCameraComponent* mTempCameraComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UCameraComponent* mCameraCompRef;
+
+
+	// Normal Attack
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	bool mIsCanNextAttack;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	bool mIsAttackInputOn;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	int32 mCurrentAttackIndex;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	int32 mAttackMaxIndex;
+
+
+	// Camera Switch
+	FTransform mTempCameraTrans;
+	FTransform mCameraCompTrans;
+	
+	FOnTimelineFloat mTimelineUpdateDelegate;
+	FOnTimelineEvent mTimelineFinishDelegate;
+
+	
+	FOnTimelineFloat timelineFloat;
+	UCurveFloat* mTimeLineCurveStart;
+
+	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int32	mJumpAttackIndex;
 
-	USkeletalMesh* mGhostMesh;
+	
 
-	bool mCameraChangeFlag = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> mCameraShake;
+	
 
 private:
 	void SetAnimDelegate();

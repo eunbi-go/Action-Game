@@ -19,16 +19,6 @@
 
 AValkyrie::AValkyrie()
 {
-	//mTimeLineCurveStart = 
-	
-	static ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("CurveFloat'/Game/Blueprints/GameMode/BP_CameraCurve.BP_CameraCurve'"));
-	if (curve.Succeeded())
-	{
-		mTimeLineCurveStart = curve.Object;
-	}
-
-	mTimeLine = CreateDefaultSubobject<UTimelineComponent>(TEXT("mTimelineComp"));
-	
 	//------------------
 	// Mesh 세팅.
 	//------------------
@@ -48,9 +38,6 @@ AValkyrie::AValkyrie()
 		GetMesh()->SetAnimClass(animInst.Class);
 	}
 
-
-	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
-	mTargetingComp->SetOwner(this);
 
 
 	UAnimMontage* montage;
@@ -104,20 +91,19 @@ AValkyrie::AValkyrie()
 
 
 
-	mTempCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TempCamera"));
-	//FPPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FPPCamera"));
-	mTempCamera->SetActive(false);
-	mTempCamera->SetupAttachment(GetMesh());
-	mTempCamera->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
-	mTempCamera->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));
-	mTempCamera->bAutoActivate = false;
+	mTempCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TempCamera"));
+	mTempCameraComp->SetActive(false);
+	mTempCameraComp->SetupAttachment(GetMesh());
+	mTempCameraComp->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
+	mTempCameraComp->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));
+	mTempCameraComp->bAutoActivate = false;
 
 
-	tppRef = CreateDefaultSubobject<UCameraComponent>(TEXT("TPPREF"));
-	tppRef->SetupAttachment(GetCapsuleComponent());
-	tppRef->SetRelativeLocation(FVector(-300.f, 0.f, 0.f));
-	tppRef->SetActive(false);
-	tppRef->bAutoActivate = false;
+	mCameraCompRef = CreateDefaultSubobject<UCameraComponent>(TEXT("mCameraCompRef"));
+	mCameraCompRef->SetupAttachment(GetCapsuleComponent());
+	mCameraCompRef->SetRelativeLocation(FVector(-400.f, 0.f, 0.f));
+	mCameraCompRef->SetActive(false);
+	mCameraCompRef->bAutoActivate = false;
 	tempLocation = FVector(0.f);
 
 	JumpMaxCount = 2;
@@ -138,6 +124,22 @@ AValkyrie::AValkyrie()
 		mCameraShake = cameraShake.Class;
 
 
+
+	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
+	mTargetingComp->SetOwner(this);
+
+	mTimeLineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("mTimelineComp"));
+
+
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("CurveFloat'/Game/Blueprints/GameMode/BP_CameraCurve.BP_CameraCurve'"));
+	if (curve.Succeeded())
+	{
+		mTimeLineCurveStart = curve.Object;
+	}
+
+
+
+
 	timelineFloat.BindUFunction(this, FName("CurveUpdate"));
 	mTimelineUpdateDelegate.BindUFunction(this, FName("TimeLineUpdate"));
 	mTimelineFinishDelegate.BindUFunction(this, FName("TimeLineFinish"));
@@ -146,6 +148,12 @@ AValkyrie::AValkyrie()
 void AValkyrie::BeginPlay()
 {
 	Super::BeginPlay();
+
+	mCameraComp->SetAspectRatio(1.777778);
+	mCameraComp->bConstrainAspectRatio = true;
+
+	mTempCameraComp->SetAspectRatio(1.777778);
+	mTempCameraComp->bConstrainAspectRatio = true;
 
 	mAnimInst = Cast<UValkyrieAnimInstance>(GetMesh()->GetAnimInstance());
 
@@ -161,13 +169,12 @@ void AValkyrie::BeginPlay()
 
 	SetAnimDelegate();
 
-	//mTimeLine->SetFloatCurve(mTimeLineCurveStart, TEXT("test"));
-
-	
 	// timeline update
-	mTimeLine->AddInterpFloat(mTimeLineCurveStart, timelineFloat);
-	mTimeLine->SetTimelineFinishedFunc(mTimelineFinishDelegate);
-	mTimeLine->SetTimelineLength(0.5f);
+	mTimeLineComp->AddInterpFloat(mTimeLineCurveStart, timelineFloat);
+	// timeline finish
+	mTimeLineComp->SetTimelineFinishedFunc(mTimelineFinishDelegate);
+	// timeline length
+	mTimeLineComp->SetTimelineLength(0.5f);
 }
 
 void AValkyrie::PostInitializeComponents()
@@ -181,18 +188,6 @@ void AValkyrie::Tick(float DeltaTime)
 
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
-
-	//if (mCameraComp->IsActive())
-	//	PrintViewport(1.f, FColor::Blue, TEXT("cameracomp"));
-	//if (mTempCamera->IsActive())
-	//	PrintViewport(1.f, FColor::Blue, TEXT("mTempCamera"));
-	//if (tppRef->IsActive())
-	//	PrintViewport(1.f, FColor::Blue, TEXT("tppRef"));
-
-	//if (mActionState != EActionState::EAS_JumpAttack)
-	//	mIsJumpAttack = false;
-	//if (mActionState == EActionState::EAS_JumpAttack)
-	//	PrintViewport(1.f, FColor::Red, TEXT("Ffff"));
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -357,53 +352,12 @@ void AValkyrie::TargetingKey()
 	mTargetingComp->SetTargetLock();
 }
 
-void AValkyrie::CameraKey()
-{
-	FDetachmentTransformRules detachRules(EDetachmentRule::KeepWorld, true);
-	mTempCamera->DetachFromComponent(detachRules);
-	mTempCameraTrans = mTempCamera->GetRelativeTransform();
-	FAttachmentTransformRules attachRules(EAttachmentRule::KeepWorld, true);
-	mTempCamera->AttachToComponent(GetMesh(), attachRules);
-
-	if (mToCameraComp)
-	{
-		mToCameraComp = false;
-		mCameraComp->DetachFromComponent(detachRules);
-		mCameraCompTrans = mCameraComp->GetRelativeTransform();
-		mTimeLine->PlayFromStart();
-	}
-	else
-	{
-		mToCameraComp = true;
-		mCameraComp->SetActive(true);
-		mTempCamera->SetActive(false);
-		mCameraCompTrans = mCameraComp->GetRelativeTransform();
-		mTimeLine->ReverseFromEnd();
-	}
-
-
-	//if (mCameraChangeFlag)
-	//{
-	//	mTempCamera->SetActive(true);
-	//	mCameraComp->SetActive(false);
-	//	mCameraOne->SetActive(false);
-	//}
-	//else
-	//{
-	//	mTempCamera->SetActive(false);
-	//	mCameraComp->SetActive(true);
-	//	mCameraOne->SetActive(true);
-	//}
-	//mCameraChangeFlag = !mCameraChangeFlag;
-}
-
 void AValkyrie::NormalAttackStart()
 {
 	if (mCurrentAttackIndex == 4)
 		mCurrentAttackIndex = 1;	
 	mIsCanNextAttack = true;
 	mIsAttackInputOn = false;
-	//if (FMath::IsWithinInclusive<int32>(mCurrentAttackIndex, 0, mAttackMaxIndex))
 	mCurrentAttackIndex = FMath::Clamp<int32>(mCurrentAttackIndex + 1, 1, mAttackMaxIndex);
 	
 	if (mIsJumpAttack)
@@ -448,7 +402,6 @@ void AValkyrie::SpawnFresnel()
 		PrintViewport(0.5f, FColor::Black, TEXT("Fresnel"));
 		// 잔상 생성
 		FActorSpawnParameters	SpawnParam;
-		//SpawnParam.Template = mHitActor;
 		SpawnParam.SpawnCollisionHandlingOverride =
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -488,8 +441,8 @@ void AValkyrie::TimeLineFinish()
 	else
 	{
 		mCameraComp->SetActive(false);
-		mTempCamera->SetActive(true);
-		tppRef->SetActive(false);
+		mTempCameraComp->SetActive(true);
+		mCameraCompRef->SetActive(false);
 	}
 }
 
@@ -497,22 +450,23 @@ void AValkyrie::CurveUpdate(float value)
 {
 	if (value < 0.f)
 		return;
-	
+	FTransform newTransform = FTransform();
+
 	if (mToCameraComp)
 	{
-		newTrans = UKismetMathLibrary::TLerp(mCameraCompTrans, mTempCameraTrans, value);
-		mCameraComp->SetWorldTransform(newTrans);
+		newTransform = UKismetMathLibrary::TLerp(mCameraCompTrans, mTempCameraTrans, value);
+		mCameraComp->SetWorldTransform(newTransform);
 	}
 	else
 	{
-		newTrans = UKismetMathLibrary::TLerp(mCameraCompTrans, mTempCameraTrans, value);
-		mCameraComp->SetRelativeTransform(newTrans);
+		newTransform = UKismetMathLibrary::TLerp(mCameraCompTrans, mTempCameraTrans, value);
+		mCameraComp->SetRelativeTransform(newTransform);
 	}
 
 	FRotator newControllerRotator = FRotator(0.f);
 	newControllerRotator.Roll = 0.f;
-	newControllerRotator.Pitch = mTempCamera->GetComponentRotation().Pitch;
-	newControllerRotator.Yaw = newTrans.Rotator().Yaw;
+	newControllerRotator.Pitch = mTempCameraComp->GetComponentRotation().Pitch;
+	newControllerRotator.Yaw = newTransform.Rotator().Yaw;
 	APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0);
 	controller->SetControlRotation(newControllerRotator);
 }
@@ -521,28 +475,28 @@ void AValkyrie::CameraSwitch(bool _value)
 {
 	FAttachmentTransformRules attachRules(EAttachmentRule::KeepWorld, true);
 	FDetachmentTransformRules detachRules(EDetachmentRule::KeepWorld, true);
-	mTempCamera->DetachFromComponent(detachRules);
-	mTempCameraTrans = mTempCamera->GetRelativeTransform();
-	mTempCamera->AttachToComponent(GetMesh(), attachRules);
+	mTempCameraComp->DetachFromComponent(detachRules);
+	mTempCameraTrans = mTempCameraComp->GetRelativeTransform();
+	mTempCameraComp->AttachToComponent(GetMesh(), attachRules);
 
 	if (_value)
 	{
 		mToCameraComp = false;
 		mCameraComp->DetachFromComponent(detachRules);
 		mCameraCompTrans = mCameraComp->GetRelativeTransform();
-		mTimeLine->PlayFromStart();
+		mTimeLineComp->PlayFromStart();
 	}
 	else
 	{
 		mToCameraComp = true;
 
-		mCameraCompTrans = tppRef->GetComponentTransform();
-		mTempCameraTrans = mTempCamera->GetComponentTransform();
+		mCameraCompTrans = mCameraCompRef->GetComponentTransform();
+		mTempCameraTrans = mTempCameraComp->GetComponentTransform();
 
 		mCameraComp->SetActive(true);
-		mTempCamera->SetActive(false);
-		tppRef->SetActive(false);
-		mTimeLine->ReverseFromEnd();
+		mTempCameraComp->SetActive(false);
+		mCameraCompRef->SetActive(false);
+		mTimeLineComp->ReverseFromEnd();
 	}
 }
 
@@ -551,13 +505,19 @@ void AValkyrie::SpawnEffect()
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
+	UAnimMontage* montage;
+	FVector location = FVector(0.f);
+
 	switch (mSkillState)
 	{
 	case ESkillState::ESS_Sprint:
 	{
+		montage = *mMontages.Find(FName("Sprint"));
+		location = GetActorLocation() + GetActorForwardVector() * 300.f;
+		location.Z -= GetCapsuleComponent()->GetScaledCapsuleRadius();
+
 		AValkyrieLightning* niagara = GetWorld()->SpawnActor<AValkyrieLightning>(
-			GetActorLocation() + GetActorForwardVector() * 300.f,
+			location,
 			FRotator::ZeroRotator,
 			SpawnParam
 			);
@@ -629,8 +589,6 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill3Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Camera"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::CameraKey);
 }
 
 void AValkyrie::UnequipSword()
