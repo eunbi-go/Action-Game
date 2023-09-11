@@ -59,6 +59,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+		USpringArmComponent* mSpringArmComp;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -77,8 +80,7 @@ protected:
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void SpawnEffect();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	USpringArmComponent* mSpringArmComp;
+	
 
 
 

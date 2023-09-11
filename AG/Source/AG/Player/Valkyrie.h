@@ -71,16 +71,23 @@ protected:
 	UTimelineComponent* mTimeLine;
 
 	FOnTimelineFloat mTimelineUpdateDelegate;
-	
+	FOnTimelineEvent mTimelineFinishDelegate;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	UCameraComponent* tppRef;
+
 	UFUNCTION()
-		void TimeLineUpdate();
+		void TimeLineFinish();
 
 	UFUNCTION()
 		void CurveUpdate(float value);
 
+	void CameraSwitch(bool _value);
+
 	FTransform newTrans;
 
 	FOnTimelineFloat timelineFloat;
+	bool isFlag = false;
 
 	UCurveFloat* mTimeLineCurveStart;
 
@@ -101,8 +108,7 @@ protected:
 	UPROPERTY();
 	TObjectPtr<UMotionWarpingComponent> mMotionWarpComp;
 
-	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
-	UCameraComponent* mCameraOne;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	//UCameraComponent* FPPCamera;
