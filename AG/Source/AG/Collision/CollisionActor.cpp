@@ -90,10 +90,6 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 				this);
 			if (Cast<AValkyrieSlash>(mParent))
 				Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
-			if (Cast<AValkyrieDemonSlash>(mParent))
-			{
-				hitInterface->PlayJumpAction(SweepResult.ImpactPoint);
-			}
 		}
 
 		else if (mHitType == EHitType::EHT_Continuous)
@@ -156,10 +152,6 @@ void ACollisionActor::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedCompon
 		if (Cast<AValkyrieSlash>(mParent))
 		{
 			Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
-		}
-		if (Cast<AValkyrieDemonSlash>(mParent) && hitInterface)
-		{
-			hitInterface->PlayJumpAction(SweepResult.ImpactPoint);
 		}
 	}
 }

@@ -13,7 +13,6 @@ DECLARE_MULTICAST_DELEGATE(FOnAttackCheckStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnLaunchDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSkillEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnChangeCameraDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnJumpAttackEnableDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnJumpEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
@@ -53,16 +52,7 @@ public:
 	void AnimNotify_ChangeCamera();
 
 	UFUNCTION()
-	void AnimNotify_JumpAttackEnable();
-
-	UFUNCTION()
 	void AnimNotify_JumpEnd();
-
-	UFUNCTION()
-	void AnimNotify_JumpAttackEnd();
-
-	UFUNCTION()
-	void AnimNotify_JumpAttackStart();
 
 	UFUNCTION()
 	void AnimNotify_SpawnFresnel();
@@ -88,7 +78,6 @@ public:
 	FOnLaunchDelegate			mOnLaunch;
 	FOnSkillEndDelegate			mSkillEnd;
 	FOnChangeCameraDelegate		mChangeCamera;
-	FOnJumpAttackEnableDelegate	mJumpAttackEnable;
 	FOnJumpEndDelegate			mOnJumpEnd;
 	FOnSpawnFresnelDelegate		mSpawnFresnel;
 	FOnResetFresnelDelegate		mResetFresnel;
@@ -97,29 +86,23 @@ public:
 	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float mGroundSpeed = 0.f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float mDirection = 0.f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	bool mIsJumpAttackEnable = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		bool	mIsInAir;
 
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		EActionState	mActionState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		bool	mIsJumpAttackEnd;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	bool	mIsInAir;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	EActionState	mActionState;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	int32	mJumpAttackIndex;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	bool	mIsJumpAttackEnd;
 	
 	UPROPERTY()
 	FTimerHandle	mTimer;

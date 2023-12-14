@@ -66,7 +66,7 @@ public:
 	void RespawnSkill1(ARampageSlash* preParticle);
 
 	UFUNCTION()
-		void Hit();
+		void Hit(FVector impactPoint);
 
 public:
 	void EndSkill4() 

@@ -83,9 +83,12 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		actorsToIgnoreArray.AddUnique(actor);
 
 	FHitResult boxHit;
+	// 라인을 따라 상자를 설치하고 첫 번째 충돌지점 리턴
 	UKismetSystemLibrary::BoxTraceSingle(
 		this, start, end, FVector(5.f),
 		mBoxTraceStart->GetComponentRotation(),
+		// 여기에 무엇을 넣는지는 별로 중요하지 않다
+		// 박스 트레이스 싱글은 기본적으로 Visility 채널을 기준으로 추적하기 때문
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		actorsToIgnoreArray,	

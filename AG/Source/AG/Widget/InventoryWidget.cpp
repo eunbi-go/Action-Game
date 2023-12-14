@@ -105,7 +105,7 @@ void UInventoryWidget::UseItem(EITEM_ID _id, APlayerCharacter* userCharacter)
 // item: 클릭된 아이템.
 void UInventoryWidget::Clicked(UObject* item)
 {
-	PrintViewport(20.f, FColor::Yellow, TEXT("click"));
+	//PrintViewport(20.f, FColor::Yellow, TEXT("click"));
 
 	UItemData* itemData = Cast<UItemData>(item);
 

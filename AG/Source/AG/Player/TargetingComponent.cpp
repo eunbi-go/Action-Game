@@ -37,24 +37,17 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	if (mIsTargetLock)
 	{
-
 		if (mTarget && mTarget->GetIsDead())
 		{
 			mTarget = nullptr;
-			CheckTarget();
-			if (!mTarget)
-			{
-				mOwner->bUseControllerRotationYaw = false;
-				mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
-				mIsTargetLock = false;
-				return;
-			}
+			mIsTargetLock = false;
+			mIsTargetLock = false;
+			mOwner->bUseControllerRotationYaw = false;
+			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
+			mOwner->SetActorTickEnabled(true);
 		}
-
-		if (mTarget)
-			LockingCamera(DeltaTime);
 		else
-			CheckTarget();
+			LockingCamera(DeltaTime);
 	}
 }
 
@@ -64,15 +57,16 @@ void UTargetingComponent::CheckTarget()
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	TArray<AActor*> ignoreActors;
 	TArray<AActor*> outActors;
-	//AActor* target;
 
-	objectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+	objectTypes.Add(UEngineTypes::ConvertToObjectType(
+		ECollisionChannel::ECC_GameTraceChannel3)
+	);
 	ignoreActors.Add(mOwner);
 
 	bool isOverlapped = UKismetSystemLibrary::SphereOverlapActors(
 							GetWorld(),
 							location,
-							5000.f,	// sphere radius
+							mSphereRadius,	
 							objectTypes,
 							nullptr,
 							ignoreActors,
@@ -81,20 +75,16 @@ void UTargetingComponent::CheckTarget()
 
 	if (isOverlapped)
 	{
-		mTarget = Cast<AMonster>(GetClosetActor(outActors, FName("Monster")));
+		mTarget = Cast<AMonster>(GetClosetActor(outActors));
 		if (mTarget)
 		{
-			//PrintViewport(1.f, FColor::Black, FString("Find Character Target"));
 			mIsTargetLock = true;
-			mIsYaw = true;
-			mIsControl = false;
 			mOwner->bUseControllerRotationYaw = true;
 			mOwner->GetCharacterMovement()->bOrientRotationToMovement = false;
 			mOwner->SetActorTickEnabled(false);
 		}
 		else
 		{
-			//PrintViewport(1.f, FColor::Red, FString("Target Unlock"));
 			mIsTargetLock = false;
 			mOwner->bUseControllerRotationYaw = false;
 			mOwner->GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -103,7 +93,7 @@ void UTargetingComponent::CheckTarget()
 	}
 }
 
-AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors, FName targetTag)
+AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors)
 {
 	int num = actors.Num();
 	float distance = 10000.f;

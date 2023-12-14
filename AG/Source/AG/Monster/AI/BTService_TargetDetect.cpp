@@ -74,7 +74,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (isCollision)
 	{
-		//controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
+		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	}
 	
 	else

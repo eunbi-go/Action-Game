@@ -26,7 +26,7 @@ void ARockBurst::ParticleColiision(FName EventName, float EmitterTime, int32 Par
 	if (!mIsCollide)
 	{
 		mIsCollide = true;
-		mOnHit.Broadcast();
+		mOnHit.Broadcast(GetActorLocation());
 		PrintViewport(3.f, FColor::Red, TEXT("ARockBurst::ParticleColiisionss"));
 	}
 }

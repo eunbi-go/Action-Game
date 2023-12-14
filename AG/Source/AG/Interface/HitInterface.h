@@ -18,5 +18,4 @@ class AG_API IHitInterface
 
 public:
 	virtual void GetHit(const FVector& _impactPoint) = 0;
-	virtual void PlayJumpAction(const FVector& _impactPoint) = 0;
 };

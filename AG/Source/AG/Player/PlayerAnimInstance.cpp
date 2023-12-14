@@ -687,7 +687,7 @@ void UPlayerAnimInstance::ResumSprintAttackMontage()
 void UPlayerAnimInstance::ReplaySprintMontage()
 {
 	//Montage_Play(mSkillMontageArray[mCurSkillPlayingIndex].Montage);
-	PrintViewport(10.f, FColor::Red, FString::Printf(TEXT("ReplaySprintMontage")));
+	//PrintViewport(10.f, FColor::Red, FString::Printf(TEXT("ReplaySprintMontage")));
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillPlayingIndex].Montage, 1.5f);
 
 	Montage_Resume(mSkillMontageArray[mCurSkillPlayingIndex].Montage);

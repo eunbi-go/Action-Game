@@ -106,7 +106,7 @@ void AValkyrieSlash::Tick(float DeltaTime)
 
 void AValkyrieSlash::OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	PrintViewport(1.f, FColor::Black, TEXT("ValkyrieSlash OverlapBegin"));
+	//PrintViewport(1.f, FColor::Black, TEXT("ValkyrieSlash OverlapBegin"));
 
 	if (IHitInterface* hitInterface = Cast<IHitInterface>(OtherActor))
 	{

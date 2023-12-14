@@ -105,7 +105,7 @@ void UMonsterAnimInstance::AnimNotify_HitEnd()
 	AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
 	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), false);
 	monster->SetIsAttackEnd(true);
-	PrintViewport(10.f, FColor::Purple, TEXT("hit end"));
+	//PrintViewport(10.f, FColor::Purple, TEXT("hit end"));
 }
 
 void UMonsterAnimInstance::AnimNotify_Attack()
@@ -186,13 +186,13 @@ void UMonsterAnimInstance::AnimNotify_Skill4()
 
 void UMonsterAnimInstance::AnimNotify_PlayRataDown()
 {
-	PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataDown"));
+	//PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataDown"));
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 0.2f);
 }
 
 void UMonsterAnimInstance::AnimNotify_PlayRataReset()
 {
-	PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataReset"));
+	//PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataReset"));
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 1.f);
 }
 
@@ -235,9 +235,12 @@ void UMonsterAnimInstance::SetHitDirection(FString _value)
 
 	
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
-	AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
-	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), true);
-	monster->SetIsAttackEnd(true);
+	if (monster)
+	{
+		AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
+		//controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), true);
+		monster->SetIsAttackEnd(true);
+	}
 	Hit();
 	//PrintViewport(2.f, FColor::Blue, mHitDirection);
 }

@@ -194,10 +194,10 @@ void AMonster::Tick(float DeltaTime)
 	// Å¸°Ù ¼¼ÆÃ.
 	//-----------------------------
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
-
 	AActor* target = Cast<AActor>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 	if (IsValid(target))
 		mTarget = Cast<ACharacter>(target);
+
 
 
 	//-----------------------------
@@ -228,7 +228,7 @@ void AMonster::Tick(float DeltaTime)
 	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
 	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
-	//PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
+	PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -273,11 +273,6 @@ void AMonster::GetHit(const FVector& _impactPoint)
 	PlayHitMontage(_impactPoint);
 }
 
-void AMonster::PlayJumpAction(const FVector& _impactPoint)
-{
-	PrintViewport(1.f, FColor::Orange, TEXT("PlayJumpAction"));
-	LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
-}
 
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -476,7 +471,7 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 			
 			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
 			{
-				PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
+				//PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
 
 				mSkillInfoArray[i].duration = 0.0f;
 				mSkillInfoArray[i].isUse = false;
@@ -499,14 +494,14 @@ void AMonster::SetRotationToTarget()
 	{
 		AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
-		PrintViewport(1.f, FColor::Blue, TEXT("isvalid before"));
+		//PrintViewport(1.f, FColor::Blue, TEXT("isvalid before"));
 
 		//if (IsValid(target))
 		//{
 			FVector direction = mTarget->GetActorLocation() - GetActorLocation();
 			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-			PrintViewport(1.f, FColor::Red, TEXT("SetActor"));
+			//PrintViewport(1.f, FColor::Red, TEXT("SetActor"));
 
 			SetActorRotation(FMath::RInterpTo(GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 		//}

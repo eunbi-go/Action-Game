@@ -134,7 +134,7 @@ float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	mInfo.hp -= damage;
 
-	PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
+	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
 
 	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
 
@@ -278,6 +278,12 @@ void AFengMao::NormalAttackCheck()
 			//		SpawnParam);
 
 			//Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Mobile/Fire/combat/P_Fire_AOE_Blast_mobile.P_Fire_AOE_Blast_mobile'"));
+
+			IHitInterface* hitInterface = Cast<IHitInterface>(collisionResult[i].GetActor());
+			if (hitInterface)
+			{
+				hitInterface->GetHit(collisionResult[i].ImpactPoint);
+			}
 
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
@@ -543,6 +549,11 @@ void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* Ot
 
 void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
+	IHitInterface* hitInterface = Cast<IHitInterface>(hitActor);
+	if (hitInterface)
+	{
+		hitInterface->GetHit(Hit.ImpactPoint);
+	}
 	hitActor->TakeDamage(100.f, FDamageEvent(), GetController(), this);
 	collisionObject->Destroy();
 }
@@ -699,7 +710,7 @@ void AFengMao::RespawnSkill1(ARampageSlash* preParticle)
 }
 
 
-void AFengMao::Hit()
+void AFengMao::Hit(FVector impactPoint)
 {
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
 
@@ -707,6 +718,11 @@ void AFengMao::Hit()
 
 	if (IsValid(target))
 	{
+		IHitInterface* hitInterface = Cast<IHitInterface>(target);
+		if (hitInterface)
+		{
+			hitInterface->GetHit(impactPoint);
+		}
 		target->TakeDamage(100.f, FDamageEvent(), GetController(), this);
 	}
 }

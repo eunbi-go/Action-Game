@@ -100,6 +100,12 @@ void AKhaimera::NormalAttackCheck()
 
 			Particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonKhaimera/FX/ParticleSystems/Abilities/Ultimate/FX/P_Ult_Impact_DMG.P_Ult_Impact_DMG'"));
 
+			IHitInterface* hitInterface = Cast<IHitInterface>(collisionResult[i].GetActor());
+			if (hitInterface)
+			{
+				hitInterface->GetHit(collisionResult[i].ImpactPoint);
+			}
+
 			// 데미지 계산.
 			collisionResult[i].GetActor()->TakeDamage(
 				(float)mInfo.attackPoint,

@@ -14,7 +14,7 @@ class AG_API ARockBurst : public AParticleCascade
 	GENERATED_BODY()
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReSpawn, class ARockBurst*, niagara);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHit);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, FVector, impactPoint);
 
 public:
 	ARockBurst();

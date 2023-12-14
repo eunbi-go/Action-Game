@@ -16,6 +16,7 @@ void UValkyrieAnimInstance::NativeInitializeAnimation()
 
 	mIsInAir = false;
 	mIsJumpAttackEnd = true;
+
 }
 
 void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
@@ -29,9 +30,7 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		mDirection = mCharacter->GetDirection();
 		//mCharacterState = mCharacter->GetCharacterState();
 		mIsInAir = mMovementComp->IsFalling();
-		mIsJumpAttackEnable = mCharacter->GetIsJumpAttackEnable();
 		mActionState = mCharacter->GetActionState();
-		mJumpAttackIndex = mCharacter->GetJumpAttackIndex();
 	}
 }
 
@@ -75,26 +74,9 @@ void UValkyrieAnimInstance::AnimNotify_ChangeCamera()
 	mChangeCamera.Broadcast();
 }
 
-void UValkyrieAnimInstance::AnimNotify_JumpAttackEnable()
-{
-	mJumpAttackEnable.Broadcast();
-	mIsJumpAttackEnd = true;
-}
-
 void UValkyrieAnimInstance::AnimNotify_JumpEnd()
 {
 	mOnJumpEnd.Broadcast();
-	mIsJumpAttackEnd = true;
-}
-
-void UValkyrieAnimInstance::AnimNotify_JumpAttackEnd()
-{
-	mIsJumpAttackEnd = false;
-}
-
-void UValkyrieAnimInstance::AnimNotify_JumpAttackStart()
-{
-	//mIsJumpAttackEnd = false;
 }
 
 void UValkyrieAnimInstance::AnimNotify_SpawnFresnel()
@@ -117,12 +99,14 @@ void UValkyrieAnimInstance::AnimNotify_Dash()
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	FVector location = mCharacter->GetActorLocation() - mCharacter->GetActorForwardVector() * 300.f;
+
+	FVector location = mCharacter->GetActorLocation() - mCharacter->GetActorForwardVector() * 290.f;
 	location.Z -= (mCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.f);
+	FRotator rotation = mCharacter->GetActorRotation();
 
 	AParticleNiagara* niagara = GetWorld()->SpawnActor<AParticleNiagara>(
 		location,
-		mCharacter->GetActorRotation(),
+		rotation,
 		SpawnParam
 		);
 	niagara->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Dash_Fire.NS_Dash_Fire'"));

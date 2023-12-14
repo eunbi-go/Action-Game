@@ -46,6 +46,7 @@ protected:
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void EquipWeaponKey() override;
 	virtual void NormalAttackKey() override;
+	virtual void JumpKey() override;
 	void Skill1Key();
 	void Skill2Key();
 	void Skill3Key();
@@ -60,7 +61,6 @@ protected:
 	void SpawnFresnel();
 	void ResetFresnel();
 
-	bool mToCameraComp = true;
 
 
 	UFUNCTION()
@@ -87,14 +87,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UTargetingComponent* mTargetingComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
-	UTimelineComponent* mTimeLineComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	UCameraComponent* mTempCameraComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
-	UCameraComponent* mCameraCompRef;
+	
 
 
 	// Normal Attack
@@ -103,6 +96,7 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
 	bool mIsAttackInputOn;
+	
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
 	int32 mCurrentAttackIndex;
@@ -112,20 +106,35 @@ protected:
 
 
 	// Camera Switch
+
+	// TimeLine Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UTimelineComponent* mTimeLineComp;
+
+	// 기존 카메라에서 Switch 될 카메라
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UCameraComponent* mTempCameraComp;
+
+	// 기존 카메라의 위치 저장
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UCameraComponent* mCameraCompRef;
+
+	// mTempCameraComp 의 Transform 저장
 	FTransform mTempCameraTrans;
+	// mCameraComp/mCameraCompRef 의 Transform 저장
 	FTransform mCameraCompTrans;
 	
-	FOnTimelineFloat mTimelineUpdateDelegate;
+	// Timeline 이 끝났을 때/업데이트될 때 호출되는 함수를 바인딩하기 위한 델리게이트
 	FOnTimelineEvent mTimelineFinishDelegate;
+	FOnTimelineFloat mCurveUpdateDelegate;
+	// Timeline 에 사용할 Curve
+	UCurveFloat* mTimeLineCurve;
 
+	// CameraComp -> TempCameraComp : false
+	// TempCameraComp -> CameraComp : true
+	bool mToCameraComp = true;
 	
-	FOnTimelineFloat timelineFloat;
-	UCurveFloat* mTimeLineCurveStart;
 
-	
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	int32	mJumpAttackIndex;
 
 	
 
@@ -136,7 +145,7 @@ private:
 
 	FVector tempLocation;
 
-	bool	mIsJumpAttack = false;
+	bool	mIsJump = false;
 
 	FresnelInfo mFresnelInfo;
 	
@@ -144,5 +153,4 @@ public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }
 	EActionState GetActionState() { return mActionState; }
 	ESkillState GetSkillState() { return mSkillState; }
-	int32 GetJumpAttackIndex() { return mJumpAttackIndex; }
 };

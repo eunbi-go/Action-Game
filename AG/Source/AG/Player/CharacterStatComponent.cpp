@@ -48,7 +48,7 @@ void UCharacterStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	gameMode->GetSaveGame()->mPlayerInfo = playerInfo;
 
-	PrintViewport(10.f, FColor::Blue, TEXT("UCharacterStatComponent::EndPlay"));
+	//PrintViewport(10.f, FColor::Blue, TEXT("UCharacterStatComponent::EndPlay"));
 }
 
 

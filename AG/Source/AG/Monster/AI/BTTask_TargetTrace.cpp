@@ -61,7 +61,7 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	// 있으면 Target 을 향해 회전한 후, 쫓아간다.
 	//---------------
 
-	UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
+	//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
 
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();

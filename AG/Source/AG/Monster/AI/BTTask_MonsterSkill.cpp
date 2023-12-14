@@ -61,7 +61,7 @@ EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 	FVector direction = target->GetActorLocation() - monster->GetActorLocation();
 	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
 
-	PrintViewport(1.f, FColor::Red, TEXT("UBTTask_MonsterSkill::ExecuteTask()"));
+	//PrintViewport(1.f, FColor::Red, TEXT("UBTTask_MonsterSkill::ExecuteTask()"));
 
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
@@ -125,7 +125,7 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 	if (!IsValid(target))
 	{
-		PrintViewport(3.f, FColor::Green, TEXT("no target"));
+		//PrintViewport(3.f, FColor::Green, TEXT("no target"));
 		controller->StopMovement();
 
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
@@ -168,7 +168,7 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
-			PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), monster->GetActorRotation().Roll, monster->GetActorRotation().Pitch, monster->GetActorRotation().Yaw));
+			//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), monster->GetActorRotation().Roll, monster->GetActorRotation().Pitch, monster->GetActorRotation().Yaw));
 			const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
 
 			if (skillInfo != nullptr)

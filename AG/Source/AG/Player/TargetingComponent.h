@@ -32,21 +32,27 @@ protected:
 
 private:
 	void LockingCamera(float DeltaTime);
-	AActor* GetClosetActor(TArray<AActor*> actors, FName targetTag);
+	AActor* GetClosetActor(TArray<AActor*> actors);
+
+
+
+
 
 public:	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+
+	// 해당 Component 를 멤버변수로 갖고 있는 클래스
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Targeting", meta = (AllowPrivateAccess = true))
 	ACharacter* mOwner;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	// 타겟이 될 객체
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Targeting", meta = (AllowPrivateAccess = true))
 	AMonster* mTarget;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	// 타겟이 세팅되어 있다: true
+	// 타겟이 없다:		  false
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Targeting", meta = (AllowPrivateAccess = true))
 	bool mIsTargetLock = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	bool mIsYaw = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	bool mIsControl = false;
+	// Target 을 감지하기 위한 Sphere 의 반지름
+	float mSphereRadius = 1000.f;
 };

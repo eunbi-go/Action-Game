@@ -82,6 +82,14 @@ AValkyrie::AValkyrie()
 	}
 	mMontages.Add(FName("Slash"), montage5);
 
+	UAnimMontage* montage6;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> doubleJumpMontage(TEXT("AnimMontage'/Game/Assets/Character/Valkyrie/Animation/Jump/AM_Double_Jump.AM_Double_Jump'"));
+	if (doubleJumpMontage.Succeeded())
+	{
+		montage6 = doubleJumpMontage.Object;
+	}
+	mMontages.Add(FName("DoubleJump"), montage6);
+
 
 	mAttackMaxIndex = 4;
 	NormalAttackEnd();
@@ -108,7 +116,6 @@ AValkyrie::AValkyrie()
 
 	JumpMaxCount = 2;
 	GetCharacterMovement()->JumpZVelocity = 500.f;
-	mJumpAttackIndex = -1;
 
 
 	mFresnelInfo.mFresnelEnable = false;
@@ -128,21 +135,23 @@ AValkyrie::AValkyrie()
 	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
 	mTargetingComp->SetOwner(this);
 
+
+
+
+
 	mTimeLineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("mTimelineComp"));
 
 
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("CurveFloat'/Game/Blueprints/GameMode/BP_CameraCurve.BP_CameraCurve'"));
 	if (curve.Succeeded())
 	{
-		mTimeLineCurveStart = curve.Object;
+		mTimeLineCurve = curve.Object;
 	}
 
 
 
 
-	timelineFloat.BindUFunction(this, FName("CurveUpdate"));
-	mTimelineUpdateDelegate.BindUFunction(this, FName("TimeLineUpdate"));
-	mTimelineFinishDelegate.BindUFunction(this, FName("TimeLineFinish"));
+	
 }
 
 void AValkyrie::BeginPlay()
@@ -169,8 +178,11 @@ void AValkyrie::BeginPlay()
 
 	SetAnimDelegate();
 
+	mCurveUpdateDelegate.BindUFunction(this, FName("CurveUpdate"));
+	mTimelineFinishDelegate.BindUFunction(this, FName("TimeLineFinish"));
+
 	// timeline update
-	mTimeLineComp->AddInterpFloat(mTimeLineCurveStart, timelineFloat);
+	mTimeLineComp->AddInterpFloat(mTimeLineCurve, mCurveUpdateDelegate);
 	// timeline finish
 	mTimeLineComp->SetTimelineFinishedFunc(mTimelineFinishDelegate);
 	// timeline length
@@ -230,24 +242,6 @@ void AValkyrie::NormalAttackKey()
 
 	mWeapon->SetCollisionOnOff(true);
 
-	if (mIsJumpAttack)
-	{
-		
-		mActionState = EActionState::EAS_JumpAttack;
-		
-		if (mAnimInst->GetIsJumpAttackEnd())
-		{
-			if (mJumpAttackIndex == 2)
-				mJumpAttackIndex = 0;
-			else
-				mJumpAttackIndex = FMath::Clamp<int32>(mJumpAttackIndex + 1, 0, 2);
-			LaunchCharacter(FVector(0.f, 0.f, 200.f), true, true);
-			PrintViewport(0.5f, FColor::Blue, TEXT("Jump!"));
-		}
-		PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("JumpAttack: %d"), mJumpAttackIndex));
-		return;
-	}
-
 	if (mIsAttacking)
 	{
 		if (mIsCanNextAttack)
@@ -262,6 +256,21 @@ void AValkyrie::NormalAttackKey()
 	}
 
 
+}
+
+void AValkyrie::JumpKey()
+{
+	if (mIsJump)
+	{
+		mIsJump = false;
+		LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
+		PlayMontage(FName("DoubleJump"));
+	}
+	else
+	{
+		Jump();
+		mIsJump = true;
+	}
 }
 
 void AValkyrie::Skill1Key()
@@ -360,10 +369,8 @@ void AValkyrie::NormalAttackStart()
 	mIsAttackInputOn = false;
 	mCurrentAttackIndex = FMath::Clamp<int32>(mCurrentAttackIndex + 1, 1, mAttackMaxIndex);
 	
-	if (mIsJumpAttack)
-		mActionState = EActionState::EAS_JumpAttack;
-	else
-		mActionState = EActionState::EAS_Attack;
+
+	mActionState = EActionState::EAS_Attack;
 }
 
 void AValkyrie::NormalAttackEnd()
@@ -399,7 +406,7 @@ void AValkyrie::SpawnFresnel()
 	if (mFresnelInfo.mFresnelCreateTime >= mFresnelInfo.mFresnelCreateTimeEnd)
 	{
 		mFresnelInfo.mFresnelCreateTime -= mFresnelInfo.mFresnelCreateTimeEnd;
-		PrintViewport(0.5f, FColor::Black, TEXT("Fresnel"));
+		//PrintViewport(0.5f, FColor::Black, TEXT("Fresnel"));
 		// ÀÜ»ó »ý¼º
 		FActorSpawnParameters	SpawnParam;
 		SpawnParam.SpawnCollisionHandlingOverride =
@@ -433,9 +440,9 @@ void AValkyrie::ResetFresnel()
 
 void AValkyrie::TimeLineFinish()
 {
-	FAttachmentTransformRules attachRules(EAttachmentRule::SnapToTarget, true);
 	if (mToCameraComp)
 	{
+		FAttachmentTransformRules attachRules(EAttachmentRule::SnapToTarget, true);
 		mCameraComp->AttachToComponent(mSpringArmComp, attachRules);
 	}
 	else
@@ -496,6 +503,7 @@ void AValkyrie::CameraSwitch(bool _value)
 		mCameraComp->SetActive(true);
 		mTempCameraComp->SetActive(false);
 		mCameraCompRef->SetActive(false);
+
 		mTimeLineComp->ReverseFromEnd();
 	}
 }
@@ -607,7 +615,6 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
 		CustomTimeDilation = 1.f;
 		mIsAttacking = false;
-		mIsJumpAttack = false;
 		NormalAttackEnd();
 		if (mWeapon)
 		{
@@ -653,11 +660,13 @@ void AValkyrie::SetAnimDelegate()
 		{
 			CameraSwitch(false);
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+			mSkillState = ESkillState::ESS_None;
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 			ResetFresnel();
+			mSkillState = ESkillState::ESS_None;
 		}
 	});
 
@@ -669,17 +678,13 @@ void AValkyrie::SetAnimDelegate()
 		montage = *mMontages.Find(FName("Sprint"));
 		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
 		CameraSwitch(true);
+
 	}
 	});
 
-	mAnimInst->mJumpAttackEnable.AddLambda([this]() -> void {
-		mIsJumpAttack = true;
-	});
-
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
-		mIsJumpAttack = false;
 		mActionState = EActionState::EAS_Idle;
-		mJumpAttackIndex = -1;
+		mIsJump = false;
 	});
 
 	mAnimInst->mSpawnFresnel.AddLambda([this]() -> void {

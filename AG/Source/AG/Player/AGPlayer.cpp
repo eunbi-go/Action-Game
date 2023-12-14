@@ -226,6 +226,59 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	return 0.0f;
 }
 
+void AAGPlayer::GetHit(const FVector& _impactPoint)
+{
+	FVector position = GetActorLocation();
+	FVector impactPosition = FVector(_impactPoint.X, _impactPoint.Y, position.Z);
+	FVector direction = (impactPosition - position).GetSafeNormal();
+
+	// Forward * direction = |forward| * |direction| * cos(theta)
+	// 근데 |forward|, |direction| 이 2개는 크기가 1이므로 
+	// 내적의 결과는 cos(theta)가 된다.
+	float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+	// theta값을 얻는다
+	// 라디안과 삼각함수는 일반적으로 각도 대신 라디안을 사용한다
+	float degree = UKismetMathLibrary::Acos(innerProduct);
+	// 라디안을 실제 각도(몇도)로 변환한다
+	degree = FMath::RadiansToDegrees(degree);
+
+	// 오른쪽/왼쪽 구분
+	// outProdouct가 위를 향하고 있다 -> 오른쪽 (양수)
+	// 아래 -> 왼쪽 (음수)
+	FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+	float angle = sign * degree;
+
+
+
+	FString angleString = TEXT("");
+
+	// 오른쪽.
+	if (angle >= 0.f)
+	{
+		if (degree >= 50.f && angle <= 130.f)
+			angleString = TEXT("Right");
+		else if (degree < 50.f)
+			angleString = TEXT("Front");
+		else
+			angleString = TEXT("Back");
+	}
+	 
+	// 왼쪽
+	else if (angle < 0.f)
+	{
+		if (degree <= -50.f && angle >= -130.f)
+			angleString = TEXT("Left");
+		else if (degree > -50.f)
+			angleString = TEXT("Front");
+		else
+			angleString = TEXT("Back");
+	}
+
+	//mAnimInst->SetHitDirection(angleString);
+}
+
 bool AAGPlayer::AddItem(EITEM_ID _itemID)
 {
 	if (_itemID == EITEM_ID::COIN)
@@ -245,7 +298,7 @@ bool AAGPlayer::AddItem(EITEM_ID _itemID)
 			UMainWidget* MainHUD = GameMode->GetMainWidget();
 			UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
 			InveotyrWidget->AddItemByKey(_itemID);
-			PrintViewport(3.f, FColor::Black, FString("Add Item"));
+			//PrintViewport(3.f, FColor::Black, FString("Add Item"));
 		}
 	}
 	else

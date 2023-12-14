@@ -123,6 +123,6 @@ void AAGGameModeBase::SaveGame()
 
 		delete writer;
 
-		PrintViewport(10.f, FColor::Blue, TEXT("AAGGameModeBase::SaveGame"));
+		//PrintViewport(10.f, FColor::Blue, TEXT("AAGGameModeBase::SaveGame"));
 	}
 }

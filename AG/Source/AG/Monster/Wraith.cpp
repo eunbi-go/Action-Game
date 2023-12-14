@@ -107,6 +107,12 @@ void AWraith::NormalAttackCheck()
 
 		Particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonWraith/FX/Particles/Abilities/ScopedShot/FX/P_Wraith_Sniper_HitCharacter.P_Wraith_Sniper_HitCharacter'"));
 
+		IHitInterface* hitInterface = Cast<IHitInterface>(result.GetActor());
+		if (hitInterface)
+		{
+			hitInterface->GetHit(result.ImpactPoint);
+		}
+
 		// 데미지 계산.
 		result.GetActor()->TakeDamage(
 			(float)mInfo.attackPoint,

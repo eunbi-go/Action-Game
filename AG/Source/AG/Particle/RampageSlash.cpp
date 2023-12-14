@@ -66,7 +66,7 @@ void ARampageSlash::Tick(float DeltaTime)
 		if (Distance <= 100.f)
 		{
 			// 충돌했다고 판정.
-			mOnHit.Broadcast();
+			mOnHit.Broadcast(GetActorLocation());
 
 			// 카메라 세이크 추가.
 			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mHitShake);

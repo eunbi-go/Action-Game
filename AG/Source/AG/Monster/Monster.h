@@ -34,7 +34,6 @@ public:
 	virtual void UnPossessed();
 
 	virtual void GetHit(const FVector& _impactPoint) override;
-	virtual void PlayJumpAction(const FVector& _impactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 private:

@@ -4,6 +4,7 @@
 
 #include "../BasicInfo.h"
 #include "GameFramework/Character.h"
+#include "../Interface/HitInterface.h"
 #include "AGPlayer.generated.h"
 
 class UCharacterStatComponent;
@@ -37,7 +38,7 @@ enum class ESkillState : uint8
 };
 
 UCLASS()
-class AG_API AAGPlayer : public ACharacter
+class AG_API AAGPlayer : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	virtual void GetHit(const FVector& _impactPoint) override;
 
 	bool AddItem(EITEM_ID _itemID);
 	EITEM_ID SelectItem();
@@ -72,7 +75,7 @@ protected:
 	void MoveHorizontal(float _value);
 	void Turn(float _value);
 	void LookUp(float _value);
-	void JumpKey();
+	virtual void JumpKey();
 
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();
