@@ -117,8 +117,7 @@ void AAGPlayer::BeginPlay()
 			mStat->GetInfo().attackDistance = info->attackDistance;
 		}
 	}
-
-
+	GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
 	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	UMainWidget* mainWidget = gameMode->GetMainWidget();
 	mainWidget->SetCharacterStat(mStat);

@@ -27,25 +27,18 @@ EBTNodeResult::Type UBTTask_PatrolWait::ExecuteTask(UBehaviorTreeComponent& Owne
 	// MonsterAIController, Monster, BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 		return EBTNodeResult::Failed;
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 		return EBTNodeResult::Failed;
 
-
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 		return EBTNodeResult::Failed;
 
-
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
 
 
 	//---------------
@@ -77,34 +70,27 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	// MonsterAIController, Monster(Info, AnimInst), BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
 	if (IsValid(target))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
@@ -114,14 +100,11 @@ void UBTTask_PatrolWait::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	//---------------
 	// Target 이 없으면 patrolWaitTime 을 증가시키고, 시간이 다 됐으면 종료.
 	//---------------
-
-
 	monster->SetPatrolWaitTime(DeltaSeconds);
 
 	if (monster->GetPatrolWaitTime() >= mWaitTime)
 	{
 		monster->ClearPatrolWaitTime();
-
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 }

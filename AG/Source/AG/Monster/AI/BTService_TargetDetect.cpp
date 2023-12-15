@@ -30,26 +30,19 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	// -> OwnerComp 로 몬스터들을 구분할 수 있다.
 	// -> 객체(몬스터)마다 OwnerComp 는 하나씩 독립적으로 들어온다.
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 		return;
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 		return;
-
 	
 	const FMonsterInfo& monsterInfo = monster->GetMonsterInfo();
-
 
 
 	//---------------
 	// monsterInfo.traceDistance 안에 객체가 있는지 확인한다.
 	//---------------
-
-
 	TArray<FOverlapResult>	resultArray;
 	FCollisionQueryParams	param(NAME_None, false, monster);
 

@@ -24,26 +24,21 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	// MonsterAIController, Monster, BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 		return EBTNodeResult::Failed;
 
 
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 		return EBTNodeResult::Failed;
 
 
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 		return EBTNodeResult::Failed;
 
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-
 
 	//---------------
 	// Target 이 있거나 몬스터가 순찰할 수 없는 상태이면 종료시킨다.
@@ -52,32 +47,15 @@ EBTNodeResult::Type UBTTask_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Succeeded;
 
 	
-
 	//---------------
 	// 몬스터 순찰을 시작한다.
 	//---------------
 	const FMonsterInfo& info = monster->GetMonsterInfo();
-
-	PrintViewport(3.f, FColor::Orange, TEXT("Patrol Start"));
-
 	monster->GetCharacterMovement()->MaxWalkSpeed = info.movingWalkSpeed;
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::PATROL);
-
 	monster->SetIsPatrolEnable(true);
 
-
-	//// 회전.
-	//FVector monsterPosition = monster->GetActorLocation();
-	//FVector targetPosition = monster->GetPatrolPosition();
-	//FVector direction = targetPosition - monsterPosition;
-
-	//FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
-	//monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
-
-	// 이동.
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller,
-		monster->GetPatrolPosition());
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, monster->GetPatrolPosition());
 
 
 	return EBTNodeResult::InProgress;
@@ -97,46 +75,36 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	// MonsterAIController, Monster(Info, AnimInst), BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
 	if (IsValid(target))
 	{
 		monster->SetIsPatrolEnable(false);
-
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 
 	FVector direction = monster->GetPatrolPosition() - monster->GetActorLocation();
-
 	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
 	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
 
 
@@ -150,22 +118,15 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// 몬스터가 Patrol Point 에 도착했는지 확인한다.
 		// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
 		//---------------
-
-
-
-
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(
 			controller,
 			monster->GetPatrolPosition());
 
 
 		FVector	MonsterLoc = monster->GetActorLocation();
-
-		MonsterLoc = MonsterLoc -
-			FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		MonsterLoc -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
 		float	Distance = FVector::Distance(MonsterLoc, monster->GetPatrolPointPosition());
-
 		Distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
 		if (Distance <= 10.f)
@@ -186,7 +147,6 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		// 몬스터가 Patrol Point 에 도착했는지 확인한다.
 		// 도착했으면 몬스터가 다음 Patrol Point 로 순찰할 수 있게 해준다.
 		//---------------
-
 		FVector monsterPosition = monster->GetActorLocation();
 		FVector targetPosition = monster->GetPatrolPosition();
 		monsterPosition.Z = targetPosition.Z = 0.f;
@@ -197,11 +157,8 @@ void UBTTask_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		if (distance <= 10.f)
 		{
 			monster->SetIsPatrolEnable(false);
-
 			controller->StopMovement();
-
 			monster->GoNextPatrolPoint();
-
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 	}

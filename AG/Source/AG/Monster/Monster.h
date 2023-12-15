@@ -14,6 +14,15 @@ enum class EHitActionType : uint8
 	EHAT_Jump
 };
 
+UENUM()
+enum class EAttackType : uint8
+{
+	EAT_Ing,
+	EAT_End
+};
+
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
 UCLASS()
 class AG_API AMonster : public ACharacter, public IHitInterface
 {
@@ -35,6 +44,8 @@ public:
 
 	virtual void GetHit(const FVector& _impactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	FOnAttackEndDelegate	mOnAttackEnd;
 
 private:
 	void PlayHitMontage(const FVector& _impactPoint);
@@ -249,4 +260,6 @@ protected:
 	bool	mIsUsingSkill;
 
 	ACharacter* mTarget;
+
+	EAttackType	mAttackType;
 };

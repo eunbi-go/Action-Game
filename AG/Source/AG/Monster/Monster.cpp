@@ -55,10 +55,13 @@ AMonster::AMonster()
 	//-------------------
 	// AI Controller 지정.
 	//-------------------
+	// 레벨에 배치하거나 새롭게 생성되는 Monster마다 
+	// AMonsterAIController 객체가 생성되고, 
+	// AMonsterAIController 의 지배를 받는다.
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = AMonsterAIController::StaticClass();
 
-	mIsAttackEnd = false;
+
 	
 	mPatrolIndex = 1;
 	mPatrolWaitTime = 0.f;
@@ -77,6 +80,8 @@ AMonster::AMonster()
 	mIsUsingSkill = false;
 
 	mTarget = nullptr;
+
+	mAttackType = EAttackType::EAT_End;
 }
 
 void AMonster::BeginPlay()

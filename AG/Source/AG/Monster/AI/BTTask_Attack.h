@@ -30,4 +30,8 @@ protected:
 
 	// Task 종료될 때 호출.
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult);
+
+
+private:
+	bool	mIsAttacking = false;
 };

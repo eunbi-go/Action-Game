@@ -117,7 +117,11 @@ void UMonsterAnimInstance::AnimNotify_AttackEnd()
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 	//mMonsterMotionType = MONSTER_MOTION::IDLE;
 	if (IsValid(monster))
+	{
+		PrintViewport(2.f, FColor::Red, TEXT("AttackEnd"));
 		monster->SetIsAttackEnd(true);
+		monster->mOnAttackEnd.Broadcast();
+	}
 }
 
 void UMonsterAnimInstance::AnimNotify_AttackCheck()

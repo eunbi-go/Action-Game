@@ -24,62 +24,33 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	// MonsterAIController, Monster, BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 		return EBTNodeResult::Failed;
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 		return EBTNodeResult::Failed;
 
-
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 		return EBTNodeResult::Failed;
 
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
 
 
 	//---------------
-	// Target 이 없으면 Idle/Task 종료, 있으면 Target 을 향해 회전한 후, 쫓아간다.
+	// Target 이 없으면 Idle -> Task 종료, 있으면 Target 을 향해 회전한 후, 쫓아간다.
 	//---------------
 	if (!IsValid(target))
 	{
 		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-
 		return EBTNodeResult::Failed;
 	}
 
-
-	//---------------
-	// 있으면 Target 을 향해 회전한 후, 쫓아간다.
-	//---------------
-
-	//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
-
-	FVector monsterPosition = monster->GetActorLocation();
-	FVector targetPosition = target->GetActorLocation();
-	FVector direction = targetPosition - monsterPosition;
-
-	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 10.f));
-
-	controller->MoveToActor(target);
-
-	
-
-
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
-
-
-	// 몬스터가 타겟에 도착할 때까지 이 Task를 빠져나가지 못하게 한다.
+	UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
 	return EBTNodeResult::InProgress;
 }
 
@@ -97,27 +68,21 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	// MonsterAIController, Monster(Info, AnimInst), BB의 Target 을 얻어온다.
 	//---------------
 	AMonsterAIController* controller = Cast<AMonsterAIController>(OwnerComp.GetAIOwner());
-
 	if (!IsValid(controller))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	AMonster* monster = Cast<AMonster>(controller->GetPawn());
-
 	if (!IsValid(monster))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
 
-
 	const FMonsterInfo& monsterInfo = monster->GetMonsterInfo();
-
 	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
-
 	if (!IsValid(monsterAnimInst))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -126,43 +91,39 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 	
-
-
 	//---------------
-	// Target 이 없으면 Idle/Task 종료.
+	// Target 이 없으면 Idle -> Task 종료.
 	//---------------
 	if (!IsValid(target))
 	{
 		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-
-		// Task를 종료시킨다.
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-
 		return;
 	}
 
 
 	//---------------
-	// 있으면 Target 을 향해 회전한 후, 쫓아간다.
+	// Target 있고, 공격 범위 안에 있으면 공격 시작.
+	// Target 있고, 공격 범위 밖에 있으면 추격.
 	//---------------
 	FVector monsterPosition = monster->GetActorLocation();
 	FVector targetPosition = target->GetActorLocation();
+	monsterPosition -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	targetPosition -= FVector(0.f, 0.f, target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	float	distance = FVector::Distance(monsterPosition, targetPosition);
 
-	float distance = (monsterPosition - targetPosition).Size();
-
-	FVector direction = targetPosition - monsterPosition;
-	FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
-	monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, DeltaSeconds, 10.f));
-
-
+	distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	if (distance <= monsterInfo.attackDistance)
 	{
+		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		controller->StopMovement();
-
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
+	
+	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
+	UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
 }
 
 void UBTTask_TargetTrace::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
