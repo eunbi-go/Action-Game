@@ -76,6 +76,7 @@ protected:
 	void Turn(float _value);
 	void LookUp(float _value);
 	virtual void JumpKey();
+	virtual void CrouchKey();
 
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();

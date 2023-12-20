@@ -31,6 +31,15 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		//mCharacterState = mCharacter->GetCharacterState();
 		mIsInAir = mMovementComp->IsFalling();
 		mActionState = mCharacter->GetActionState();
+		mIsCrouch = mCharacter->GetIsCrouch();
+	}
+	if (mIsCrouch && mGroundSpeed)
+	{
+		mCrouchValue = 1.f;
+	}
+	else
+	{
+		mCrouchValue = 0.f;
 	}
 }
 

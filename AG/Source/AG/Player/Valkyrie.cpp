@@ -187,6 +187,8 @@ void AValkyrie::BeginPlay()
 	mTimeLineComp->SetTimelineFinishedFunc(mTimelineFinishDelegate);
 	// timeline length
 	mTimeLineComp->SetTimelineLength(0.5f);
+
+	GetCapsuleComponent()->bHiddenInGame = false;
 }
 
 void AValkyrie::PostInitializeComponents()
@@ -359,6 +361,22 @@ void AValkyrie::Skill3Key()
 void AValkyrie::TargetingKey()
 {
 	mTargetingComp->SetTargetLock();
+}
+
+void AValkyrie::CrouchKey()
+{
+	if (!mIsCrouch)
+	{
+		mIsCrouch = true;
+		GetCharacterMovement()->Crouch(true);
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	}
+	else
+	{
+		mIsCrouch = false;
+		GetCharacterMovement()->UnCrouch(false);
+		GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
+	}
 }
 
 void AValkyrie::NormalAttackStart()
@@ -597,6 +615,7 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill3Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
+	
 }
 
 void AValkyrie::UnequipSword()

@@ -84,6 +84,7 @@ public:
 	FOnDelayDelegate			mOnDelay;
 
 	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
+	bool GetIsCrouch() { return mIsCrouch; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -93,7 +94,13 @@ protected:
 	float mDirection = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		float mCrouchValue = 0.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 		bool	mIsInAir;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+		bool	mIsCrouch;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 		EActionState	mActionState;

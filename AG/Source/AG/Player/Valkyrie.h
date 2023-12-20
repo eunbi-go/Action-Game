@@ -51,6 +51,7 @@ protected:
 	void Skill2Key();
 	void Skill3Key();
 	void TargetingKey();
+	virtual void CrouchKey() override;
 
 	void NormalAttackStart();
 	void NormalAttackEnd();
@@ -148,9 +149,11 @@ private:
 	bool	mIsJump = false;
 
 	FresnelInfo mFresnelInfo;
+	bool mIsCrouch = false;
 	
 public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }
 	EActionState GetActionState() { return mActionState; }
 	ESkillState GetSkillState() { return mSkillState; }
+	bool GetIsCrouch() { return mIsCrouch; }
 };

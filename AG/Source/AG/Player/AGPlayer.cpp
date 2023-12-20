@@ -118,9 +118,31 @@ void AAGPlayer::BeginPlay()
 		}
 	}
 	GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 100.f;
 	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	UMainWidget* mainWidget = gameMode->GetMainWidget();
 	mainWidget->SetCharacterStat(mStat);
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+}
+
+void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("MoveForward"), this, &AAGPlayer::MoveForward);
+	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("MoveHorizontal"), this, &AAGPlayer::MoveHorizontal);
+	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("LookUp"), this, &AAGPlayer::LookUp);
+	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("Turn"), this, &AAGPlayer::Turn);
+
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("EquipWeapon"), EInputEvent::IE_Released,
+		this, &AAGPlayer::EquipWeaponKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("NormalAttack"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::NormalAttackKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Jump"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::JumpKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Crouch"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::CrouchKey);
+
 }
 
 void AAGPlayer::MoveForward(float _value)
@@ -164,6 +186,10 @@ void AAGPlayer::JumpKey()
 	//mActionState = EActionState::EAS_Jump;
 }
 
+void AAGPlayer::CrouchKey()
+{
+}
+
 void AAGPlayer::EquipWeaponKey()
 {
 }
@@ -187,22 +213,7 @@ void AAGPlayer::Tick(float DeltaTime)
 
 }
 
-void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("MoveForward"), this, &AAGPlayer::MoveForward);
-	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("MoveHorizontal"), this, &AAGPlayer::MoveHorizontal);
-	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("LookUp"), this, &AAGPlayer::LookUp);
-	PlayerInputComponent->BindAxis<AAGPlayer>(TEXT("Turn"), this, &AAGPlayer::Turn);
-
-	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("EquipWeapon"), EInputEvent::IE_Released,
-		this, &AAGPlayer::EquipWeaponKey);
-	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("NormalAttack"), EInputEvent::IE_Pressed,
-		this, &AAGPlayer::NormalAttackKey);
-	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Jump"), EInputEvent::IE_Pressed,
-		this, &AAGPlayer::JumpKey);
-}
 
 float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
