@@ -70,6 +70,9 @@ protected:
 	UFUNCTION()
 	void CurveUpdate(float value);
 
+	UFUNCTION()
+	void CrouchCurveUpdate(float value);
+
 	void CameraSwitch(bool _value);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
@@ -137,7 +140,9 @@ protected:
 	
 
 
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
+	UTimelineComponent* mCrouchTimeLineComp;
+	FOnTimelineFloat mCrouchCurveUpdateDelegate;
 
 	
 
@@ -149,7 +154,12 @@ private:
 	bool	mIsJump = false;
 
 	FresnelInfo mFresnelInfo;
+
 	bool mIsCrouch = false;
+	float	mCrouchCapsuleHalfHeight;
+	float	mCapsuleHalfHeight;
+	
+
 	
 public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }

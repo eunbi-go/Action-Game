@@ -140,6 +140,7 @@ AValkyrie::AValkyrie()
 
 
 	mTimeLineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("mTimelineComp"));
+	mCrouchTimeLineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("mCrouchTimeLineComp"));
 
 
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("CurveFloat'/Game/Blueprints/GameMode/BP_CameraCurve.BP_CameraCurve'"));
@@ -149,7 +150,8 @@ AValkyrie::AValkyrie()
 	}
 
 
-
+	mCrouchCapsuleHalfHeight = 60.f;
+	mCapsuleHalfHeight = 88.f;
 
 	
 }
@@ -179,10 +181,12 @@ void AValkyrie::BeginPlay()
 	SetAnimDelegate();
 
 	mCurveUpdateDelegate.BindUFunction(this, FName("CurveUpdate"));
+	mCrouchCurveUpdateDelegate.BindUFunction(this, FName("CrouchCurveUpdate"));
 	mTimelineFinishDelegate.BindUFunction(this, FName("TimeLineFinish"));
 
 	// timeline update
 	mTimeLineComp->AddInterpFloat(mTimeLineCurve, mCurveUpdateDelegate);
+	mCrouchTimeLineComp->AddInterpFloat(mTimeLineCurve, mCrouchCurveUpdateDelegate);
 	// timeline finish
 	mTimeLineComp->SetTimelineFinishedFunc(mTimelineFinishDelegate);
 	// timeline length
@@ -368,14 +372,22 @@ void AValkyrie::CrouchKey()
 	if (!mIsCrouch)
 	{
 		mIsCrouch = true;
-		GetCharacterMovement()->Crouch(true);
+		mCrouchTimeLineComp->ReverseFromEnd();
 		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+
+		GetCapsuleComponent()->SetRelativeLocation(FVector(0.f, 0.f, -60.f));
+		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, 30.f));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(mCrouchCapsuleHalfHeight);
 	}
 	else
 	{
 		mIsCrouch = false;
-		GetCharacterMovement()->UnCrouch(false);
+		mCrouchTimeLineComp->PlayFromStart();
 		GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
+
+		GetCapsuleComponent()->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
+		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(mCapsuleHalfHeight);
 	}
 }
 
@@ -494,6 +506,11 @@ void AValkyrie::CurveUpdate(float value)
 	newControllerRotator.Yaw = newTransform.Rotator().Yaw;
 	APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0);
 	controller->SetControlRotation(newControllerRotator);
+}
+
+void AValkyrie::CrouchCurveUpdate(float value)
+{
+	mCameraComp->SetRelativeLocation(FVector(0.f, 0.f, (FMath::Lerp(0.f, 30.f, value))));
 }
 
 void AValkyrie::CameraSwitch(bool _value)
