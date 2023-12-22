@@ -193,6 +193,9 @@ void AValkyrie::BeginPlay()
 	mTimeLineComp->SetTimelineLength(0.5f);
 
 	GetCapsuleComponent()->bHiddenInGame = false;
+
+	GetCharacterMovement()->MaxAcceleration = 300.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 100.f;
 }
 
 void AValkyrie::PostInitializeComponents()

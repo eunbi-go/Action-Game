@@ -32,6 +32,33 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		mIsInAir = mMovementComp->IsFalling();
 		mActionState = mCharacter->GetActionState();
 		mIsCrouch = mCharacter->GetIsCrouch();
+
+		// 디스턴스 매칭이 필요한 변수 세팅.
+		mAccelation = mMovementComp->GetCurrentAcceleration();
+		mAccelation.Z = 0.f;
+		if (!mAccelation.IsNearlyZero())
+		{
+			mIsAccel = true;
+		}
+		else
+			mIsAccel = false;
+
+		mVelocity = mCharacter->GetVelocity();
+		mVelocity.Z = 0.f;
+		if (!mVelocity.IsNearlyZero())
+		{
+			mIsVelocity = true;
+		}
+		else
+			mIsVelocity = false;
+
+		// 이전 프레임과 위치를 비교해서 거리와 속도를 구한다.
+		FVector location = mCharacter->GetActorLocation() - mCurrentWorldLocation;
+		mDistanceLastUpdate = UKismetMathLibrary::VSizeXY(location);
+		mCurrentWorldLocation = location;
+
+		// 현재 속도를 구한다.
+		mCurrentSpeed = UKismetMathLibrary::SafeDivide(mDistanceLastUpdate, _deltaTime);
 	}
 	if (mIsCrouch && mGroundSpeed)
 	{

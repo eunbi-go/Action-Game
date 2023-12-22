@@ -69,7 +69,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	AValkyrie* mCharacter;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
 	class UCharacterMovementComponent* mMovementComp;
 
 	FOnNextAttackCheckDelegate	mOnNextAttackCheck;
@@ -94,7 +94,30 @@ protected:
 	float mDirection = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-		float mCrouchValue = 0.f;
+	float mCrouchValue = 0.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FVector mAccelation;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	bool mIsAccel;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FVector mVelocity;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	bool mIsVelocity;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float mDistanceLastUpdate;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FVector mCurrentWorldLocation;
+
+	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float mCurrentSpeed;
+
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 		bool	mIsInAir;
