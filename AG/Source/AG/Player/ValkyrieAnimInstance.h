@@ -4,7 +4,6 @@
 
 #include "../BasicInfo.h"
 #include "Animation/AnimInstance.h"
-#include "Valkyrie.h"
 #include "ValkyrieAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
@@ -18,12 +17,22 @@ DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDelayDelegate);
 
+UENUM(BlueprintType)
+enum class EMoveDirection : uint8
+{
+	EMD_Front UMETA(DisplayName = "Front"),
+	EMD_Back UMETA(DisplayName = "Back"),
+	EMD_Right UMETA(DisplayName = "Right"),
+	EMD_Left UMETA(DisplayName = "Left"),
+};
+
 UCLASS()
 class AG_API UValkyrieAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
 public:
+	UValkyrieAnimInstance();
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float _deltaTime) override;
 
@@ -67,7 +76,7 @@ public:
 	void AnimNotify_Dash();
 
 	UPROPERTY(BlueprintReadOnly)
-	AValkyrie* mCharacter;
+	class AValkyrie* mCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
 	class UCharacterMovementComponent* mMovementComp;
@@ -96,6 +105,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float mCrouchValue = 0.f;
 
+
+
 	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FVector mAccelation;
 
@@ -116,6 +127,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float mCurrentSpeed;
+
+	UPROPERTY(VisibleAnywhere, Category = "PoseWarping", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float mLocalVelocityDirectionAngle;
+
+	UPROPERTY(VisibleAnywhere, Category = "PoseWarping", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	EMoveDirection mMoveDirection;
 
 
 

@@ -20,7 +20,8 @@ AAGPlayer::AAGPlayer()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	//GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 450.f;
 
@@ -95,6 +96,7 @@ void AAGPlayer::BeginPlay()
 		mStat->SetHp(mStat->GetInfo().hp);
 		mStat->SetMp(mStat->GetInfo().mp);
 		mStat->SetCoin(mStat->GetInfo().gold);
+		
 	}
 	else
 	{

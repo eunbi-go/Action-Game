@@ -35,6 +35,20 @@
 #include "BasicInfo.generated.h"
 
 
+UENUM(BlueprintType)
+enum class EActionState : uint8
+{
+	EAS_Idle UMETA(DisplayName = "Idle"),
+	EAS_Move UMETA(DisplayName = "Move"),
+	EAS_Dash UMETA(DisplayName = "Dash"),
+	EAS_Attack UMETA(DisplayName = "Attack"),
+	EAS_Skill UMETA(DisplayName = "Skill"),
+	EAS_Jump UMETA(DisplayName = "Jump"),
+	EAS_JumpAttack UMETA(DisplayName = "JumpAttack"),
+};
+
+
+
 USTRUCT(BlueprintType)
 struct FCharacterInfo
 {

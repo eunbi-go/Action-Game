@@ -148,7 +148,11 @@ AValkyrie::AValkyrie()
 	{
 		mTimeLineCurve = curve.Object;
 	}
-
+	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("AnimBlueprint'/Game/Blueprints/Valkyrie/Animations/ABP_Valkyrie.ABP_Valkyrie_C'"));
+	if (WARRIOR_ANIM.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(WARRIOR_ANIM.Class);
+	}
 
 	mCrouchCapsuleHalfHeight = 60.f;
 	mCapsuleHalfHeight = 88.f;
@@ -192,7 +196,7 @@ void AValkyrie::BeginPlay()
 	// timeline length
 	mTimeLineComp->SetTimelineLength(0.5f);
 
-	GetCapsuleComponent()->bHiddenInGame = false;
+	//GetCapsuleComponent()->bHiddenInGame = false;
 
 	GetCharacterMovement()->MaxAcceleration = 300.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 100.f;
