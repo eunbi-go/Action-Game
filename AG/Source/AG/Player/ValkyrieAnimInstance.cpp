@@ -103,7 +103,7 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		}
 	}
 	else
-		PrintViewport(3.f, FColor::Yellow, FString("No Movement"));
+		//PrintViewport(3.f, FColor::Yellow, FString("No Movement"));
 	if (mIsCrouch && mGroundSpeed)
 	{
 		mCrouchValue = 1.f;

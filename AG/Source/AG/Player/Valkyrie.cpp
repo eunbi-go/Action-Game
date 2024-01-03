@@ -16,6 +16,7 @@
 #include "CharacterStatComponent.h"
 #include "TargetingComponent.h"
 #include "Components/TimelineComponent.h"
+#include "../Monster/Monster.h"
 
 AValkyrie::AValkyrie()
 {
@@ -59,7 +60,8 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Attack"), montage2);
 
 	UAnimMontage* montage3;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Sprint.AM_Valkyrie_Sprint'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Sprint.AM_Valkyrie_Sprint'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Sprint_2.AM_Valkyrie_Sprint_2'"));
 	if (sprintMontage.Succeeded())
 	{
 		montage3 = sprintMontage.Object;
@@ -291,11 +293,45 @@ void AValkyrie::Skill1Key()
 	mSkillState = ESkillState::ESS_Sprint;
 	mStat->SetMp(mStat->GetMp() - 100.f);
 	mWeapon->SetCollisionOnOff(false);
+
+
+	TArray<AActor*> targetActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AValkyrie::GetClass(), targetActors);
+	
+	FVector location = GetActorLocation();
+	FVector targetLocation = FVector();
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
+	TArray<AActor*> ignoreActors;
+	TArray<AActor*> outActors;
+
+	objectTypes.Add(UEngineTypes::ConvertToObjectType(
+		ECollisionChannel::ECC_GameTraceChannel3)
+	);
+	ignoreActors.Add(this);
+
+	bool isOverlapped = UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(),
+		location,
+		5000.f,
+		objectTypes,
+		nullptr,
+		ignoreActors,
+		outActors
+	);
+
+	if (isOverlapped)
+	{
+		if (IsValid(Cast<AMonster>(outActors[0])))
+		{
+			targetLocation = outActors[0]->GetActorLocation();
+		}
+	}
+
+	FMotionWarpingTarget mwt;
+	mwt.Transform.SetLocation(targetLocation);
+	mwt.Transform.SetRotation(UKismetMathLibrary::FindLookAtRotation(location, targetLocation).Quaternion());
+	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget2"), mwt);
 	PlayMontage(FName("Sprint"));
-	FVector targetLocation = GetActorLocation();
-	tempLocation = targetLocation;
-	targetLocation += GetActorForwardVector() * 1000.f;
-	mMotionWarpComp->AddOrUpdateWarpTargetFromLocation(FName("SprintTarget2"), targetLocation);
 }
 
 void AValkyrie::Skill2Key()
