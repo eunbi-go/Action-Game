@@ -17,6 +17,11 @@
 #include "TargetingComponent.h"
 #include "Components/TimelineComponent.h"
 #include "../Monster/Monster.h"
+#include "ValkyriePlayerState.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
+#include "AGPlayerController.h"
+#include "../Widget/HUD/AGHUD.h"
 
 AValkyrie::AValkyrie()
 {
@@ -33,7 +38,7 @@ AValkyrie::AValkyrie()
 	GetMesh()->SetRelativeRotation(FRotator(0.0, -90.0, 0.0));
 
 
-	static ConstructorHelpers::FClassFinder <UValkyrieAnimInstance>    animInst(TEXT("AnimBlueprint'/Game/Blueprints/Valkyrie/Animations/ABP_Valkyrie.ABP_Valkyrie_C'"));
+	static ConstructorHelpers::FClassFinder <UValkyrieAnimInstance>    animInst(TEXT("AnimBlueprint'/Game/Blueprints/Valkyrie_BP/Animations/ABP_Valkyrie.ABP_Valkyrie_C'"));
 	if (animInst.Succeeded())
 	{
 		GetMesh()->SetAnimClass(animInst.Class);
@@ -43,7 +48,7 @@ AValkyrie::AValkyrie()
 
 	UAnimMontage* montage;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> equipMontage(
-		TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Equip.AM_Valkyrie_Equip'")
+		TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Equip.AM_Valkyrie_Equip'")
 	);
 	if (equipMontage.Succeeded())
 	{
@@ -52,7 +57,7 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Equip"), montage);
 
 	UAnimMontage* montage2;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> attackMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Attack.AM_Valkyrie_Attack'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> attackMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Attack.AM_Valkyrie_Attack'"));
 	if (attackMontage.Succeeded())
 	{
 		montage2 = attackMontage.Object;
@@ -60,8 +65,9 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Attack"), montage2);
 
 	UAnimMontage* montage3;
-	//static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Sprint.AM_Valkyrie_Sprint'"));
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Sprint_2.AM_Valkyrie_Sprint_2'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Sprint.AM_Valkyrie_Sprint'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Sprint_2.AM_Valkyrie_Sprint_2'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> sprintMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/NewAnimMontage.NewAnimMontage'"));
 	if (sprintMontage.Succeeded())
 	{
 		montage3 = sprintMontage.Object;
@@ -69,7 +75,7 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Sprint"), montage3);
 
 	UAnimMontage* montage4;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Ribbon.AM_Valkyrie_Ribbon'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Ribbon.AM_Valkyrie_Ribbon'"));
 	if (ribbonMontage.Succeeded())
 	{
 		montage4 = ribbonMontage.Object;
@@ -77,7 +83,7 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Ribbon"), montage4);
 
 	UAnimMontage* montage5;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie/Animations/Montages/AM_Valkyrie_Slash.AM_Valkyrie_Slash'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Slash.AM_Valkyrie_Slash'"));
 	if (slashMontage.Succeeded())
 	{
 		montage5 = slashMontage.Object;
@@ -150,7 +156,7 @@ AValkyrie::AValkyrie()
 	{
 		mTimeLineCurve = curve.Object;
 	}
-	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("AnimBlueprint'/Game/Blueprints/Valkyrie/Animations/ABP_Valkyrie.ABP_Valkyrie_C'"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("AnimBlueprint'/Game/Blueprints/Valkyrie_BP/Animations/ABP_Valkyrie.ABP_Valkyrie_C'"));
 	if (WARRIOR_ANIM.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(WARRIOR_ANIM.Class);
@@ -208,6 +214,42 @@ void AValkyrie::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 }
+
+void AValkyrie::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Init ability actor info for the server.
+	InitAbilityActorInfo();
+}
+
+void AValkyrie::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// Init ability actor info for the client.
+	InitAbilityActorInfo();
+}
+
+void AValkyrie::InitAbilityActorInfo()
+{
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	check(state);
+	state->GetAbilitySystemComponent()->InitAbilityActorInfo(state, this);
+
+	mAbilitySystemComp = state->GetAbilitySystemComponent();
+	mAttributeSet = state->GetAttributeSet();
+
+	// Widget°ú ¿¬°á
+	if (AAGPlayerController* pc = Cast<AAGPlayerController>(GetController()))
+	{
+		if (AAGHUD* hud = Cast<AAGHUD>(pc->GetHUD()))
+		{
+			hud->InitMainWidget(pc, state, mAbilitySystemComp, mAttributeSet);
+		}
+	}
+}
+
 
 void AValkyrie::Tick(float DeltaTime)
 {
@@ -330,7 +372,7 @@ void AValkyrie::Skill1Key()
 	FMotionWarpingTarget mwt;
 	mwt.Transform.SetLocation(targetLocation);
 	mwt.Transform.SetRotation(UKismetMathLibrary::FindLookAtRotation(location, targetLocation).Quaternion());
-	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget2"), mwt);
+	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget"), mwt);
 	PlayMontage(FName("Sprint"));
 }
 
@@ -591,24 +633,21 @@ void AValkyrie::SpawnEffect()
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	UAnimMontage* montage;
-	FVector location = FVector(0.f);
+	FVector location = FVector();
 
 	switch (mSkillState)
 	{
 	case ESkillState::ESS_Sprint:
 	{
-		montage = *mMontages.Find(FName("Sprint"));
-		location = GetActorLocation() + GetActorForwardVector() * 300.f;
-		location.Z -= GetCapsuleComponent()->GetScaledCapsuleRadius();
-
+		location = GetActorLocation();
+		location.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		AValkyrieLightning* niagara = GetWorld()->SpawnActor<AValkyrieLightning>(
 			location,
 			FRotator::ZeroRotator,
 			SpawnParam
 			);
-		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LightningAttactOnPoint_2.NS_LightningAttactOnPoint_2'"));
-		niagara->SetNiagaraScale(FVector(0.1f));
+		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LaserAttack.NS_LaserAttack'"));
+		//niagara->SetNiagaraScale(FVector(0.1f));
 	}
 		break;
 
@@ -688,6 +727,7 @@ void AValkyrie::UnequipSword()
 		mDirection = 0.f;
 	}
 }
+
 
 void AValkyrie::SetAnimDelegate()
 {

@@ -17,6 +17,8 @@
 #include "../Basic/ItemActor.h"
 #include "FengMao.h"
 #include "../Player/Valkyrie.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
+#include "../AbilitySystem/AGAttributeSet.h"
 
 AMonster::AMonster()
 {
@@ -82,12 +84,22 @@ AMonster::AMonster()
 	mTarget = nullptr;
 
 	mAttackType = EAttackType::EAT_End;
+
+	mAbilitySystemComp = CreateDefaultSubobject<UAGAbilitySystemComponent>("AbilitySystemComp");
+	mAbilitySystemComp->SetIsReplicated(true);
+	mAbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	mAttributeSet = CreateDefaultSubobject<UAGAttributeSet>("AttributeSet");
 }
 
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// 소유자와 아바타 모두 본인.
+	mAbilitySystemComp->InitAbilityActorInfo(this, this);
+
+
 	UAGGameInstance* gameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
 
 	//------------------

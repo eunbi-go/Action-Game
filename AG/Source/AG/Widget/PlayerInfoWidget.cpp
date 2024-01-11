@@ -2,6 +2,7 @@
 
 
 #include "PlayerInfoWidget.h"
+#include "WidgetController/MainWidgetController.h"
 
 void UPlayerInfoWidget::SetHp(float _ratio)
 {
@@ -11,6 +12,21 @@ void UPlayerInfoWidget::SetHp(float _ratio)
 void UPlayerInfoWidget::SetMp(float _ratio)
 {
 	mMpBar->SetPercent(_ratio);
+}
+
+void UPlayerInfoWidget::SetNewHp(float newHp)
+{
+	mNewHp = newHp;
+}
+
+void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
+{
+	mNewMaxHp = newMaxHp;
+}
+
+void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)
+{
+	//mWidgetController = widgetController;
 }
 
 void UPlayerInfoWidget::NativeConstruct()
@@ -31,10 +47,13 @@ void UPlayerInfoWidget::NativeConstruct()
 
 void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 {
-	Super::NativeTick(_geo, _deltaTime);
+	Super::NativeTick(_geo , _deltaTime);
+	float fq = UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp);
 
-	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _deltaTime, 5.f));
+	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("x: %f, hp %f, : maxhp : %f"), fq, mNewHp, mNewMaxHp));
+
+	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp), _deltaTime, 5.f));
 	mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, mMpTargetRatio, _deltaTime, 5.f));
-
+	//mHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
 	mCoinTxt->SetText(FText::FromString(FString::Printf(TEXT("%d"), mCoin)));
 }

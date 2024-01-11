@@ -76,54 +76,54 @@ void AAGPlayer::BeginPlay()
 	TSharedPtr<FArchive>	Reader = MakeShareable(IFileManager::Get().CreateFileReader(*FullPath));
 	const FPlayerTableInfo* info = gameInst->FindPlayerTable(mPlayerTableRowName);
 
-	if (Reader.IsValid())
-	{
-		*Reader.Get() << mStat->GetInfo().name;
-		*Reader.Get() << mStat->GetInfo().attackPoint;
-		*Reader.Get() << mStat->GetInfo().defensePoint;
-		*Reader.Get() << mStat->GetInfo().hp;
-		*Reader.Get() << mStat->GetInfo().maxHp;
-		*Reader.Get() << mStat->GetInfo().mp;
-		*Reader.Get() << mStat->GetInfo().maxMp;
-		*Reader.Get() << mStat->GetInfo().level;
-		*Reader.Get() << mStat->GetInfo().exp;
-		*Reader.Get() << mStat->GetInfo().gold;
-		*Reader.Get() << mStat->GetInfo().movingWalkSpeed;
-		*Reader.Get() << mStat->GetInfo().movingRunSpeed;
-		*Reader.Get() << mStat->GetInfo().movingDashSpeed;
-		*Reader.Get() << mStat->GetInfo().attackDistance;
+	//if (Reader.IsValid())
+	//{
+	//	*Reader.Get() << mStat->GetInfo().name;
+	//	*Reader.Get() << mStat->GetInfo().attackPoint;
+	//	*Reader.Get() << mStat->GetInfo().defensePoint;
+	//	*Reader.Get() << mStat->GetInfo().hp;
+	//	*Reader.Get() << mStat->GetInfo().maxHp;
+	//	*Reader.Get() << mStat->GetInfo().mp;
+	//	*Reader.Get() << mStat->GetInfo().maxMp;
+	//	*Reader.Get() << mStat->GetInfo().level;
+	//	*Reader.Get() << mStat->GetInfo().exp;
+	//	*Reader.Get() << mStat->GetInfo().gold;
+	//	*Reader.Get() << mStat->GetInfo().movingWalkSpeed;
+	//	*Reader.Get() << mStat->GetInfo().movingRunSpeed;
+	//	*Reader.Get() << mStat->GetInfo().movingDashSpeed;
+	//	*Reader.Get() << mStat->GetInfo().attackDistance;
 
-		mStat->SetHp(mStat->GetInfo().hp);
-		mStat->SetMp(mStat->GetInfo().mp);
-		mStat->SetCoin(mStat->GetInfo().gold);
-		
-	}
-	else
-	{
+	//	mStat->SetHp(mStat->GetInfo().hp);
+	//	mStat->SetMp(mStat->GetInfo().mp);
+	//	mStat->SetCoin(mStat->GetInfo().gold);
+	//	
+	//}
+	//else
+	//{
 
-		if (info)
-		{
-			mStat->GetInfo().name = info->name;
-			mStat->GetInfo().attackPoint = info->attackPoint;
-			mStat->GetInfo().defensePoint = info->defensePoint;
-			mStat->GetInfo().hp = info->hp;
-			mStat->GetInfo().maxHp = info->maxHp;
-			mStat->GetInfo().mp = info->mp;
-			mStat->GetInfo().maxMp = info->maxMp;
-			mStat->GetInfo().level = info->level;
-			mStat->GetInfo().exp = info->exp;
-			mStat->GetInfo().gold = info->gold;
-			mStat->GetInfo().movingWalkSpeed = info->movingWalkSpeed;
-			mStat->GetInfo().movingRunSpeed = info->movingRunSpeed;
-			mStat->GetInfo().movingDashSpeed = info->movingDashSpeed;
-			mStat->GetInfo().attackDistance = info->attackDistance;
-		}
-	}
-	GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 100.f;
-	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	UMainWidget* mainWidget = gameMode->GetMainWidget();
-	mainWidget->SetCharacterStat(mStat);
+	//	if (info)
+	//	{
+	//		mStat->GetInfo().name = info->name;
+	//		mStat->GetInfo().attackPoint = info->attackPoint;
+	//		mStat->GetInfo().defensePoint = info->defensePoint;
+	//		mStat->GetInfo().hp = info->hp;
+	//		mStat->GetInfo().maxHp = info->maxHp;
+	//		mStat->GetInfo().mp = info->mp;
+	//		mStat->GetInfo().maxMp = info->maxMp;
+	//		mStat->GetInfo().level = info->level;
+	//		mStat->GetInfo().exp = info->exp;
+	//		mStat->GetInfo().gold = info->gold;
+	//		mStat->GetInfo().movingWalkSpeed = info->movingWalkSpeed;
+	//		mStat->GetInfo().movingRunSpeed = info->movingRunSpeed;
+	//		mStat->GetInfo().movingDashSpeed = info->movingDashSpeed;
+	//		mStat->GetInfo().attackDistance = info->attackDistance;
+	//	}
+	//}
+	//GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
+	//GetCharacterMovement()->MaxWalkSpeedCrouched = 100.f;
+	//AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	//UMainWidget* mainWidget = gameMode->GetMainWidget();
+	//mainWidget->SetCharacterStat(mStat);
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
 

@@ -34,11 +34,16 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 	virtual void SpawnEffect() override;
 
 	void Delay(float _customTimeDilation, float _timeRate, bool _isLoop);
 	void UnequipSword();
+
+private:
+	void InitAbilityActorInfo();
 
 protected:
 	virtual void BeginPlay() override;

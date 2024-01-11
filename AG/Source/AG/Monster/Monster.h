@@ -5,6 +5,8 @@
 #include "../BasicInfo.h"
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
+#include "../Interface/EnemyInterface.h"
+#include "../CharacterBase/AGBaseCharacter.h"
 #include "Monster.generated.h"
 
 UENUM()
@@ -24,7 +26,7 @@ enum class EAttackType : uint8
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
 UCLASS()
-class AG_API AMonster : public ACharacter, public IHitInterface
+class AG_API AMonster : public AAGBaseCharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -33,6 +35,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
 
 public:	
 	virtual void PostInitializeComponents() override;

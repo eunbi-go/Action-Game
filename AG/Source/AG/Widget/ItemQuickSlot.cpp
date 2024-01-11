@@ -36,7 +36,7 @@ void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
 {
 	Super::NativeTick(_geo, _DeltaTime);
 
-	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	/*AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	if (nullptr == gameMode)
 		return;
@@ -67,7 +67,7 @@ void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
 				break;
 			}
 		}
-	}
+	}*/
 
 	
 }

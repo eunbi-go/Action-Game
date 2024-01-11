@@ -8,6 +8,7 @@
 #include "InventoryWidget.h"
 #include "ItemQuickSlot.h"
 #include "BossInfoWidget.h"
+#include "WidgetController/MainWidgetController.h"
 
 void UMainWidget::NativeConstruct()
 {
@@ -19,11 +20,20 @@ void UMainWidget::NativeConstruct()
 	mBossInfo = Cast<UBossInfoWidget>(GetWidgetFromName(FName(TEXT("BossInfo"))));
 
 	mBossInfo->SetVisibility(ESlateVisibility::Hidden);
+	mInventory->SetVisibility(ESlateVisibility::Hidden);
+
+	Cast<UMainWidgetController>(mWidgetController)->mOnMaxHpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMaxHp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnHpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewHp);
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 {
 	Super::NativeTick(_geo, _deltaTime);
+}
+
+void UMainWidget::SetWidgetController(UMainWidgetController* widgetController)
+{
+	mWidgetController = widgetController;
 }
 
 void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
@@ -34,8 +44,8 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 	mCurrentStat = _characterStat;
 
 
-	mCurrentStat->mHpChange.AddUObject(this, &UMainWidget::UpdateHp);
-	UpdateHp();
+	//mCurrentStat->mHpChange.AddUObject(this, &UMainWidget::UpdateHp);
+	//UpdateHp();
 
 	mCurrentStat->mMpChange.AddUObject(this, &UMainWidget::UpdateMp);
 	UpdateMp();
@@ -46,6 +56,8 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 	mItemQuickSlot->mUseItems.AddDynamic(mInventory, &UInventoryWidget::UseItem);
 	mItemQuickSlot->mUseItems.AddDynamic(this, &UMainWidget::UseItem);
 
+
+	//PrintViewport(3.f, FColor::Yellow, TEXT("SetCharacterStat"));
 	UpdateBossHp(1.f, 1.f);
 }
 

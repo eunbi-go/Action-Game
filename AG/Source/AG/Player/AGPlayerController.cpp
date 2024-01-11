@@ -3,6 +3,7 @@
 
 #include "AGPlayerController.h"
 #include "../Particle/Decal.h"
+#include "../Interface/EnemyInterface.h"
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -13,12 +14,22 @@ AAGPlayerController::AAGPlayerController()
 	mPickingPosition = FVector(0.f, 0.f, 0.f);
 }
 
+void AAGPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	TraceCursor();
+}
+
 void AAGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly	Mode;
-	//FInputModeGameAndUI	Mode;
+
+
+	//FInputModeGameOnly	Mode;
+	FInputModeGameAndUI	Mode;
+	Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	Mode.SetHideCursorDuringCapture(false);
 	SetInputMode(Mode);
 
 	mMousePick = GetWorld()->SpawnActor<ADecal>(FVector::ZeroVector,
@@ -96,4 +107,45 @@ void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
 	}
 	break;
 	}*/
+}
+
+void AAGPlayerController::TraceCursor()
+{
+	FHitResult hitResult;
+	GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
+	if (!hitResult.bBlockingHit) return;
+
+	mPreActor = mCurActor;
+	mCurActor = Cast<IEnemyInterface>(hitResult.GetActor());
+
+	if (!mPreActor)
+	{
+		if (mCurActor)
+		{
+			mCurActor->HighlightActor();
+		}
+		else
+		{
+
+		}
+	}
+	else
+	{
+		if (!mCurActor)
+		{
+			mPreActor->UnHighlightActor();
+		}
+		else
+		{
+			if (mPreActor != mCurActor)
+			{
+				mPreActor->UnHighlightActor();
+				mCurActor->HighlightActor();
+			}
+			else
+			{
+				// 동일한 액터
+			}
+		}
+	}
 }

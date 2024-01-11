@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "AGPlayerController.generated.h"
 
+class IEnemyInterface;
+
 /**
  * 
  */
@@ -17,6 +19,7 @@ class AG_API AAGPlayerController : public APlayerController
 public:
 	AAGPlayerController();
 
+	virtual void PlayerTick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +49,12 @@ public:
 
 public:
 	void SetInputModeType(INPUT_MODE_TYPE _type);
+
+
+private:
+	void TraceCursor();
+	IEnemyInterface* mPreActor;
+	IEnemyInterface* mCurActor;
 
 
 protected:

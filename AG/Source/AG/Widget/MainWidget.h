@@ -23,6 +23,16 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetController(UMainWidgetController* widgetController);
+
+	// 시스템에서 데이터를 가져와서 모든 위젯에 브로드캐스팅한다.
+	UPROPERTY(BlueprintReadOnly)
+	UObject* mWidgetController;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetControllerSet();
 
 public:
 	void SetCharacterStat(class UCharacterStatComponent* _characterStat);

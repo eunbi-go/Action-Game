@@ -5,6 +5,7 @@
 #include "../BasicInfo.h"
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
+#include "../CharacterBase/AGBaseCharacter.h"
 #include "AGPlayer.generated.h"
 
 class UCharacterStatComponent;
@@ -38,7 +39,7 @@ enum class ESkillState : uint8
 };
 
 UCLASS()
-class AG_API AAGPlayer : public ACharacter, public IHitInterface
+class AG_API AAGPlayer : public AAGBaseCharacter, public IHitInterface
 {
 	GENERATED_BODY()
 

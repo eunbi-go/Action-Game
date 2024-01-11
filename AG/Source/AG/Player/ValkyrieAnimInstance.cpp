@@ -73,7 +73,8 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 
 
 		// 플레이어의 방향과 현재 속도의 차이를 나타내는 rotator
-		mLocalVelocityDirectionAngle = CalculateDirection(mVelocity, mCharacter->GetRootComponent()->GetComponentRotation());
+		
+		mLocalVelocityDirectionAngle = UKismetAnimationLibrary::CalculateDirection(mVelocity, mCharacter->GetRootComponent()->GetComponentRotation());
 		//PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), mLocalVelocityDirectionAngle));
 		// 구해진 각도로 현재 내가 앞/옆/뒤로 가고 있는지 확인한다.
 		if (abs(mLocalVelocityDirectionAngle) <= 65.f)

@@ -24,6 +24,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "KismetAnimationLibrary.h"
 
 #include <Components\WidgetComponent.h>
 #include <Components\Image.h>

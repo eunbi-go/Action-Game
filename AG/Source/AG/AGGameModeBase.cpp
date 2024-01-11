@@ -10,12 +10,15 @@
 #include "Widget/MainWidget.h"
 #include "AGGameInstance.h"
 #include "AGSaveGame.h"
-
+#include "Player/ValkyriePlayerState.h"
+#include "Widget/HUD/AGHUD.h"
 
 AAGGameModeBase::AAGGameModeBase()
 {
 	DefaultPawnClass = AValkyrie::StaticClass();
-	//PlayerControllerClass = AAGPlayerController::StaticClass();
+	PlayerControllerClass = AAGPlayerController::StaticClass();
+	PlayerStateClass = AValkyriePlayerState::StaticClass();
+	HUDClass = AAGHUD::StaticClass();
 
 	ConstructorHelpers::FClassFinder<UUserWidget>
 		mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
@@ -35,11 +38,11 @@ void AAGGameModeBase::BeginPlay()
 	if (IsValid(mMainWidgetClass))
 	{
 		mMainWidget = Cast<UMainWidget>(CreateWidget(GetWorld(), mMainWidgetClass));
-		if (IsValid(mMainWidget))
+		/*if (IsValid(mMainWidget))
 		{
 			mMainWidget->AddToViewport();
 			mMainWidget->SetHp(1.f);
-		}
+		}*/
 	}
 }
 

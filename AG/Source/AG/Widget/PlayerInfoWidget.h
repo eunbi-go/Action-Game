@@ -8,6 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerInfoWidget.generated.h"
 
+
 /**
  * 
  */
@@ -41,12 +42,24 @@ public:
 	{
 		mCoin = _value; 
 	}
+	
+	UFUNCTION()
+		void SetNewHp(float newHp);
+	UFUNCTION()
+		void SetNewMaxHp(float newMaxHp);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void WidgetControllerSet();
+
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetController(UObject* widgetController);
+
+	UPROPERTY(BlueprintReadOnly)
+	UObject* mWidgetController;
 
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;
-
 
 
 
@@ -60,6 +73,10 @@ private:
 
 	float			mHpTargetRatio;
 	float			mHpRatio;
+
+	float			mNewHp;
+	float			mNewMp;
+	float			mNewMaxHp;
 
 	float			mMpTargetRatio;
 
