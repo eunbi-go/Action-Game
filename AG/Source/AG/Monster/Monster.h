@@ -5,7 +5,6 @@
 #include "../BasicInfo.h"
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
-#include "../Interface/EnemyInterface.h"
 #include "../CharacterBase/AGBaseCharacter.h"
 #include "Monster.generated.h"
 

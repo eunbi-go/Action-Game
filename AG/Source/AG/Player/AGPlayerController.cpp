@@ -3,7 +3,6 @@
 
 #include "AGPlayerController.h"
 #include "../Particle/Decal.h"
-#include "../Interface/EnemyInterface.h"
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -115,37 +114,37 @@ void AAGPlayerController::TraceCursor()
 	GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
 	if (!hitResult.bBlockingHit) return;
 
-	mPreActor = mCurActor;
-	mCurActor = Cast<IEnemyInterface>(hitResult.GetActor());
+	//mPreActor = mCurActor;
+	//mCurActor = Cast<IEnemyInterface>(hitResult.GetActor());
 
-	if (!mPreActor)
-	{
-		if (mCurActor)
-		{
-			mCurActor->HighlightActor();
-		}
-		else
-		{
+	//if (!mPreActor)
+	//{
+	//	if (mCurActor)
+	//	{
+	//		mCurActor->HighlightActor();
+	//	}
+	//	else
+	//	{
 
-		}
-	}
-	else
-	{
-		if (!mCurActor)
-		{
-			mPreActor->UnHighlightActor();
-		}
-		else
-		{
-			if (mPreActor != mCurActor)
-			{
-				mPreActor->UnHighlightActor();
-				mCurActor->HighlightActor();
-			}
-			else
-			{
-				// 동일한 액터
-			}
-		}
-	}
+	//	}
+	//}
+	//else
+	//{
+	//	if (!mCurActor)
+	//	{
+	//		mPreActor->UnHighlightActor();
+	//	}
+	//	else
+	//	{
+	//		if (mPreActor != mCurActor)
+	//		{
+	//			mPreActor->UnHighlightActor();
+	//			mCurActor->HighlightActor();
+	//		}
+	//		else
+	//		{
+	//			// 동일한 액터
+	//		}
+	//	}
+	//}
 }
