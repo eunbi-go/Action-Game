@@ -28,6 +28,7 @@ UMainWidgetController* AAGHUD::GetMainWidgetController(const FWidgetControllerPa
 	{
 		mMainWidgetController = NewObject<UMainWidgetController>(this, mMainWidgetControllerClass);
 		mMainWidgetController->SetWidgetControllerParams(params);
+		mMainWidgetController->BindCallbacksToDependecies();
 
 		return mMainWidgetController;
 	}

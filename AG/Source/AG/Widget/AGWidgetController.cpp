@@ -14,3 +14,7 @@ void UAGWidgetController::SetWidgetControllerParams(const FWidgetControllerParam
 void UAGWidgetController::BroadcastInitValues()
 {
 }
+
+void UAGWidgetController::BindCallbacksToDependecies()
+{
+}

@@ -26,7 +26,6 @@ void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 
 void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)
 {
-	//mWidgetController = widgetController;
 }
 
 void UPlayerInfoWidget::NativeConstruct()
@@ -53,7 +52,8 @@ void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("x: %f, hp %f, : maxhp : %f"), fq, mNewHp, mNewMaxHp));
 
 	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp), _deltaTime, 5.f));
-	mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, mMpTargetRatio, _deltaTime, 5.f));
+	mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp), _deltaTime, 5.f));
+	//mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, mMpTargetRatio, _deltaTime, 5.f));
 	//mHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
 	mCoinTxt->SetText(FText::FromString(FString::Printf(TEXT("%d"), mCoin)));
 }

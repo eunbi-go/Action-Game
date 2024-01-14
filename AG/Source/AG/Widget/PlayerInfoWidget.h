@@ -48,6 +48,17 @@ public:
 	UFUNCTION()
 		void SetNewMaxHp(float newMaxHp);
 
+	UFUNCTION()
+		void SetNewMp(float newMp)
+	{
+		mNewMp = newMp;
+	}
+	UFUNCTION()
+		void SetNewMaxMp(float newMaxMp)
+	{
+		mNewMaxMp = newMaxMp;
+	}
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void WidgetControllerSet();
 
@@ -77,6 +88,7 @@ private:
 	float			mNewHp;
 	float			mNewMp;
 	float			mNewMaxHp;
+	float			mNewMaxMp;
 
 	float			mMpTargetRatio;
 
