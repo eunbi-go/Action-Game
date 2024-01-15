@@ -13,6 +13,40 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties() {}
+
+	FGameplayEffectContextHandle effectContextHandle;
+
+	UPROPERTY()
+	UAbilitySystemComponent* sourceASC = nullptr;
+
+	UPROPERTY()
+	AActor* sourceAvatarActor = nullptr;
+
+	UPROPERTY()
+	AController* sourceController = nullptr;
+
+	UPROPERTY()
+	ACharacter* sourceCharacter = nullptr;
+
+	UPROPERTY()
+	UAbilitySystemComponent* targetASC = nullptr;
+
+	UPROPERTY()
+	AActor* targetAvatarActor = nullptr;
+
+	UPROPERTY()
+	AController* targetController = nullptr;
+
+	UPROPERTY()
+	ACharacter* targetCharacter = nullptr;
+};
+
 /**
  * 
  */
@@ -24,6 +58,16 @@ class AG_API UAGAttributeSet : public UAttributeSet
 public:
 	UAGAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	/**
+	 * Attribute가 변경되기 전 호출된다.
+	 * Epic에서는 이 함수를 Clamp 용도로 사용하는 것을 권장함. 
+	 */
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	/**
+	 * Attribute가 변경된 후, 호출된다.
+	 */
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	// 복제 지정자 ReplicatedUsing: 복제 변수로 만든다.
 	// -> 클라에서 서버로 변경된 값을 알린다.
@@ -55,4 +99,8 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMp(const FGameplayAttributeData& prMaxMp) const;
+
+
+private:
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 };

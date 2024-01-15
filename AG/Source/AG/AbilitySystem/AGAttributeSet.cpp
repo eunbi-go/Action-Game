@@ -3,7 +3,8 @@
 
 #include "AGAttributeSet.h"
 #include "Net/UnrealNetwork.h"
-
+#include "GameplayEffectExtension.h"
+#include "AbilitySystemBlueprintLibrary.h"
 UAGAttributeSet::UAGAttributeSet()
 {
 	InitmHp(50.f);
@@ -22,6 +23,30 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
+}
+
+void UAGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	// 인수가 Hp 속성인가?
+	if (Attribute == GetmHpAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetmMaxHp());
+	}
+	// 인수가 Mp 속성인가?
+	else if (Attribute == GetmMpAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0, GetmMaxMp());
+	}
+}
+
+void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	FEffectProperties props;
+	SetEffectProperties(Data, props);
 }
 
 void UAGAttributeSet::OnRep_Hp(const FGameplayAttributeData& preHp) const
@@ -47,4 +72,43 @@ void UAGAttributeSet::OnRep_Mp(const FGameplayAttributeData& preMp) const
 void UAGAttributeSet::OnRep_MaxMp(const FGameplayAttributeData& prMaxeMp) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mMaxMp, prMaxeMp);
+}
+
+void UAGAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
+{
+	/**
+	 * 변경된 Attribute 종류 : Data.EvaluatedData.Attribute
+	 * 변경된 Attribute 크기 : Data.EvaluatedData.Magnitude
+	 *
+	 */
+
+	 // source = causer of the effect
+	 // target = target of the effect, owner of ths AS
+	Props.effectContextHandle = Data.EffectSpec.GetContext();
+	Props.sourceASC = Props.effectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	if (IsValid(Props.sourceASC) && Props.sourceASC->AbilityActorInfo.IsValid() && Props.sourceASC->AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.sourceAvatarActor = Props.sourceASC->AbilityActorInfo->AvatarActor.Get();
+		Props.sourceController = Props.sourceASC->AbilityActorInfo->PlayerController.Get();
+		if (Props.sourceController == nullptr && Props.sourceAvatarActor != nullptr)
+		{
+			if (const APawn* pawn = Cast<APawn>(Props.sourceAvatarActor))
+			{
+				Props.sourceController = pawn->GetController();
+			}
+		}
+		if (Props.sourceController)
+		{
+			Props.sourceCharacter = Cast<ACharacter>(Props.sourceController->GetPawn());
+		}
+	}
+
+	// Get Target
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.targetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		Props.targetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		Props.targetCharacter = Cast<ACharacter>(Props.targetAvatarActor);
+		Props.targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.targetAvatarActor);
+	}
 }
