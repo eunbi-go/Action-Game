@@ -70,7 +70,7 @@ void AAGEffectActor::ApplyEffectToTarget(AActor* target, TSubclassOf<UGameplayEf
 									여러 대상 등에 여러 번 적용한다.
 		핸들에는 실제 구조체를 저장하는 내부 데이터 멤버(data)가 있다.
 	*/
-	const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(gmaePlayEffectClass, 1.f, ecHandle);
+	const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(gmaePlayEffectClass, mActorLevel, ecHandle);
 
 	const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
 

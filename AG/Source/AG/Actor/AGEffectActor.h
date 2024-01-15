@@ -76,4 +76,7 @@ protected:
 	EEffectRemovePolicy	mInfiniteEffectRemovePolicy = EEffectRemovePolicy::RemoveOnEndOverlap;
 
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> mActiveEffectHandles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
+	float mActorLevel = 1.f;
 };
