@@ -19,7 +19,6 @@
 #include "../Monster/Monster.h"
 #include "ValkyriePlayerState.h"
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
-#include "../AbilitySystem/AGAbilitySystemComponent.h"
 #include "AGPlayerController.h"
 #include "../Widget/HUD/AGHUD.h"
 
@@ -236,6 +235,7 @@ void AValkyrie::InitAbilityActorInfo()
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	check(state);
 	state->GetAbilitySystemComponent()->InitAbilityActorInfo(state, this);
+	Cast<UAGAbilitySystemComponent>(state->GetAbilitySystemComponent())->AbilityActorInfoSet();
 
 	mAbilitySystemComp = state->GetAbilitySystemComponent();
 	mAttributeSet = state->GetAttributeSet();

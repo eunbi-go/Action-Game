@@ -95,9 +95,8 @@ AMonster::AMonster()
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
+	InitAbilityActorInfo();
 	
-	// 소유자와 아바타 모두 본인.
-	mAbilitySystemComp->InitAbilityActorInfo(this, this);
 
 
 	UAGGameInstance* gameInst = GetWorld()->GetGameInstance<UAGGameInstance>();
@@ -173,6 +172,14 @@ void AMonster::BeginPlay()
 
 		mSkillInfoArray.Add(skillInfo);
 	}
+}
+
+void AMonster::InitAbilityActorInfo()
+{
+	// 소유자와 아바타 모두 본인.
+	mAbilitySystemComp->InitAbilityActorInfo(this, this);
+	// 캐릭터는 ASC에 의존함. ASC는 캐릭터에 대해 알 필요X
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityActorInfoSet();
 }
 
 void AMonster::PostInitializeComponents()

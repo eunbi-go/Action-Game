@@ -19,3 +19,7 @@ void AAGBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+void AAGBaseCharacter::InitAbilityActorInfo()
+{
+}
