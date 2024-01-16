@@ -211,7 +211,7 @@ void APlayerCharacter::BeginPlay()
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	UMainWidget* MainHUD = GameMode->GetMainWidget();
 
-	MainHUD->SetCharacterStat(mStat);
+	//MainHUD->SetCharacterStat(mStat);
 }
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

@@ -38,78 +38,9 @@ void UMainWidget::SetWidgetController(UMainWidgetController* widgetController)
 	mWidgetController = widgetController;
 }
 
-void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
-{
-	if (_characterStat == nullptr)
-		return;
-
-	mCurrentStat = _characterStat;
-
-
-	//mCurrentStat->mHpChange.AddUObject(this, &UMainWidget::UpdateHp);
-	//UpdateHp();
-
-	mCurrentStat->mMpChange.AddUObject(this, &UMainWidget::UpdateMp);
-	UpdateMp();
-
-	mCurrentStat->mCoinChange.AddUObject(this, &UMainWidget::UpdateCoin);
-	UpdateCoin();
-
-	/*mItemQuickSlot->mUseItems.AddDynamic(mInventory, &UInventoryWidget::UseItem);
-	mItemQuickSlot->mUseItems.AddDynamic(this, &UMainWidget::UseItem);*/
-
-
-	//PrintViewport(3.f, FColor::Yellow, TEXT("SetCharacterStat"));
-	UpdateBossHp(1.f, 1.f);
-}
-
-void UMainWidget::UpdateHp()
-{
-	mPlayerInfo->SetHpRatio(mCurrentStat->GetHpRatio());
-}
-
-void UMainWidget::UpdateMp()
-{
-	mPlayerInfo->SetMpRatio(mCurrentStat->GetMpRatio());
-}
-
-void UMainWidget::UpdateCoin()
-{
-	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
-}
-
-void UMainWidget::InitCoin()
-{
-	mPlayerInfo->SetCoin(mCurrentStat->GetCurrentInfo().gold);
-}
-
 void UMainWidget::UpdateBossHp(float _hp, float _maxHp)
 {
 	mBossInfo->SetHpRatio(_hp / _maxHp);
-}
-
-void UMainWidget::UseItem(EITEM_ID id, APlayerCharacter* userCharacter)
-{
-	switch (id)
-	{
-	case EITEM_ID::POTION_HP_MIN:
-		break;
-
-	case EITEM_ID::POTION_HP_MAX:
-		break;
-
-	case EITEM_ID::POTION_MP_MIN:
-		break;
-
-	case EITEM_ID::POTION_MP_MAX:
-		break;
-
-	case EITEM_ID::COIN:
-		break;
-
-	case EITEM_ID::SWORD1:
-		break;
-	}
 }
 
 void UMainWidget::BossInfoOnOff(bool _value)
@@ -118,14 +49,4 @@ void UMainWidget::BossInfoOnOff(bool _value)
 		mBossInfo->SetVisibility(ESlateVisibility::Visible);
 	else
 		mBossInfo->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UMainWidget::SetHp(float _ratio)
-{
-	mPlayerInfo->SetHp(_ratio);
-}
-
-void UMainWidget::SetMp(float _ratio)
-{
-	mPlayerInfo->SetMp(_ratio);
 }

@@ -76,9 +76,6 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 
 void UInventoryWidget::UseItem(EITEM_ID _id, ACharacter* userCharacter)
 {
-	// 아이템 사용.
-	//userCharacter->UseItem(_id);
-
 	// 인벤토리 업데이트.
 	TArray<UObject*> itemArray = mTileView->GetListItems();
 	int32 num = itemArray.Num();

@@ -152,8 +152,6 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	 */
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("InventoryOnOff"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::InventoryOnOffKey);
-	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("EquipItem"), EInputEvent::IE_Pressed,
-		this, &AAGPlayer::EquipItemKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item1"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::Item1Key);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item2"), EInputEvent::IE_Pressed,
@@ -228,11 +226,6 @@ void AAGPlayer::InventoryOnOffKey()
 	}
 	else
 		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(true);
-}
-
-void AAGPlayer::EquipItemKey()
-{
-	//UInventoryManager::GetInst(GetWorld())->clicked
 }
 
 void AAGPlayer::Item1Key()

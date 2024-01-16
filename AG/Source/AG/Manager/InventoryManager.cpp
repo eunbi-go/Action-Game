@@ -58,30 +58,26 @@ void UInventoryManager::InventoryOnOff(bool _Show)
 	int32 curTime = 0;
 	float curPartial = 0.f;
 	UGameplayStatics::GetAccurateRealTime(curTime, curPartial);
-
 	// 시간차이가 1초를 넘어서지 못하면 반환
 	if (curTime - mPreTime < 1)
 		return;
-
 	mPreTime = curTime;
 
 
 
-	// 현재 게임모드를 알아낸다. (입력으로 현재 월드가 요구된다, 현재 월드의 게임모드를 알아내야 하기 때문)
 	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(mWorld));
-	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
 	if (nullptr == gameMode)
 		return;
 
-
-	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
 	AAGHUD* hud = Cast<AAGHUD>(mWorld->GetFirstPlayerController()->GetHUD());
 	if (!IsValid(hud))
 		return;
 	UMainWidget* mainWidget = hud->mMainWidget;
-	if (!IsValid(hud))
+	if (!IsValid(mainWidget))
 		return;
 	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
+	if (!IsValid(inventoryWidget))
+		return;
 
 	// 인벤토리 온
 	if (_Show)
@@ -110,10 +106,7 @@ void UInventoryManager::InventoryOnOff(bool _Show)
 
 bool UInventoryManager::IsInventoryOn()
 {
-	// 현재 게임모드를 알아낸다. (입력으로 현재 월드가 요구된다, 현재 월드의 게임모드를 알아내야 하기 때문)
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(mWorld));
-
-	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
 	if (nullptr == GameMode)
 		return false;
 
@@ -124,6 +117,8 @@ bool UInventoryManager::IsInventoryOn()
 	if (!IsValid(mainWidget))
 		return false;
 	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
+	if (!IsValid(inventoryWidget))
+		return false;
 
 	return inventoryWidget->IsVisible();
 }
@@ -140,7 +135,6 @@ void UInventoryManager::SetItemInfoTable(UDataTable* _Table)
 	// 데이터 테이블에 들어있는 모든 행 이름
 	TArray<FName> AllRowname;
 	AllRowname = mItemTable->GetRowNames();
-
 
 	// 테이블정보를 다 받아와서 전체 반복문을 돈다.
 	// ItemID 를 키값으로, 해당 아이템의 RowName 을 데이터로 연결한다.

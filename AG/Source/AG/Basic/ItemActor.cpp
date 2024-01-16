@@ -67,7 +67,7 @@ void AItemActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	//	Cast<APlayerCharacter>(OtherActor)->SetItemId(mItemId);
 	//	mOnHitt.Broadcast(this, SweepResult, OtherActor);
 	//}
-		if (Cast<AAGPlayer>(OtherActor))
+	if (Cast<AAGPlayer>(OtherActor))
 	{
 		if (Cast<AAGPlayer>(OtherActor)->AddItem(mItemId))
 			Destroy();
