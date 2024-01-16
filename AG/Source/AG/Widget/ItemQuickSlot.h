@@ -16,13 +16,13 @@ class AG_API UItemQuickSlot : public UUserWidget
 {
 	GENERATED_BODY()
 
-		DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUseItems, EITEM_ID, id, class APlayerCharacter*, userCharacter);
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUseItems, EITEM_ID, id, ACharacter*, userCharacter);
 
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
 	
-	void UseItem(int32 _index, class APlayerCharacter* userObject);
+	void UseItem(int32 _index, ACharacter* userObject);
 
 	UPROPERTY(BlueprintAssignable)
 		FUseItems	mUseItems;

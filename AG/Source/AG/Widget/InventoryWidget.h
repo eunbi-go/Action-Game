@@ -22,7 +22,7 @@ public:
 	void AddItemByKey(EITEM_ID _id);
 
 	UFUNCTION()
-	void UseItem(EITEM_ID _id, class APlayerCharacter* userCharacter);
+	void UseItem(EITEM_ID _id, class ACharacter* userCharacter);
 	
 	UFUNCTION(BlueprintCallable)
 	void Clicked(UObject* item);

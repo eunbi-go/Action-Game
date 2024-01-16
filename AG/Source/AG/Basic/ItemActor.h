@@ -57,10 +57,10 @@ public:
 	}
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* mMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	UBoxComponent* mBox;
 
 	UPROPERTY()

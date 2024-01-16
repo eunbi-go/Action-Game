@@ -31,6 +31,7 @@
 #include <Components\TextBlock.h>
 #include "Components/TileView.h"
 #include <Components\ProgressBar.h>
+#include "GameplayEffect.h"
 
 #include "UObject/NoExportTypes.h"
 #include "BasicInfo.generated.h"
@@ -492,6 +493,34 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		float value;
+};
+
+USTRUCT(BlueprintType)
+struct FItemDataTable2 : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EITEM_TYPE type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EITEM_ID id;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	FString name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	FString description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	FString		iconPath;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	float value;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UGameplayEffect> effect;
 };
 
 

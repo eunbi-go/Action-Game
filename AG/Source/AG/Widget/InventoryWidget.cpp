@@ -10,6 +10,7 @@
 #include "../AGGameModeBase.h"
 #include "MainWidget.h"
 #include "../Player/PlayerCharacter.h"
+#include "HUD/AGHUD.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -34,7 +35,7 @@ void UInventoryWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 
 void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 {
-	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
+	const FItemDataTable2* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
 
 	if (mItemMap.Contains(_id))
 	{
@@ -64,6 +65,7 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 		item->SetDescription(table->description);
 		item->SetItemCount(1);
 		item->SetItemId(_id);
+		item->SetItemEffect(table->effect);
 
 		mItemMap.Add(_id, item);
 		mTileView->AddItem(item);
@@ -72,10 +74,10 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 	
 }
 
-void UInventoryWidget::UseItem(EITEM_ID _id, APlayerCharacter* userCharacter)
+void UInventoryWidget::UseItem(EITEM_ID _id, ACharacter* userCharacter)
 {
 	// 아이템 사용.
-	userCharacter->UseItem(_id);
+	//userCharacter->UseItem(_id);
 
 	// 인벤토리 업데이트.
 	TArray<UObject*> itemArray = mTileView->GetListItems();
@@ -119,8 +121,13 @@ void UInventoryWidget::Clicked(UObject* item)
 
 
 		// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
-		UMainWidget* MainHUD = GameMode->GetMainWidget();
-		UItemQuickSlot* quickSlot = MainHUD->GetItemQuickSlot();
+		AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+		if (!IsValid(hud))
+			return;
+		UMainWidget* mainWidget = hud->mMainWidget;
+		if (!IsValid(mainWidget))
+			return;
+		UItemQuickSlot* quickSlot = mainWidget->GetItemQuickSlot();
 
 		EITEM_ID id = itemData->GetItemId();
 		quickSlot->AddItemToQuickSlot(itemData);

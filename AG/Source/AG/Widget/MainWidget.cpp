@@ -55,8 +55,8 @@ void UMainWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 	mCurrentStat->mCoinChange.AddUObject(this, &UMainWidget::UpdateCoin);
 	UpdateCoin();
 
-	mItemQuickSlot->mUseItems.AddDynamic(mInventory, &UInventoryWidget::UseItem);
-	mItemQuickSlot->mUseItems.AddDynamic(this, &UMainWidget::UseItem);
+	/*mItemQuickSlot->mUseItems.AddDynamic(mInventory, &UInventoryWidget::UseItem);
+	mItemQuickSlot->mUseItems.AddDynamic(this, &UMainWidget::UseItem);*/
 
 
 	//PrintViewport(3.f, FColor::Yellow, TEXT("SetCharacterStat"));

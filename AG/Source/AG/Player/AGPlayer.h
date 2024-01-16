@@ -82,6 +82,12 @@ protected:
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();
 	void InventoryOnOffKey();
+	void EquipItemKey();
+	void Item1Key();
+	void Item2Key();
+	void Item3Key();
+	void Item4Key();
+	void Item5Key();
 
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void SpawnEffect();

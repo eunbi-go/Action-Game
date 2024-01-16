@@ -31,7 +31,7 @@ public:
 
 	bool IsInventoryOn();
 	void SetItemInfoTable(UDataTable* _Table);
-	const FItemDataTable* GetItemInfo(EITEM_ID _ItemID);
+	const FItemDataTable2* GetItemInfo(EITEM_ID _ItemID);
 
 
 

@@ -12,6 +12,7 @@
 #include "../AGSaveGame.h"
 #include "../AGGameInstance.h"
 #include "../Manager/InventoryManager.h"
+#include "../Widget/HUD/AGHUD.h"
 
 AAGPlayer::AAGPlayer()
 {
@@ -145,8 +146,24 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::JumpKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Crouch"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::CrouchKey);
+
+	/**
+	 * Item
+	 */
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("InventoryOnOff"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::InventoryOnOffKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("EquipItem"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::EquipItemKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item1"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::Item1Key);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item2"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::Item2Key);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item3"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::Item3Key);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item4"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::Item4Key);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Item5"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::Item5Key);
 
 }
 
@@ -211,6 +228,42 @@ void AAGPlayer::InventoryOnOffKey()
 	}
 	else
 		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(true);
+}
+
+void AAGPlayer::EquipItemKey()
+{
+	//UInventoryManager::GetInst(GetWorld())->clicked
+}
+
+void AAGPlayer::Item1Key()
+{
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
+
+	mainWidget->GetItemQuickSlot()->UseItem(1, this);
+}
+
+void AAGPlayer::Item2Key()
+{
+}
+
+void AAGPlayer::Item3Key()
+{
+}
+
+void AAGPlayer::Item4Key()
+{
+}
+
+void AAGPlayer::Item5Key()
+{
 }
 
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)
@@ -320,9 +373,14 @@ bool AAGPlayer::AddItem(EITEM_ID _itemID)
 			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 			if (nullptr == GameMode)
 				return false;
-			UMainWidget* MainHUD = GameMode->GetMainWidget();
-			UInventoryWidget* InveotyrWidget = MainHUD->GetInventoryWidget();
-			InveotyrWidget->AddItemByKey(_itemID);
+			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			if (!IsValid(hud))
+				return false;
+			UMainWidget* mainWidget = hud->mMainWidget;
+			if (!IsValid(hud))
+				return false;
+			UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
+			inventoryWidget->AddItemByKey(_itemID);
 			//PrintViewport(3.f, FColor::Black, FString("Add Item"));
 		}
 	}
@@ -336,6 +394,7 @@ bool AAGPlayer::AddItem(EITEM_ID _itemID)
 EITEM_ID AAGPlayer::SelectItem()
 {
 	int32 randomValue = FMath::RandRange(1, 2);
+	return EITEM_ID::POTION_HP_MIN;
 
 	if (randomValue == 1)
 	{

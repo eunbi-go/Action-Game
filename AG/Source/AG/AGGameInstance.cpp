@@ -28,7 +28,8 @@ UAGGameInstance::UAGGameInstance()
 		mMonsterSkillTable = monsterSkillTable.Object;
 
 
-	static ConstructorHelpers::FObjectFinder<UDataTable>	itemInfoTable(TEXT("DataTable'/Game/Blueprints/DataTable/ItemInfoTable.ItemInfoTable'"));
+	//static ConstructorHelpers::FObjectFinder<UDataTable>	itemInfoTable(TEXT("DataTable'/Game/Blueprints/DataTable/ItemInfoTable.ItemInfoTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable>	itemInfoTable(TEXT("DataTable'/Game/Blueprints/DataTable/ItemInfoTable2.ItemInfoTable2'"));
 	if (itemInfoTable.Succeeded())
 	{
 		mItemInfoTable = itemInfoTable.Object;
@@ -66,7 +67,7 @@ const FSkillData* UAGGameInstance::FindMonsterSkillTable(const FName& _name)
 	return mMonsterSkillTable->FindRow<FSkillData>(_name, TEXT(""));
 }
 
-const FItemDataTable* UAGGameInstance::FindItemInfoTable(const FName& _name)
+const FItemDataTable2* UAGGameInstance::FindItemInfoTable(const FName& _name)
 {
-	return mItemInfoTable->FindRow<FItemDataTable>(_name, TEXT(""));
+	return mItemInfoTable->FindRow<FItemDataTable2>(_name, TEXT(""));
 }

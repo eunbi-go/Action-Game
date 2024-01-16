@@ -20,6 +20,8 @@ public:
 
 
 public:
+	void ApplyEffect(ACharacter* target);
+
 	void SetIconPath(const FString& _IconPath) 
 	{ 
 		mIconPath = _IconPath; 
@@ -70,10 +72,17 @@ public:
 		mId = _id; 
 	}
 
+	void SetItemEffect(TSubclassOf<UGameplayEffect> effect)
+	{
+		mEffect = effect;
+	}
+
 private:
 	FString		mIconPath;		// 아이콘 이미지 경로
 	FString		mDescription;	// 아이템 설명
 	int32		mItemCount;	// 아이템 수량
 	int32		mItemIndex;	// 아이템 인덱스 (퀵슬롯에서 사용)
 	EITEM_ID	mId;
+public:
+	TSubclassOf<UGameplayEffect> mEffect;
 };

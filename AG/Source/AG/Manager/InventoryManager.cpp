@@ -121,7 +121,7 @@ bool UInventoryManager::IsInventoryOn()
 	if (!IsValid(hud))
 		return false;
 	UMainWidget* mainWidget = hud->mMainWidget;
-	if (!IsValid(hud))
+	if (!IsValid(mainWidget))
 		return false;
 	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
 
@@ -134,8 +134,8 @@ void UInventoryManager::SetItemInfoTable(UDataTable* _Table)
 
 	// 데이터 테이블에 들어있는 모든 구조체 정보
 	FString str;
-	TArray<FItemDataTable*> AllItemInfo;
-	mItemTable->GetAllRows<FItemDataTable>(str, AllItemInfo);
+	TArray<FItemDataTable2*> AllItemInfo;
+	mItemTable->GetAllRows<FItemDataTable2>(str, AllItemInfo);
 
 	// 데이터 테이블에 들어있는 모든 행 이름
 	TArray<FName> AllRowname;
@@ -150,13 +150,13 @@ void UInventoryManager::SetItemInfoTable(UDataTable* _Table)
 	}
 }
 
-const FItemDataTable* UInventoryManager::GetItemInfo(EITEM_ID _ItemID)
+const FItemDataTable2* UInventoryManager::GetItemInfo(EITEM_ID _ItemID)
 {
 	// ItemID 에 연결해둔 RowName 을 찾아서
 	FName RowName = mRownameMap.FindRef(_ItemID);
 
 	// 데이터 테이블에서 검색을 한다.
-	FItemDataTable* ItemInfo = mItemTable->FindRow<FItemDataTable>(RowName, nullptr);
+	FItemDataTable2* ItemInfo = mItemTable->FindRow<FItemDataTable2>(RowName, nullptr);
 
 	return ItemInfo;
 }

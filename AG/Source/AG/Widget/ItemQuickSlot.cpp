@@ -9,7 +9,7 @@
 #include "../Widget/MainWidget.h"
 #include "../Widget/InventoryWidget.h"
 #include "../Player/PlayerCharacter.h"
-
+#include "HUD/AGHUD.h"
 
 void UItemQuickSlot::NativeConstruct()
 {
@@ -36,16 +36,22 @@ void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
 {
 	Super::NativeTick(_geo, _DeltaTime);
 
-	/*AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	if (nullptr == gameMode)
 		return;
 
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(hud))
+		return;
+	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
 
-	UMainWidget* mainHUD = gameMode->GetMainWidget();
-	UInventoryWidget* inveotyrWidget = mainHUD->GetInventoryWidget();
 
-	TArray<UObject*> inventoryItemArray = inveotyrWidget->GetTileView()->GetListItems();
+
+	TArray<UObject*> inventoryItemArray = inventoryWidget->GetTileView()->GetListItems();
 	TArray<UObject*> quickSlotItemArray = mListView->GetListItems();
 
 	int32 num = quickSlotItemArray.Num();
@@ -67,18 +73,18 @@ void UItemQuickSlot::NativeTick(const FGeometry& _geo, float _DeltaTime)
 				break;
 			}
 		}
-	}*/
+	}
 
 	
 }
 
-void UItemQuickSlot::UseItem(int32 _index, APlayerCharacter* userObject)
+void UItemQuickSlot::UseItem(int32 _index, ACharacter* userObject)
 {
 	TArray<UObject*> quickSlotItemArray = mListView->GetListItems();
 	int32 num = quickSlotItemArray.Num();
 
 	int32 itemCount = Cast<UItemData>(quickSlotItemArray[_index - 1])->GetItemCount();
-
+	
 	EITEM_ID id = Cast<UItemData>(quickSlotItemArray[_index - 1])->GetItemId();
 
 	if (itemCount - 1 == 0)
@@ -97,12 +103,30 @@ void UItemQuickSlot::UseItem(int32 _index, APlayerCharacter* userObject)
 
 	mListView->RegenerateAllEntries();
 
-	mUseItems.Broadcast(id, userObject);
+	// 아이템 효과 적용
+	Cast<UItemData>(quickSlotItemArray[_index - 1])->ApplyEffect(userObject);
+
+	// 인벤토리 위젯에서 아이템 제거
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
+	if (nullptr == gameMode)
+		return;
+
+
+	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(hud))
+		return;
+	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
+	inventoryWidget->UseItem(id, userObject);
 }
 
 void UItemQuickSlot::AddItemToQuickSlot(UItemData* _itemData)
 {
-	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_itemData->GetItemId());
+	const FItemDataTable2* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_itemData->GetItemId());
 
 	TArray<UObject*> quickSlotItemArray = mListView->GetListItems();
 
@@ -115,6 +139,7 @@ void UItemQuickSlot::AddItemToQuickSlot(UItemData* _itemData)
 			item->SetDescription(table->description);
 			item->SetItemCount(_itemData->GetItemCount());
 			item->SetItemId(_itemData->GetItemId());
+			item->SetItemEffect(_itemData->mEffect);
 			break;
 		}
 	}

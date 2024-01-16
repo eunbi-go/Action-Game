@@ -30,7 +30,7 @@ public:
 	FPlayerTableInfo* FindPlayerTables(const FName& _name);
 	const FMonsterTableInfo* FindMonsterTable(const FName& _name);
 	const FSkillData* FindMonsterSkillTable(const FName& _name);
-	const FItemDataTable* FindItemInfoTable(const FName& _name);
+	const FItemDataTable2* FindItemInfoTable(const FName& _name);
 
 
 private:
