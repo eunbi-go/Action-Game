@@ -11,6 +11,7 @@
 #include "../Widget/ItemQuickSlot.h"
 #include "../AGSaveGame.h"
 #include "../AGGameInstance.h"
+#include "../Manager/InventoryManager.h"
 
 AAGPlayer::AAGPlayer()
 {
@@ -144,6 +145,8 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::JumpKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Crouch"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::CrouchKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("InventoryOnOff"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::InventoryOnOffKey);
 
 }
 
@@ -198,6 +201,16 @@ void AAGPlayer::EquipWeaponKey()
 
 void AAGPlayer::NormalAttackKey()
 {
+}
+
+void AAGPlayer::InventoryOnOffKey()
+{
+	if (UInventoryManager::GetInst(GetWorld())->IsInventoryOn())
+	{
+		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(false);
+	}
+	else
+		UInventoryManager::GetInst(GetWorld())->InventoryOnOff(true);
 }
 
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)

@@ -81,6 +81,7 @@ protected:
 
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();
+	void InventoryOnOffKey();
 
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void SpawnEffect();

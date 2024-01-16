@@ -31,6 +31,7 @@ public:
 
 	void InitMainWidget(APlayerController* pc, APlayerState* ps, UAbilitySystemComponent* asc, UAttributeSet* as);
 
+
 protected:
 	virtual void BeginPlay() override;
 
