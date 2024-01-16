@@ -20,6 +20,7 @@ class AG_API UMainWidgetController : public UAGWidgetController
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHpChange, float, newMaxHp);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMpChange, float, newMp);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxMpChange, float, newMaxMp);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCoinChange, float, newCoin);
 
 public:
 	virtual void BroadcastInitValues() override;
@@ -30,10 +31,12 @@ public:
 	FOnMaxHpChange mOnMaxHpChange;
 	FOnMpChange mOnMpChange;
 	FOnMaxMpChange mOnMaxMpChange;
+	FOnCoinChange	mOnCoinChange;
 
 protected:
 	void HpChange(const FOnAttributeChangeData& data) const;
 	void MaxHpChange(const FOnAttributeChangeData& data) const;
 	void MpChange(const FOnAttributeChangeData& data) const;
 	void MaxMpChange(const FOnAttributeChangeData& data) const;
+	void CoinChange(const FOnAttributeChangeData& data) const;
 };

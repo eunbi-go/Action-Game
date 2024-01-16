@@ -26,6 +26,7 @@ void UMainWidget::NativeConstruct()
 	Cast<UMainWidgetController>(mWidgetController)->mOnHpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewHp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnMaxMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMaxMp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnCoinChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewCoin);
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)

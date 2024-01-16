@@ -19,48 +19,34 @@ class AG_API UPlayerInfoWidget : public UUserWidget
 
 
 public:
-	void SetHp(float _ratio);
-	
-	void SetHpRatio(float _ratio)
-	{ 
-		mHpTargetRatio = _ratio; 
-	}
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;
 
-	void SetMp(float _ratio);
-	
-	void SetMpRatio(float _ratio)
-	{
-		mMpTargetRatio = _ratio; 
-	}
-
-	void SetCoin(int32 _value) 
-	{
-		mCoin = _value; 
-	}
-
-	void InitCoin(int32 _value) 
-	{
-		mCoin = _value; 
-	}
-	
-	UFUNCTION()
-		void SetNewHp(float newHp);
-	UFUNCTION()
-		void SetNewMaxHp(float newMaxHp);
 
 	UFUNCTION()
-		void SetNewMp(float newMp)
+	void SetNewHp(float newHp);
+	UFUNCTION()
+	void SetNewMaxHp(float newMaxHp);
+
+	UFUNCTION()
+	void SetNewMp(float newMp)
 	{
 		mNewMp = newMp;
 	}
 	UFUNCTION()
-		void SetNewMaxMp(float newMaxMp)
+	void SetNewMaxMp(float newMaxMp)
 	{
 		mNewMaxMp = newMaxMp;
 	}
+	
+	UFUNCTION()
+	void SetNewCoin(float newCoin)
+	{
+		mNewCoin = newCoin;
+	}
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void WidgetControllerSet();
+	void WidgetControllerSet();
 
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* widgetController);
@@ -68,10 +54,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UObject* mWidgetController;
 
-public:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& _geo, float _deltaTime) override;
-
+	
 
 
 
@@ -82,15 +65,9 @@ private:
 	UProgressBar*	mMpBar;
 	class UTextBlock* mCoinTxt;
 
-	float			mHpTargetRatio;
-	float			mHpRatio;
-
 	float			mNewHp;
 	float			mNewMp;
 	float			mNewMaxHp;
 	float			mNewMaxMp;
-
-	float			mMpTargetRatio;
-
-	int				mCoin;
+	int				mNewCoin;
 };

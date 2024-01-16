@@ -13,6 +13,8 @@
 #include "../AGGameInstance.h"
 #include "../Manager/InventoryManager.h"
 #include "../Widget/HUD/AGHUD.h"
+#include "ValkyriePlayerState.h"
+#include "../AbilitySystem/AGAttributeSet.h"
 
 AAGPlayer::AAGPlayer()
 {
@@ -49,7 +51,7 @@ AAGPlayer::AAGPlayer()
 	//TPPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TPPCamera"));
 	mCameraComp->SetupAttachment(mSpringArmComp);
 	
-	mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
+	//mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
 
 	mIsAttacking = false;
 
@@ -279,19 +281,25 @@ void AAGPlayer::Tick(float DeltaTime)
 float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	damage -= mStat->GetCurrentInfo().defensePoint;
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+
+	damage -= attributeSet->GetmDefense();
 	if (damage < 1)
 		damage = 1;
 
+	
+	int hp = attributeSet->GetmHp();
+
 	// death
-	if (mStat->GetHp() - damage <= 0)
+	if (hp - damage <= 0)
 	{
 
 	}
 	// hit
 	else
 	{
-		mStat->SetHp(mStat->GetHp() - damage);
+		attributeSet->SetmHp(hp - damage);
 	}
 
 	return 0.0f;
@@ -352,9 +360,12 @@ void AAGPlayer::GetHit(const FVector& _impactPoint)
 
 bool AAGPlayer::AddItem(EITEM_ID _itemID)
 {
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+
 	if (_itemID == EITEM_ID::COIN)
 	{
-		mStat->SetCoin(mStat->GetCoin() + 10);
+		attributeSet->SetmCoin(attributeSet->GetmCoin() + 10);
 	}
 	else if (_itemID == EITEM_ID::END)	// random
 	{

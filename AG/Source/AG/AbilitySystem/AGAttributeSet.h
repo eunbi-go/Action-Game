@@ -88,6 +88,21 @@ public:
 		FGameplayAttributeData mMaxMp;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mMaxMp);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Coin)
+	FGameplayAttributeData mCoin;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mCoin);
+
+	/**
+	 * Combat 
+	 **/
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Defense)
+	FGameplayAttributeData mDefense;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mDefense);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Attack)
+	FGameplayAttributeData mAttack;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mAttack);
+
 	UFUNCTION()
 	void OnRep_Hp(const FGameplayAttributeData& preHp) const;
 
@@ -99,6 +114,15 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMp(const FGameplayAttributeData& prMaxMp) const;
+
+	UFUNCTION()
+	void OnRep_Defense(const FGameplayAttributeData& preDefense) const;
+
+	UFUNCTION()
+	void OnRep_Attack(const FGameplayAttributeData& preAttack) const;
+
+	UFUNCTION()
+	void OnRep_Coin(const FGameplayAttributeData& preCoin) const;
 
 
 private:

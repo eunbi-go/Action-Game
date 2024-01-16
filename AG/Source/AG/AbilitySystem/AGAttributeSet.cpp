@@ -11,6 +11,9 @@ UAGAttributeSet::UAGAttributeSet()
 	InitmMaxHp(100.f);
 	InitmMp(100.f);
 	InitmMaxMp(100.f);
+	InitmCoin(100.f);
+	InitmAttack(100.f);
+	InitmDefense(100.f);
 }
 
 void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -23,6 +26,11 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCoin, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mAttack, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDefense, COND_None, REPNOTIFY_Always);
+
 }
 
 void UAGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -72,6 +80,21 @@ void UAGAttributeSet::OnRep_Mp(const FGameplayAttributeData& preMp) const
 void UAGAttributeSet::OnRep_MaxMp(const FGameplayAttributeData& prMaxeMp) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mMaxMp, prMaxeMp);
+}
+
+void UAGAttributeSet::OnRep_Defense(const FGameplayAttributeData& preDefense) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mDefense, preDefense);
+}
+
+void UAGAttributeSet::OnRep_Attack(const FGameplayAttributeData& preAttack) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mAttack, preAttack);
+}
+
+void UAGAttributeSet::OnRep_Coin(const FGameplayAttributeData& preCoin) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mCoin, preCoin);
 }
 
 void UAGAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

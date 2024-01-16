@@ -11,6 +11,7 @@ void UMainWidgetController::BroadcastInitValues()
 	mOnMaxHpChange.Broadcast(as->GetmMaxHp());
 	mOnMpChange.Broadcast(as->GetmMp());
 	mOnMaxMpChange.Broadcast(as->GetmMaxMp());
+	mOnCoinChange.Broadcast(as->GetmCoin());
 }
 
 void UMainWidgetController::BindCallbacksToDependecies()
@@ -30,6 +31,10 @@ void UMainWidgetController::BindCallbacksToDependecies()
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
 		as->GetmMaxMpAttribute()).AddUObject(
 			this, &UMainWidgetController::MaxMpChange);
+
+	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
+		as->GetmCoinAttribute()).AddUObject(
+			this, &UMainWidgetController::CoinChange);
 }
 
 void UMainWidgetController::HpChange(const FOnAttributeChangeData& data) const
@@ -51,4 +56,9 @@ void UMainWidgetController::MpChange(const FOnAttributeChangeData& data) const
 void UMainWidgetController::MaxMpChange(const FOnAttributeChangeData& data) const
 {
 	mOnMaxMpChange.Broadcast(data.NewValue);
+}
+
+void UMainWidgetController::CoinChange(const FOnAttributeChangeData& data) const
+{
+	mOnCoinChange.Broadcast(data.NewValue);
 }

@@ -21,6 +21,7 @@
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
 #include "AGPlayerController.h"
 #include "../Widget/HUD/AGHUD.h"
+#include "../AbilitySystem/AGAttributeSet.h"
 
 AValkyrie::AValkyrie()
 {
@@ -333,7 +334,11 @@ void AValkyrie::JumpKey()
 void AValkyrie::Skill1Key()
 {
 	mSkillState = ESkillState::ESS_Sprint;
-	mStat->SetMp(mStat->GetMp() - 100.f);
+
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
+
 	mWeapon->SetCollisionOnOff(false);
 
 
@@ -379,7 +384,11 @@ void AValkyrie::Skill1Key()
 void AValkyrie::Skill2Key()
 {
 	mSkillState = ESkillState::ESS_Ribbon;
-	mStat->SetMp(mStat->GetMp() - 100.f);
+	
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
+
 	PlayMontage(FName("Ribbon"));
 	mWeapon->SetCollisionOnOff(false);
 
@@ -442,7 +451,11 @@ void AValkyrie::Skill2Key()
 void AValkyrie::Skill3Key()
 {
 	mSkillState = ESkillState::ESS_Slash;
-	mStat->SetMp(mStat->GetMp() - 100.f);
+	
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
+
 	PlayMontage(FName("Slash"));
 	mWeapon->SetCollisionOnOff(false);
 }
@@ -468,7 +481,7 @@ void AValkyrie::CrouchKey()
 	{
 		mIsCrouch = false;
 		mCrouchTimeLineComp->PlayFromStart();
-		GetCharacterMovement()->MaxWalkSpeed = mStat->GetInfo().movingRunSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
 		GetCapsuleComponent()->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
 		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
