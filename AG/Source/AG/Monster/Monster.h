@@ -52,7 +52,6 @@ public:
 private:
 	void PlayHitMontage(const FVector& _impactPoint);
 
-
 public:
 	virtual void Skill1();
 	virtual void Skill2();

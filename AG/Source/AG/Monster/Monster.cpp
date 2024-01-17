@@ -277,13 +277,11 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmDefense();
-
 	if (damage < 1)
 		damage = 1;
 	
 	int32 randomValue = FMath::RandRange(10, 20);
-
-	damage = randomValue;
+	damage -= randomValue;
 
 	Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
@@ -307,7 +305,6 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
 	{
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
 
 
@@ -367,6 +364,8 @@ void AMonster::PlayHitMontage(const FVector& _impactPoint)
 
 	mAnimInst->SetHitDirection(angleString);
 }
+
+
 
 void AMonster::Skill1()
 {
@@ -457,6 +456,7 @@ void AMonster::UseSkill(float _deltaTime)
 void AMonster::CheckSkillCoolTime(float _deltaTime)
 {
 	int32 skillCount = mSkillInfoArray.Num();
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 
 	for (int32 i = 0; i < skillCount; ++i)
 	{
@@ -466,7 +466,8 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 			
 			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
 			{
-				//PrintViewport(3.f, FColor::Blue, TEXT("cooltime end"));
+				PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("%d cooltime end"), i));
+				aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
 
 				mSkillInfoArray[i].duration = 0.0f;
 				mSkillInfoArray[i].isUse = false;

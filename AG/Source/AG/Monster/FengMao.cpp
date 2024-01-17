@@ -340,10 +340,99 @@ void AFengMao::Skill1()
 	particle->SetParticle(effect);
 	particle->SetActorScale3D(FVector(0.3f));
 	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-	particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
+
+	particle->SetTarget(target);
+
+	//particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
+
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
-	mSkill1Start.AddDynamic(particle, &ARampageSlash::ResetSlash);
 	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
+
+
+	mPreSlash = particle;
+	// 0.2초 간격으로 순차적으로 생성
+	GetWorld()->GetTimerManager().SetTimer(
+		mSkillTimerHandle, this, &AFengMao::RespawnSkill1, 0.3f, false
+	);
+
+	mSkill1Count++;
+
+}
+
+void AFengMao::RespawnSkill1()
+{
+	if (!isEnableSkill1Respawn || mSkill1Count >= 5)
+	{
+		return;
+	}
+
+	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
+
+	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!IsValid(target))
+		return;
+
+
+
+	//------------------------
+	// 스폰할 위치를 정한 후, 스폰한다.
+	//------------------------
+
+	FVector direction = GetActorForwardVector();
+
+	direction.Normalize();
+
+	FVector position = mSkill1CenterPosition + direction * 500.f;
+
+	if (mSkill1Count <= 2)
+		position.X += 500.0f;
+	else
+		position.X += 800.0f;
+
+	if (mSkill1Count % 2 == 1)
+		position.Y -= 500.0f;
+	else
+		position.Y += 500.0f;
+
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	ARampageSlash* particle = GetWorld()->SpawnActor<ARampageSlash>(
+		position,
+		GetActorRotation(),
+		params);
+
+
+
+	//------------------------
+	// 이펙트와 델리게이트를 설정한다.
+	//------------------------
+
+	UNiagaraSystem* effect = nullptr;
+	int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
+
+	for (int32 j = 0; j < effectCount; ++j)
+	{
+		effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].niagara;
+	}
+
+	particle->SetParticle(effect);
+	particle->SetActorScale3D(FVector(0.3f));
+	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+
+	particle->SetTarget(target);
+
+	
+	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
+	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
+
+	mPreSlash = particle;
+	// 0.2초 간격으로 순차적으로 생성
+	GetWorld()->GetTimerManager().SetTimer(
+		mSkillTimerHandle, this, &AFengMao::RespawnSkill1, 0.3f, false
+	);
+
 	mSkill1Count++;
 
 }
@@ -639,75 +728,7 @@ void AFengMao::RespawnSkill4(ARockBurst* particles)
 	particles->Destroy();
 }
 
-void AFengMao::RespawnSkill1(ARampageSlash* preParticle)
-{
-	if (!isEnableSkill1Respawn || mSkill1Count >= 5)
-	{
-		return;
-	}
 
-	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
-
-	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-	if (!IsValid(target))
-		return;
-
-
-
-	//------------------------
-	// 스폰할 위치를 정한 후, 스폰한다.
-	//------------------------
-
-	FVector direction = GetActorForwardVector();
-
-	direction.Normalize();
-
-	FVector position = mSkill1CenterPosition + direction * 500.f;
-
-	if (mSkill1Count <= 2)
-		position.X += 500.0f;
-	else
-		position.X += 800.0f;
-
-	if (mSkill1Count % 2 == 1)
-		position.Y -= 500.0f;
-	else
-		position.Y += 500.0f;
-
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	ARampageSlash* particle = GetWorld()->SpawnActor<ARampageSlash>(
-		position,
-		GetActorRotation(),
-		params);
-
-
-
-	//------------------------
-	// 이펙트와 델리게이트를 설정한다.
-	//------------------------
-
-	UNiagaraSystem* effect = nullptr;
-	int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
-
-	for (int32 j = 0; j < effectCount; ++j)
-	{
-		effect = mSkillInfoArray[mUsingSkillIndex].effectArray[j].niagara;
-	}
-
-	particle->SetParticle(effect);
-	particle->SetActorScale3D(FVector(0.3f));
-	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-	particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
-	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
-	mSkill1Start.AddDynamic(particle, &ARampageSlash::ResetSlash);
-	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
-
-	mSkill1Count++;
-
-}
 
 
 void AFengMao::Hit(FVector impactPoint)

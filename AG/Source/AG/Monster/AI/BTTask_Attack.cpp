@@ -109,47 +109,39 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
-	const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
-	if (skillInfo != nullptr)
-	{
-		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
 	//---------------
 	// 공격이 끝났는지 체크한 후, 계속 공격할지 결정한다.
 	//---------------
-	if (!mIsAttacking)
+	if (mIsAttacking)
+		return;
+	
+	// 공격 끝남
+	controller->StopMovement();
+
+	FVector monsterPosition = monster->GetActorLocation();
+	FVector targetPosition = target->GetActorLocation();
+
+	monsterPosition -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	targetPosition -= FVector(0.f, 0.f, target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+	// 두 위치 사이의 거리를 구해준다.
+	float	distance = FVector::Distance(monsterPosition, targetPosition);
+
+	// 두 위치 사이의 거리에서 Capsule의 반경을 뺀다.
+	distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+
+
+	// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
+	if (distance >= monsterInfo.attackDistance)
 	{
-		// 공격 끝남
-		controller->StopMovement();
-
-		FVector monsterPosition = monster->GetActorLocation();
-		FVector targetPosition = target->GetActorLocation();
-
-		monsterPosition -= FVector(0.f, 0.f, monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
-		targetPosition -= FVector(0.f, 0.f, target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
-
-		// 두 위치 사이의 거리를 구해준다.
-		float	distance = FVector::Distance(monsterPosition, targetPosition);
-
-		// 두 위치 사이의 거리에서 Capsule의 반경을 뺀다.
-		distance -= monster->GetCapsuleComponent()->GetScaledCapsuleRadius();
-		distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-
-
-		// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
-		if (distance >= monsterInfo.attackDistance)
-		{
-			monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
-			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		}
-		else
-			monsterAnimInst->Attack();
+		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
+	else
+		monsterAnimInst->Attack();
+
 
 
 	

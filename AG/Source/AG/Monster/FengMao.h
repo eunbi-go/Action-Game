@@ -14,7 +14,7 @@ class AG_API AFengMao : public AMonster
 	GENERATED_BODY()
 	
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1Start, class AActor*, actor);
-		DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkill1MoveStart, class APlayerCharacter*, target);
+		DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkill1MoveStart);
 		DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDecalDeath);
 
 public:
@@ -63,7 +63,7 @@ public:
 	void RespawnSkill4(ARockBurst* particle);
 
 	UFUNCTION()
-	void RespawnSkill1(ARampageSlash* preParticle);
+	void RespawnSkill1();
 
 	UFUNCTION()
 		void Hit(FVector impactPoint);
@@ -85,6 +85,9 @@ public:
 	UPROPERTY()
 	FTimerHandle mTimerHandle;
 
+	UPROPERTY()
+	FTimerHandle mSkillTimerHandle;
+
 	int32	mSkill3SpawnCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
@@ -102,4 +105,6 @@ public:
 	TArray<FVector> skill3PositionArray;
 	TArray<class ADecal*> skill3DecalArray;
 	int32	mSkill3Index;
+
+	class ARampageSlash* mPreSlash;
 };

@@ -163,8 +163,7 @@ void UMonsterAnimInstance::AnimNotify_Skill1End()
 
 	if (IsValid(monster))
 	{
-		//Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(Cast<APlayerCharacter>(monster->GetBlackboardTarget()));
-
+		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast();
 	}
 }
 

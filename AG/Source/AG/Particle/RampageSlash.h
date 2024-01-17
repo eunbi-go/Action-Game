@@ -13,7 +13,6 @@ class AG_API ARampageSlash : public AParticleNiagara
 {
 	GENERATED_BODY()
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReSpawn, class ARampageSlash*, preParticle);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, FVector, impactPoint);
 
 public:
@@ -23,16 +22,10 @@ public:
 	void Stop();
 
 	UPROPERTY(BlueprintAssignable)
-	FOnReSpawn	mReSpawn;
-
-	UPROPERTY(BlueprintAssignable)
 		FOnHit	mOnHit;
 
 	UFUNCTION()
-	void ResetSlash(AActor* preParticle);
-
-	UFUNCTION()
-	void MoveStart(class APlayerCharacter* target);
+	void MoveStart();
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,6 +38,10 @@ public:
 	void SetIsEnableMove(bool _value)
 	{
 		mIsEnableMove = _value; 
+	}
+	void SetTarget(ACharacter* target)
+	{
+		mTarget = target;
 	}
 
 

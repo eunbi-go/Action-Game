@@ -14,18 +14,10 @@ ARampageSlash::ARampageSlash()
 		mHitShake = cameraShake.Class;
 }
 
-void ARampageSlash::ResetSlash(AActor* preParticle)
+void ARampageSlash::MoveStart()
 {
 	mParticle->ResetSystem();
-}
-
-void ARampageSlash::MoveStart(APlayerCharacter* target)
-{
-	mTarget = target;
-	//targetPosition = target->GetActorLocation();
 	mIsEnableMove = true;
-	//mParticle->ResetSystem();
-	//mParticle->SetCustomTimeDilation(0.5f);
 }
 
 void ARampageSlash::BeginPlay()
@@ -41,43 +33,39 @@ void ARampageSlash::Tick(float DeltaTime)
 
 	if (!mIsEnableMove)
 		return;
-	else
+
+	FVector position = GetActorLocation();
+	FVector targetPosition = mTarget->GetActorLocation();
+	FVector direction = targetPosition - position;
+	FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRotation, DeltaTime, 2.f));
+
+
+	// 이동.
+	float	Distance = FVector::Distance(position, targetPosition);
+	Distance -= mTarget->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	SetActorLocation(position + direction.GetSafeNormal() * DeltaTime * 1500.0f);
+
+
+
+	if (Distance <= 500.f)
+		mParticle->ResetSystem();
+
+	if (Distance <= 100.f)
 	{
-		FVector position = GetActorLocation();
-		FVector targetPosition = mTarget->GetActorLocation();
-		FVector direction = targetPosition - position;
+		// 충돌했다고 판정.
+		mOnHit.Broadcast(GetActorLocation());
 
-		FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+		// 카메라 세이크 추가.
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mHitShake);
 
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), targetRotation, DeltaTime, 2.f));
-
-
-		// 이동.
-		float	Distance = FVector::Distance(position, targetPosition);
-		Distance -= mTarget->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-		SetActorLocation(position + direction.GetSafeNormal() * DeltaTime * 1500.0f);
-		
-		
-
-		if (Distance <= 500.f)
-			mParticle->ResetSystem();
-
-		if (Distance <= 100.f)
-		{
-			// 충돌했다고 판정.
-			mOnHit.Broadcast(GetActorLocation());
-
-			// 카메라 세이크 추가.
-			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mHitShake);
-
-			Destroy();
-		}
+		Destroy();
 	}
+
 }
 
 void ARampageSlash::Stop()
 {
-	mReSpawn.Broadcast(this);
 	mParticle->SetPaused(true);
 }

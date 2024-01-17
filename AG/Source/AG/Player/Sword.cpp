@@ -77,6 +77,7 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 {
 	const FVector start = mBoxTraceStart->GetComponentLocation();
 	const FVector end = mBoxTraceEnd->GetComponentLocation();
+
 	AValkyrie* owner = Cast<AValkyrie>(mOwner);
 	AValkyriePlayerState* playerState = owner->GetPlayerState<AValkyriePlayerState>();
 	float damage = Cast<UAGAttributeSet>(playerState->GetAttributeSet())->GetmAttack();
