@@ -101,6 +101,7 @@ public:
 	int32	mSkill1Count;
 	bool	isEnableSkill1Respawn;
 	FVector	mSkill1CenterPosition;
+	FVector mSkill1TargetPosition;
 
 	TArray<FVector> skill3PositionArray;
 	TArray<class ADecal*> skill3DecalArray;

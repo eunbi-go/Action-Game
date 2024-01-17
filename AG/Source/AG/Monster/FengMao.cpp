@@ -317,6 +317,7 @@ void AFengMao::Skill1()
 
 	FVector position = GetActorLocation();
 	mSkill1CenterPosition = position;
+	mSkill1TargetPosition = target->GetActorLocation();
 
 	ARampageSlash* particle = GetWorld()->SpawnActor<ARampageSlash>(
 		position,
@@ -361,7 +362,7 @@ void AFengMao::Skill1()
 
 void AFengMao::RespawnSkill1()
 {
-	if (!isEnableSkill1Respawn || mSkill1Count >= 5)
+	if (!isEnableSkill1Respawn || mSkill1Count == 5)
 	{
 		return;
 	}
@@ -379,21 +380,35 @@ void AFengMao::RespawnSkill1()
 	// 스폰할 위치를 정한 후, 스폰한다.
 	//------------------------
 
-	FVector direction = GetActorForwardVector();
+	FVector forward = GetActorForwardVector();
+	FVector targetRight = target->GetActorRightVector().GetSafeNormal();
+	FVector direction = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	//FVector position = mSkill1CenterPosition + direction * 500.f;
+	FVector position = FVector(0.f);
 
-	direction.Normalize();
-
-	FVector position = mSkill1CenterPosition + direction * 500.f;
-
-	if (mSkill1Count <= 2)
-		position.X += 500.0f;
-	else
-		position.X += 800.0f;
-
-	if (mSkill1Count % 2 == 1)
-		position.Y -= 500.0f;
-	else
-		position.Y += 500.0f;
+	if (mSkill1Count == 1)
+	{
+		position = target->GetActorLocation() + targetRight * 500.f;
+	}
+	else if (mSkill1Count == 2)
+	{
+		float disToTarget = GetDistanceTo(target);
+		disToTarget /= 2.f;
+		position = GetActorLocation() + direction * disToTarget;
+		position += targetRight * 250.f;
+	}
+	else if (mSkill1Count == 3)
+	{
+		position = target->GetActorLocation() - targetRight * 500.f;
+	}
+	else if (mSkill1Count == 4)
+	{
+		float disToTarget = GetDistanceTo(target);
+		disToTarget /= 2.f;
+		position = GetActorLocation() + direction * disToTarget;
+		position -= targetRight * 250.f;
+	}
+	position.Z = GetActorLocation().Z + GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.f;
 
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -449,9 +464,7 @@ void AFengMao::Skill3()
 	//------------------------
 
 	AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
-
 	ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
 	if (!IsValid(target))
 		return;
 
@@ -576,6 +589,7 @@ void AFengMao::SpawnSkill3()
 
 }
 
+// 돌
 void AFengMao::Skill4()
 {
 	//------------------------
