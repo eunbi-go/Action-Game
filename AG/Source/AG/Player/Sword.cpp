@@ -5,6 +5,8 @@
 #include "../Interface/HitInterface.h"
 #include "Valkyrie.h"
 #include "../Player/CharacterStatComponent.h"
+#include "../AbilitySystem/AGAttributeSet.h"
+#include "ValkyriePlayerState.h"
 
 ASword::ASword()
 {
@@ -75,8 +77,10 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 {
 	const FVector start = mBoxTraceStart->GetComponentLocation();
 	const FVector end = mBoxTraceEnd->GetComponentLocation();
-	float damage = Cast<AValkyrie>(mOwner)->GetStat()->GetCurrentInfo().attackPoint;
-
+	AValkyrie* owner = Cast<AValkyrie>(mOwner);
+	AValkyriePlayerState* playerState = owner->GetPlayerState<AValkyriePlayerState>();
+	float damage = Cast<UAGAttributeSet>(playerState->GetAttributeSet())->GetmAttack();
+	
 	TArray<AActor*> actorsToIgnoreArray;
 	actorsToIgnoreArray.Add(this);
 	for (AActor* actor : mIgnoreActors)

@@ -276,7 +276,7 @@ void AMonster::GetHit(const FVector& _impactPoint)
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	damage -= mInfo.defensePoint;
+	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmDefense();
 
 	if (damage < 1)
 		damage = 1;
@@ -285,18 +285,15 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	damage = randomValue;
 
-	mInfo.hp -= damage;
+	Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
-	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
-
-	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
 
 	if (IsValid(mWidgetComopnent))
 	{
 		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
 		if (IsValid(HPWidget))
 		{
-			HPWidget->SetTargetRatio((float)mInfo.hp / mInfo.maxHp);
+			HPWidget->SetTargetRatio((float)Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() / Cast<UAGAttributeSet>(mAttributeSet)->GetmMaxHp());
 		}
 
 		if (Cast<AFengMao>(this))
@@ -307,7 +304,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		}
 	}
 
-	if (mInfo.hp <= 0)
+	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
 	{
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
