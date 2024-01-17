@@ -34,6 +34,5 @@ void UMonsterHpWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
 
 void UMonsterHpWidget::UpdateHp()
 {
-	PrintViewport(3.f, FColor::Blue, TEXT("UpdateHp"));
 	SetTargetRatio(mCurrentStat->GetHpRatio());
 }

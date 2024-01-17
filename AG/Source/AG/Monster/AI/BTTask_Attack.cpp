@@ -109,6 +109,15 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		return;
 	}
 
+	const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
+	if (skillInfo != nullptr)
+	{
+		controller->StopMovement();
+		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
 	//---------------
 	// 공격이 끝났는지 체크한 후, 계속 공격할지 결정한다.
 	//---------------
@@ -136,15 +145,10 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 		if (distance >= monsterInfo.attackDistance)
 		{
 			monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
-			//UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		}
 		else
 			monsterAnimInst->Attack();
-		//monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
-
-
-		//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
 

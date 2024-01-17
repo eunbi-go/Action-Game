@@ -70,6 +70,7 @@ EBTNodeResult::Type UBTTask_MonsterSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	if (info != nullptr)
 	{
+		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(info->animType);
 	}
 	
@@ -123,13 +124,13 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
+	//---------------
+	// Target 이 없으면 Idle/Task 종료한다.
+	//---------------
 	if (!IsValid(target))
 	{
-		//PrintViewport(3.f, FColor::Green, TEXT("no target"));
 		controller->StopMovement();
-
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
-
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -156,17 +157,12 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 		if (distance >= info.attackDistance)
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-			//return;
+			return;
 		}
-
-		else
+		
+		if (monster->GetIsAttackEnd())
 		{
 			controller->StopMovement();
-
-			FVector direction = target->GetActorLocation() - monster->GetActorLocation();
-			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
-			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
 
 			//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), monster->GetActorRotation().Roll, monster->GetActorRotation().Pitch, monster->GetActorRotation().Yaw));
 			const FMonsterSkillInfo* skillInfo = monster->GetSkillInfo();
@@ -175,23 +171,15 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 			{
 				monsterAnimInst->SetMonsterMotionType(skillInfo->animType);
 			}
-			//else
-			//{
-			//	controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
-			//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-
-			//}
-			//monsterAnimInst->SetIsSkillEnd(false);
-
+			else
+			{
+				monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
+				FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+			}
 
 		}
+		
 	}
-	//else
-	//{
-	//	//controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
-	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	//}
-
 
 
 

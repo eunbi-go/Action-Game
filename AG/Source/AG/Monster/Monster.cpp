@@ -236,23 +236,6 @@ void AMonster::Tick(float DeltaTime)
 
 	if (!target)
 		return;
-
-	float	capsuleHalfHeight = 0.f;
-
-	if (Cast<ACharacter>(target))
-		capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-
-	FVector targetPosition = target->GetActorLocation();
-	targetPosition.Z -= capsuleHalfHeight;
-
-	FVector position = GetActorLocation();
-	position.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-
-	float distance = (float)FVector::Distance(targetPosition, position);
-	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
-	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
-
-	PrintViewport(0.5f, FColor::Blue, FString::Printf(TEXT("distance: %f"), distance));
 }
 
 void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -262,8 +245,6 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 // 이 함수는 MonsterAIController 보다 먼저 호출된다.
-
-
 void AMonster::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -288,12 +269,6 @@ void AMonster::UnPossessed()
 
 void AMonster::GetHit(const FVector& _impactPoint)
 {
-	//PrintViewport(1.f, FColor::Orange, TEXT("GetHit"));
-	//CustomTimeDilation = 0.3f;
-	//GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
-	//	CustomTimeDilation = 1.f;
-	//	}), 0.1f, false);
-
 	PlayHitMontage(_impactPoint);
 }
 
@@ -301,7 +276,6 @@ void AMonster::GetHit(const FVector& _impactPoint)
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
 	damage -= mInfo.defensePoint;
 
 	if (damage < 1)
@@ -505,32 +479,7 @@ void AMonster::CheckSkillCoolTime(float _deltaTime)
 	}
 }
 
-void AMonster::SelectSkill(TArray<int32> _enableSkillIndexArray)
-{
 
-}
-
-void AMonster::SetRotationToTarget()
-{
-	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
-
-	if (IsValid(aiController))
-	{
-		AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-		//PrintViewport(1.f, FColor::Blue, TEXT("isvalid before"));
-
-		//if (IsValid(target))
-		//{
-			FVector direction = mTarget->GetActorLocation() - GetActorLocation();
-			FRotator rot = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
-
-			//PrintViewport(1.f, FColor::Red, TEXT("SetActor"));
-
-			SetActorRotation(FMath::RInterpTo(GetActorRotation(), rot, GetWorld()->GetDeltaSeconds(), 10.f));
-		//}
-	}
-}
 
 void AMonster::NormalAttackCheck()
 {
@@ -712,16 +661,4 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 	return &mSkillInfoArray[mUsingSkillIndex];
 }
 
-ACharacter* AMonster::GetBlackboardTarget()
-{
-	return mTarget;
-	//AMonsterAIController* aiCotroller = Cast<AMonsterAIController>(GetController());
-
-	//ACharacter* target = Cast<ACharacter>(aiCotroller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
-	//if (IsValid(target))
-	//	return target;
-
-	//return nullptr;
-}
 

@@ -163,7 +163,7 @@ void UMonsterAnimInstance::AnimNotify_Skill1End()
 
 	if (IsValid(monster))
 	{
-		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(Cast<APlayerCharacter>(monster->GetBlackboardTarget()));
+		//Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast(Cast<APlayerCharacter>(monster->GetBlackboardTarget()));
 
 	}
 }
@@ -298,9 +298,6 @@ void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
 			AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 
 			monster->SetIsAttackEnd(false);
-
-			//if (IsValid(monster))
-			//	monster->SetRotationToTarget();
 
 			Montage_SetPosition(mSkillMontageArray[mCurSkillMontagIndex], 0.f);
 			Montage_Play(mSkillMontageArray[mCurSkillMontagIndex]);

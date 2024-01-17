@@ -100,16 +100,16 @@ void AFengMao::Tick(float DeltaTime)
 
 
 	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
-	UMainWidget* MainHUD = GameMode->GetMainWidget();
-	if (distance <= 5000.0f)
-		MainHUD->BossInfoOnOff(true);
-	else
-		MainHUD->BossInfoOnOff(false);
+	//UMainWidget* MainHUD = GameMode->GetMainWidget();
+	//if (distance <= 5000.0f)
+	//	MainHUD->BossInfoOnOff(true);
+	//else
+	//	MainHUD->BossInfoOnOff(false);
 
-	if (mInfo.hp <= 0)
-	{
-		MainHUD->BossInfoOnOff(false);
-	}
+	//if (mInfo.hp <= 0)
+	//{
+	//	MainHUD->BossInfoOnOff(false);
+	//}
 }
 
 void AFengMao::PossessedBy(AController* NewController)
