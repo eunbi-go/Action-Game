@@ -383,7 +383,6 @@ void AFengMao::RespawnSkill1()
 	FVector forward = GetActorForwardVector();
 	FVector targetRight = target->GetActorRightVector().GetSafeNormal();
 	FVector direction = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	//FVector position = mSkill1CenterPosition + direction * 500.f;
 	FVector position = FVector(0.f);
 
 	if (mSkill1Count == 1)
@@ -468,25 +467,22 @@ void AFengMao::Skill3()
 	if (!IsValid(target))
 		return;
 
-
-
+	FVector location = GetActorLocation();
+	FVector targetLocation = target->GetActorLocation();
+	float minX = (targetLocation + target->GetActorRightVector().GetSafeNormal() * mMeteoRangeWidth).X;
+	float maxX = (targetLocation - target->GetActorRightVector().GetSafeNormal() * mMeteoRangeWidth).X;
+	float maxY = location.Y;
+	float minY = targetLocation.Y;
+	
 	for (int32 i = 0; i < 3; ++i)
 	{
 		//------------------------
 		// 스폰할 위치를 정한 후, 스폰한다.
 		//------------------------
 
-		// 플레이어와 몬스터 사이 각도 구해서 각도의 범위에 따라 나눠야 함.
-
-		//float randomX = FMath::RandRange(-100.0f, -800.0f);
-		//float randomY = FMath::RandRange(-800.0f, 800.0f);
-		float randomX = FMath::RandRange(100.0f, 800.0f);
-		float randomY = FMath::RandRange(-500.0f, 800.0f);
-
-		FVector direction = target->GetActorLocation() - GetActorLocation();
-
-		FVector position = GetActorLocation() + direction.GetSafeNormal2D() * FVector(randomX, randomY, 1.0f);
-
+		float randomX = FMath::RandRange(fminf(minX, maxX), fmaxf(minX, maxX));
+		float randomY = FMath::RandRange(fminf(maxY, minY), fmaxf(maxY, minY));
+		FVector position = FVector(randomX, randomY, location.Z);
 		position.Z -= (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
 		
 		skill3PositionArray.Add(position);
@@ -610,7 +606,7 @@ void AFengMao::Skill4()
 	// 스폰할 위치를 정한 후, 스폰한다.
 	//------------------------
 	FVector position = GetActorLocation();
-	position.Z -= (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
+	position.Z += (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
 
 	originalPos = position;
 
@@ -643,29 +639,6 @@ void AFengMao::Skill4()
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
 }
 
-void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-
-}
-
-
-
-void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
-{
-	IHitInterface* hitInterface = Cast<IHitInterface>(hitActor);
-	if (hitInterface)
-	{
-		hitInterface->GetHit(Hit.ImpactPoint);
-	}
-	hitActor->TakeDamage(100.f, FDamageEvent(), GetController(), this);
-	collisionObject->Destroy();
-}
-
-void AFengMao::CameraShake(AMeteo* niagara)
-{
-	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mMeteoCameraShake);
-}
-
 void AFengMao::RespawnSkill4(ARockBurst* particles)
 {
 	if (!isEnableSkill4Respawn)
@@ -690,7 +663,7 @@ void AFengMao::RespawnSkill4(ARockBurst* particles)
 	for (int32 i = 0; i < 3; ++i)
 	{
 		FVector direction = GetActorForwardVector();
-		
+
 		if (i == 1)
 		{
 			FVector dir = GetActorRightVector();
@@ -741,6 +714,31 @@ void AFengMao::RespawnSkill4(ARockBurst* particles)
 
 	particles->Destroy();
 }
+
+
+void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+
+}
+
+
+
+void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
+{
+	IHitInterface* hitInterface = Cast<IHitInterface>(hitActor);
+	if (hitInterface)
+	{
+		hitInterface->GetHit(Hit.ImpactPoint);
+	}
+	hitActor->TakeDamage(100.f, FDamageEvent(), GetController(), this);
+	collisionObject->Destroy();
+}
+
+void AFengMao::CameraShake(AMeteo* niagara)
+{
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mMeteoCameraShake);
+}
+
 
 
 

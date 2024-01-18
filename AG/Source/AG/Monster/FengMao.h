@@ -108,4 +108,7 @@ public:
 	int32	mSkill3Index;
 
 	class ARampageSlash* mPreSlash;
+
+	float	mMeteoRangeWidth = 250.f;
+	float	mMetoRangeHeight = 100.f;
 };
