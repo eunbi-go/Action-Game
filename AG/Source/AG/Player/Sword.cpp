@@ -39,7 +39,8 @@ void ASword::BeginPlay()
 
 	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
 		nullptr, 
-		TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Flameslash_3.NS_Flameslash_3'")
+		TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Holy_Trail_1.NS_Holy_Trail_1'")
+		/*TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Flameslash_3.NS_Flameslash_3'")*/
 		/*TEXT("NiagaraSystem'/Game/sA_SwordTrailSet/Fx/NS_Star_2.NS_Star_2'")*/
 	);
 

@@ -17,10 +17,7 @@ class AG_API UBossInfoWidget : public UUserWidget
 
 public:
 	void SetHp(float _ratio);
-	void SetHpRatio(float _ratio) 
-	{
-		mHpTargetRatio = _ratio; 
-	}
+	void SetHpRatio(float _ratio);
 
 public:
 	virtual void NativeConstruct() override;

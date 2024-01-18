@@ -46,7 +46,6 @@ EBTNodeResult::Type UBTTask_RotateToTarget::ExecuteTask(UBehaviorTreeComponent& 
 	if (!IsValid(target))
 	{
 		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		return EBTNodeResult::Failed;
 	}
 

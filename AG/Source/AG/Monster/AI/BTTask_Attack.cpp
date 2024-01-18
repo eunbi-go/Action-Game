@@ -36,22 +36,23 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Failed;
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 	
 	//---------------
-	// Target 이 없으면 Idle -> Failed, 있으면 Target 을 공격한다.
+	// (Target 이 없으면) || (사용중이던 스킬이 아직 끝나지 않았으면) Task 종료한다.
 	//---------------
-	if (!IsValid(target) || isSkillEnable)
+	if (!IsValid(target) || !monsterAnimInst->GetIsSkillEnd())
 	{
 		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		return EBTNodeResult::Failed;
 	}
 
 	controller->StopMovement();
 	mIsAttacking = true;
-	monster->mOnAttackEnd.AddLambda([this]()-> void {
+	monster->SetIsAttackEnd(false);
+
+	monster->mOnAttackEnd.AddLambda([this, &monster]()-> void {
 		mIsAttacking = false;
+		//monster->SetIsAttackEnd(true);
 		});
 	monsterAnimInst->Attack();
 
@@ -97,15 +98,13 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 
 	//---------------
-	// Target 이 없으면 Idle/Task 종료한다.
+	// (Target 이 없으면) Task 종료한다.
 	//---------------
-	if (!IsValid(target) || isSkillEnable)
+	if (!IsValid(target))
 	{
 		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -134,17 +133,19 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 
 
 
-	// - Target 이 공격거리 밖으로 벗어나면 공격을 끝낸다.
-	if (distance >= monsterInfo.attackDistance)
+	// (Target 이 공격거리 밖으로 벗어나면) || (스킬을 사용할 수 있으면) 공격을 끝낸다.
+	if (distance >= monsterInfo.attackDistance || monster->IsEnableUseSkill())
 	{
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 	else
+	{
+		mIsAttacking = true;
+		monster->SetIsAttackEnd(false);
 		monsterAnimInst->Attack();
+	}
 
-
-
+	
 	
 }
 

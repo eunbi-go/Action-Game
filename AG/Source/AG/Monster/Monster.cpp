@@ -19,6 +19,7 @@
 #include "../Player/Valkyrie.h"
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
 #include "../AbilitySystem/AGAttributeSet.h"
+#include "../Widget/HUD/AGHUD.h"
 
 AMonster::AMonster()
 {
@@ -41,12 +42,9 @@ AMonster::AMonster()
 
 
 	mWidgetComopnent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetCom"));
-
 	mWidgetComopnent->SetupAttachment(GetMesh());
-
 	mWidgetComopnent->SetRelativeLocation(FVector(0.0f, 0.0f, 200.f));
 	mWidgetComopnent->SetWidgetSpace(EWidgetSpace::Screen);
-
 	static ConstructorHelpers::FClassFinder<UUserWidget> ui(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Monster.UI_Monster_C'"));
 	if (ui.Succeeded())
 	{
@@ -230,8 +228,8 @@ void AMonster::Tick(float DeltaTime)
 
 	CheckSkillCoolTime(DeltaTime);
 
-	if (!mIsUsingSkill)
-		UseSkill(DeltaTime);
+	//if (!mIsUsingSkill && mAnimInst->GetIsSkillEnd())
+	//	UseSkill(DeltaTime);
 
 
 	if (!target)
@@ -269,6 +267,14 @@ void AMonster::UnPossessed()
 
 void AMonster::GetHit(const FVector& _impactPoint)
 {
+	MONSTER_MOTION motion = mAnimInst->GetMonsterMotionType();
+	if (motion == MONSTER_MOTION::SKILL1 || motion == MONSTER_MOTION::SKILL2
+		|| motion == MONSTER_MOTION::SKILL3 || motion == MONSTER_MOTION::SKILL4
+		|| motion == MONSTER_MOTION::SKILL5)
+		return;
+	if (!mAnimInst->GetIsSkillEnd() || !mIsAttackEnd)
+		return;
+
 	PlayHitMontage(_impactPoint);
 }
 
@@ -297,8 +303,13 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		if (Cast<AFengMao>(this))
 		{
 			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-			UMainWidget* MainHUD = GameMode->GetMainWidget();
-			MainHUD->BossInfoOnOff(false);
+			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			if (!IsValid(hud))
+				return damage;
+			UMainWidget* mainWidget = hud->mMainWidget;
+			if (!IsValid(mainWidget))
+				return damage;
+			mainWidget->BossInfoOnOff(false);
 		}
 	}
 
@@ -316,7 +327,6 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 		mSpawnPoint->RemoveMonster(this);
 	}
-
 	return damage;
 }
 
@@ -383,14 +393,115 @@ void AMonster::Skill4()
 {
 }
 
-void AMonster::UseSkill(float _deltaTime)
+bool AMonster::CheckEnableSkill()
+{
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+	AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+	if (!target)
+		return false;
+
+
+	float	capsuleHalfHeight = 0.f;
+
+	if (Cast<ACharacter>(target))
+		capsuleHalfHeight = Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	FVector targetPosition = target->GetActorLocation();
+	targetPosition.Z -= capsuleHalfHeight;
+
+	FVector position = GetActorLocation();
+	position.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	float distance = (float)FVector::Distance(targetPosition, position);
+	distance -= GetCapsuleComponent()->GetScaledCapsuleRadius();
+	distance -= Cast<ACharacter>(target)->GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+
+	enableSkillIndexArray.RemoveAll([](int32) {return true; });
+
+	int32 skillCount = mSkillInfoArray.Num();
+	
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		// 현재 사용중이면 pass.
+		if (mSkillInfoArray[i].isUse || mSkillInfoArray[i].isCheckCoolTime)
+			continue;
+
+
+		if (!mIsUsingSkill && mAnimInst->GetIsSkillEnd() && distance <= mSkillInfoArray[i].distance)
+		{
+			enableSkillIndexArray.Add(i);
+		}
+	}
+
+	//---------------------
+	// 스킬 사용.
+	//---------------------
+	int32 enableSkillCount = enableSkillIndexArray.Num();
+
+	if (enableSkillCount == 0)
+	{
+		return false;
+	}
+	return true;
+}
+
+const FMonsterSkillInfo* AMonster::UseSkill()
+{
+	int32 enableSkillCount = enableSkillIndexArray.Num();
+	int32 randomIndexValue = FMath::RandRange(0, enableSkillCount);
+	
+	if (randomIndexValue == enableSkillCount)
+		randomIndexValue--;
+
+	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isUse = true;
+	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isCheckCoolTime = true;
+	mIsUsingSkill = true;
+	mUsingSkillIndex = enableSkillIndexArray[randomIndexValue];
+
+	enableSkillIndexArray.RemoveAll([](int32) {return true; });
+
+	return &mSkillInfoArray[mUsingSkillIndex];
+}
+
+// 쿨타임만 확인한다.
+void AMonster::CheckSkillCoolTime(float _deltaTime)
+{
+	int32 skillCount = mSkillInfoArray.Num();
+	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
+	AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
+
+	if (!target)
+		return;
+
+	for (int32 i = 0; i < skillCount; ++i)
+	{
+		if (mSkillInfoArray[i].isCheckCoolTime)
+		{
+			mSkillInfoArray[i].duration += _deltaTime;
+			
+			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
+			{
+				PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("%d cooltime end"), i));
+
+				mSkillInfoArray[i].duration = 0.0f;
+				mSkillInfoArray[i].isUse = false;
+				mSkillInfoArray[i].isCheckCoolTime = false;
+			}
+		}
+
+	}
+}
+
+bool AMonster::IsEnableUseSkill()
 {
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
 
 	AActor* target = Cast<AActor>(aiController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
 
 	if (!target)
-		return;
+		return false;
 
 
 	float	capsuleHalfHeight = 0.f;
@@ -411,72 +522,37 @@ void AMonster::UseSkill(float _deltaTime)
 
 
 	int32 skillCount = mSkillInfoArray.Num();
-	TArray<int32> enableSkillIndexArray;
 
 	for (int32 i = 0; i < skillCount; ++i)
 	{
 		// 현재 사용중이면 pass.
 		if (mSkillInfoArray[i].isUse || mSkillInfoArray[i].isCheckCoolTime)
 			continue;
-
-
-		if (!mIsUsingSkill && distance <= mSkillInfoArray[i].distance)
-		{
-			enableSkillIndexArray.Add(i);
-		}
-	}
-
-	//---------------------
-	// 스킬 사용.
-	//---------------------
-
-	int32 enableSkillCount = enableSkillIndexArray.Num();
-
-	if (enableSkillCount == 0)
-	{
-		aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
-		return;
-	}
-
-	int32 randomIndexValue = FMath::RandRange(0, enableSkillCount);
-	
-	if (randomIndexValue == enableSkillCount)
-		randomIndexValue--;
-
-	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isUse = true;
-	mSkillInfoArray[enableSkillIndexArray[randomIndexValue]].isCheckCoolTime = true;
-	mIsUsingSkill = true;
-	mUsingSkillIndex = enableSkillIndexArray[randomIndexValue];
-
-	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
-
-	enableSkillIndexArray.RemoveAll([](int32) {return true; });
-}
-
-void AMonster::CheckSkillCoolTime(float _deltaTime)
-{
-	int32 skillCount = mSkillInfoArray.Num();
-	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
-
-	for (int32 i = 0; i < skillCount; ++i)
-	{
+		// 스킬 쿨타임 체크하는중이면 pass 
 		if (mSkillInfoArray[i].isCheckCoolTime)
-		{
-			mSkillInfoArray[i].duration += _deltaTime;
-			
-			if (mSkillInfoArray[i].duration >= mSkillInfoArray[i].coolTime)
-			{
-				PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("%d cooltime end"), i));
-				aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+			continue;
 
-				mSkillInfoArray[i].duration = 0.0f;
-				mSkillInfoArray[i].isUse = false;
-				mSkillInfoArray[i].isCheckCoolTime = false;
-			}
+		if (!mIsUsingSkill && mAnimInst->GetIsSkillEnd() && distance <= mSkillInfoArray[i].distance)
+		{
+			return true;
 		}
 	}
+
+	return false;
 }
 
+const FMonsterSkillInfo* AMonster::GetSkillInfo()
+{
+	if (CheckEnableSkill())
+	{
+		//UseSkill(GetWorld()->GetDeltaSeconds());
+	}
+
+	if (mUsingSkillIndex == -1)
+		return nullptr;
+
+	return &mSkillInfoArray[mUsingSkillIndex];
+}
 
 
 void AMonster::NormalAttackCheck()
@@ -496,7 +572,7 @@ void AMonster::ClearUsingSkill()
 	mIsAttackEnd = true;
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
-	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
+	//aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), true);
 
 	//UseSkill(GetWorld()->GetDeltaSeconds()); 
 }
@@ -516,7 +592,7 @@ void AMonster::ClearAllSkill()
 
 
 	AMonsterAIController* aiController = Cast<AMonsterAIController>(GetController());
-	aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
+	//aiController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsSkillEnable"), false);
 
 	//UseSkill(GetWorld()->GetDeltaSeconds());
 }
@@ -595,6 +671,12 @@ void AMonster::DestroyMonster()
 	Destroy();
 }
 
+void AMonster::PlaySkillMontage(MONSTER_MOTION motion)
+{
+}
+
+
+
 FVector AMonster::GetPatrolPosition() const
 {
 	//-----------------------------
@@ -646,17 +728,6 @@ bool AMonster::GetIsPatrolPointArrive()
 	return mPatrolIndex * mPatrolCellDistance + distance >= mPatrolCurrDistance;
 }
 
-const FMonsterSkillInfo* AMonster::GetSkillInfo()
-{
-	if (mUsingSkillIndex == -1)
-	{
-		UseSkill(GetWorld()->GetDeltaSeconds());
-	}
 
-	if (mUsingSkillIndex == -1)
-		return nullptr;
-
-	return &mSkillInfoArray[mUsingSkillIndex];
-}
 
 

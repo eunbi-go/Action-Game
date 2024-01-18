@@ -10,7 +10,8 @@ UENUM(BlueprintType)
 enum class CHECK_TYPE : uint8
 {
 	ATTACK,		// 공격 거리 체크
-	TRACE		// 추적 거리 체크
+	TRACE,		// 추적 거리 체크
+	Skill
 };
 
 /**

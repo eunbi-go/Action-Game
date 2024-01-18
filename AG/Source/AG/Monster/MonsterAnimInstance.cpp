@@ -34,6 +34,10 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	if (mCurSkillMontagIndex != -1 && !Montage_IsPlaying(mSkillMontageArray[mCurSkillMontagIndex]))
+	{
+		//mIsSkillEnd = true;
+	}
 }
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
@@ -120,6 +124,7 @@ void UMonsterAnimInstance::AnimNotify_AttackEnd()
 	{
 		PrintViewport(2.f, FColor::Red, TEXT("AttackEnd"));
 		monster->SetIsAttackEnd(true);
+		mIsSkillEnd = true;
 		monster->mOnAttackEnd.Broadcast();
 	}
 }
@@ -240,12 +245,9 @@ void UMonsterAnimInstance::SetHitDirection(FString _value)
 	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 	if (monster)
 	{
-		AMonsterAIController* controller = Cast<AMonsterAIController>(monster->GetController());
-		//controller->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHitEnd"), true);
 		monster->SetIsAttackEnd(true);
 	}
 	Hit();
-	//PrintViewport(2.f, FColor::Blue, mHitDirection);
 }
 
 void UMonsterAnimInstance::Attack()
@@ -267,39 +269,57 @@ void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
 {
 	mMonsterMotionType = _motion; 
 	int32 index = 0;
-	mIsSkillEnd = true;
+	bool isSkill = false;
 
+	if (_motion == MONSTER_MOTION::SKILL1)
+	{
+		AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+		if (IsValid(monster))
+		{
+			const FMonsterSkillInfo* info = monster->UseSkill();
+			mMonsterMotionType = info->animType;
+		}
+	}
+
+	// 사용할 스킬 선택
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL1)
 	{
 		mCurSkillMontagIndex = 0;
-		mIsSkillEnd = false;
+		isSkill = true;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL2)
 	{
 		mCurSkillMontagIndex = 1;
-		mIsSkillEnd = false;
+		isSkill = true;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL3)
 	{
 		mCurSkillMontagIndex = 2;
-		mIsSkillEnd = false;
+		isSkill = true;
 	}
 	if (mMonsterMotionType == MONSTER_MOTION::SKILL4)
 	{
 		mCurSkillMontagIndex = 3;
-		mIsSkillEnd = false;
+		isSkill = true;
 	}
 
-	if (!mIsSkillEnd)
+	if (mIsSkillEnd && isSkill && Cast<AMonster>(TryGetPawnOwner())->GetIsAttackEnd())
 	{
 		if (!Montage_IsPlaying(mSkillMontageArray[mCurSkillMontagIndex]))
 		{
 			AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
 
-			monster->SetIsAttackEnd(false);
-
-			Montage_SetPosition(mSkillMontageArray[mCurSkillMontagIndex], 0.f);
-			Montage_Play(mSkillMontageArray[mCurSkillMontagIndex]);
+			
+			if (mMonsterMotionType == MONSTER_MOTION::SKILL1
+				|| mMonsterMotionType == MONSTER_MOTION::SKILL2
+				|| mMonsterMotionType == MONSTER_MOTION::SKILL3
+				|| mMonsterMotionType == MONSTER_MOTION::SKILL4
+				|| mMonsterMotionType == MONSTER_MOTION::SKILL5)
+			{
+				mIsSkillEnd = false;
+				monster->PlaySkillMontage(mMonsterMotionType);
+				monster->SetIsAttackEnd(false);
+			}
 		}
 	}
 }

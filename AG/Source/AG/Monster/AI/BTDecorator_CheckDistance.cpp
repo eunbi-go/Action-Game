@@ -5,7 +5,7 @@
 
 #include "../MonsterAIController.h"
 #include "../Monster.h"
-
+#include "../MonsterAnimInstance.h"
 
 UBTDecorator_CheckDistance::UBTDecorator_CheckDistance()
 {
@@ -32,6 +32,12 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 
 	const FMonsterInfo& monsterInfo = monster->GetMonsterInfo();
 
+	UMonsterAnimInstance* monsterAnimInst = monster->GetMonsterAnimInst();
+
+	if (!IsValid(monsterAnimInst))
+	{
+		return false;
+	}
 
 	//---------------
 	// 몬스터와 타겟의 거리를 구해 attack/trace Distance 와 비교한다.
@@ -45,6 +51,7 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
 	float checkDistance = 0.f;
+	bool ch = false;
 	switch (mCheckType)
 	{
 	case CHECK_TYPE::ATTACK:
@@ -53,6 +60,14 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 
 	case CHECK_TYPE::TRACE:
 		checkDistance = monsterInfo.traceDistance;
+		break;
+
+	case CHECK_TYPE::Skill:
+		ch = monster->CheckEnableSkill();
+		if (ch && monsterAnimInst->GetIsSkillEnd())
+			checkDistance = 5000.f;
+		else
+			checkDistance = 0.f;
 		break;
 	}
 

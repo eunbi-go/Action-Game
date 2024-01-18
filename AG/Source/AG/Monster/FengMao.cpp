@@ -16,6 +16,8 @@
 #include "../Widget/MainWidget.h"
 #include "../Widget/BossInfoWidget.h"
 #include "MonsterSpawnPoint.h"
+#include "../Widget/HUD/AGHUD.h"
+#include "../AbilitySystem/AGAttributeSet.h"
 
 AFengMao::AFengMao()
 {
@@ -53,6 +55,37 @@ AFengMao::AFengMao()
 	mSkill1CenterPosition = FVector(0.0f);
 
 	mSkill3Index = 0;
+
+
+	UAnimMontage* montage;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> equipMontage(
+		TEXT("AnimMontage'/Game/Blueprints/Monster/Animation/Rampage/AM_Rampage_Energize.AM_Rampage_Energize'")
+	);
+	if (equipMontage.Succeeded())
+	{
+		montage = equipMontage.Object;
+	}
+	mMontages.Add(FName("Energize"), montage);
+
+	UAnimMontage* montage2;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> equipMontage2(
+		TEXT("AnimMontage'/Game/Blueprints/Monster/Animation/Rampage/AM_Rampage_Roar.AM_Rampage_Roar'")
+	);
+	if (equipMontage2.Succeeded())
+	{
+		montage2 = equipMontage2.Object;
+	}
+	mMontages.Add(FName("Roar"), montage2);
+
+	UAnimMontage* montage3;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> equipMontage3(
+		TEXT("AnimMontage'/Game/Blueprints/Monster/Animation/Rampage/AM_Rampage_Smash.AM_Rampage_Smash'")
+	);
+	if (equipMontage3.Succeeded())
+	{
+		montage3 = equipMontage3.Object;
+	}
+	mMontages.Add(FName("Stone"), montage3);
 }
 
 void AFengMao::BeginPlay()
@@ -100,16 +133,22 @@ void AFengMao::Tick(float DeltaTime)
 
 
 	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
-	//UMainWidget* MainHUD = GameMode->GetMainWidget();
-	//if (distance <= 5000.0f)
-	//	MainHUD->BossInfoOnOff(true);
-	//else
-	//	MainHUD->BossInfoOnOff(false);
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
 
-	//if (mInfo.hp <= 0)
-	//{
-	//	MainHUD->BossInfoOnOff(false);
-	//}
+	if (distance <= 5000.0f)
+		mainWidget->BossInfoOnOff(true);
+	else
+		mainWidget->BossInfoOnOff(false);
+
+	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
+	{
+		mainWidget->BossInfoOnOff(false);
+	}
 }
 
 void AFengMao::PossessedBy(AController* NewController)
@@ -124,46 +163,39 @@ void AFengMao::UnPossessed()
 
 float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	damage -= mInfo.defensePoint;
-
+	int32 damage = DamageAmount;
+	//int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmDefense();
 	if (damage < 1)
 		damage = 1;
 
-
-	mInfo.hp -= damage;
-
-	//PrintViewport(4.f, FColor::Red, FString::Printf(TEXT("maxhp: %d, hp: %d, damage: %d"), mInfo.maxHp, mInfo.hp, damage));
-
-	mInfo.hp < 0.0f ? 0.0f : mInfo.hp;
+	int32 randomValue = FMath::RandRange(10, 20);
+	damage -= randomValue;
+	damage = fabsf(damage);
+	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return damage;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return damage;
 
-	// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
-	UMainWidget* MainHUD = GameMode->GetMainWidget();
+	mainWidget->UpdateBossHp((float)Cast<UAGAttributeSet>(mAttributeSet)->GetmHp(), Cast<UAGAttributeSet>(mAttributeSet)->GetmMaxHp());
 
-
-	if (IsValid(MainHUD))
-	{
-		MainHUD->UpdateBossHp(mInfo.hp, mInfo.maxHp);
-	}
-
-	if (mInfo.hp <= 0)
+	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
 	{
 		// 다시 충돌되지 않도록.
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
 
 
 		// 동작되고 있던 로직을 멈춘다.
 		AAIController* ai = Cast<AAIController>(GetController());
-
 		if (IsValid(ai))
 			ai->BrainComponent->StopLogic(TEXT("Death"));
 
-		MainHUD->BossInfoOnOff(false);
 		mSpawnPoint->RemoveMonster(this);
 	}
 	else
@@ -216,7 +248,7 @@ float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 					angleString = TEXT("Back");
 			}
 
-			mAnimInst->SetHitDirection(angleString);
+			//mAnimInst->SetHitDirection(angleString);
 		}
 	}
 
@@ -719,6 +751,30 @@ void AFengMao::RespawnSkill4(ARockBurst* particles)
 void AFengMao::SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 
+}
+
+void AFengMao::PlaySkillMontage(MONSTER_MOTION motion)
+{
+	UAnimMontage* montage = nullptr;
+	if (motion == MONSTER_MOTION::SKILL1)
+	{
+		montage = *mMontages.Find("Stone");
+	}
+	else if (motion == MONSTER_MOTION::SKILL2)
+	{
+		montage = *mMontages.Find("Stone");
+	}
+	else if (motion == MONSTER_MOTION::SKILL3)
+	{
+		montage = *mMontages.Find("Energize");
+	}
+	else if (motion == MONSTER_MOTION::SKILL4)
+	{
+		montage = *mMontages.Find("Roar");
+	}
+	else
+		return;
+	mAnimInst->Montage_Play(montage);
 }
 
 

@@ -58,19 +58,38 @@ public:
 	virtual void Skill3();
 	virtual void Skill4();
 
-//private:
+	//-------------------------------------------------------------------
+	// Boss Skill Behavior Tree
+	//-----------------------------
 public:
-	void UseSkill(float _deltaTime);
+	// 사용할 수 있는 스킬을 체크한다.
+	bool CheckEnableSkill();
+	// 스킬 사용할 수 있는지 확인만 한다.
+	bool IsEnableUseSkill();
+	// 스킬 사용.
+	const FMonsterSkillInfo* UseSkill();
+	// 스킬 쿨타임 체크.
 	void CheckSkillCoolTime(float _deltaTime);
+	// 스킬 초기화.
+	void ClearUsingSkill();
+	void ClearAllSkill();
+	// 스킬 몽타주 재생.
+	virtual void PlaySkillMontage(MONSTER_MOTION motion);
+
+private:
+	TArray<int32> enableSkillIndexArray;
+	//-------------------------------------------------------------------
 
 public:
 	virtual void NormalAttackCheck();
-	void ClearUsingSkill();
-	void ClearAllSkill();
+
 
 public:
 	void GoNextPatrolPoint();
 	void DestroyMonster();
+
+	
+	
 
 public:
 	void SetSpawnPoint(class AMonsterSpawnPoint* _spawnPoint) 
@@ -192,6 +211,10 @@ public:
 	}
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montages", meta = (AllowPrivateAccess = true))
+	TMap<FName, UAnimMontage*>	mMontages;
+
+
 	bool	mIsDead = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FMonsterInfo	mInfo;

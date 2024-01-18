@@ -45,7 +45,6 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 	if (!IsValid(target))
 	{
 		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		return EBTNodeResult::Failed;
 	}
 
@@ -97,7 +96,6 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	if (!IsValid(target))
 	{
 		controller->StopMovement();
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -117,7 +115,6 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	if (distance <= monsterInfo.attackDistance)
 	{
-		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
 		controller->StopMovement();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}

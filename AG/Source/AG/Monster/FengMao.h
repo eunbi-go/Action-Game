@@ -28,7 +28,7 @@ public:
 	virtual void PossessedBy(AController* NewController);
 	virtual void UnPossessed();
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void NormalAttackCheck();
 
 public:
@@ -53,6 +53,7 @@ public:
 
 	void SkillCollisionCheck(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	virtual void PlaySkillMontage(MONSTER_MOTION motion) override;
 
 
 	UFUNCTION()

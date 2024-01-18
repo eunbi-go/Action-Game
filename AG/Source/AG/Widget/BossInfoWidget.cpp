@@ -5,7 +5,12 @@
 
 void UBossInfoWidget::SetHp(float _ratio)
 {
-	mHpBar->SetPercent(_ratio);
+	//mHpBar->SetPercent(_ratio);
+}
+
+void UBossInfoWidget::SetHpRatio(float _ratio)
+{
+	mHpTargetRatio = _ratio;
 }
 
 void UBossInfoWidget::NativeConstruct()
