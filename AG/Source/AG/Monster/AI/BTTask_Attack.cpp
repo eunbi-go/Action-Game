@@ -36,12 +36,12 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Failed;
 
 	AActor* target = Cast<AActor>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-
+	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
 	
 	//---------------
 	// Target 이 없으면 Idle -> Failed, 있으면 Target 을 공격한다.
 	//---------------
-	if (!IsValid(target))
+	if (!IsValid(target) || isSkillEnable)
 	{
 		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
@@ -97,11 +97,12 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	}
 
 	ACharacter* target = Cast<ACharacter>(controller->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")));
-	
+	bool isSkillEnable = controller->GetBlackboardComponent()->GetValueAsBool(TEXT("IsSkillEnable"));
+
 	//---------------
 	// Target 이 없으면 Idle/Task 종료한다.
 	//---------------
-	if (!IsValid(target))
+	if (!IsValid(target) || isSkillEnable)
 	{
 		controller->StopMovement();
 		monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::IDLE);
