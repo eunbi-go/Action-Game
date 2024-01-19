@@ -34,15 +34,20 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (mCurSkillMontagIndex != -1 && !Montage_IsPlaying(mSkillMontageArray[mCurSkillMontagIndex]))
+	if (mCurSkillMontagIndex != -1)
 	{
-		//mIsSkillEnd = true;
+		int32 cnt = mSkillMontageArray.Num();
+		for (int32 i = 0; i < cnt; ++i)
+		{
+			//if (Montage_IsPlaying(mSkillMontageArray[i]))
+				//mMonsterMotionType = MONSTER_MOTION::SKILL1;
+		}
 	}
 }
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
-	for (int i = 0; i < mItemCount; ++i)
+	for (int32 i = 0; i < mItemCount; ++i)
 		mItems[i]->SetOverlapEnable();
 	Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
 	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
@@ -146,6 +151,7 @@ void UMonsterAnimInstance::AnimNotify_SkillEnd()
 
 	if (IsValid(monster))
 	{
+		PrintViewport(5.f, FColor::Orange, FString("AnimNotify_SkillEnd"));
 		monster->ClearUsingSkill();
 		monster->SetIsAttackEnd(true);
 		mIsSkillEnd = true;
@@ -202,6 +208,11 @@ void UMonsterAnimInstance::AnimNotify_PlayRataReset()
 {
 	//PrintViewport(2.f, FColor::Yellow, TEXT("AnimNotify_PlayRataReset"));
 	Montage_SetPlayRate(mSkillMontageArray[mCurSkillMontagIndex], 1.f);
+}
+
+void UMonsterAnimInstance::AnimNotify_SkillStart()
+{
+	mIsSkillEnd = false;
 }
 
 void UMonsterAnimInstance::Hit()
@@ -316,7 +327,7 @@ void UMonsterAnimInstance::SetMonsterMotionType(MONSTER_MOTION _motion)
 				|| mMonsterMotionType == MONSTER_MOTION::SKILL4
 				|| mMonsterMotionType == MONSTER_MOTION::SKILL5)
 			{
-				mIsSkillEnd = false;
+				//mIsSkillEnd = false;
 				monster->PlaySkillMontage(mMonsterMotionType);
 				monster->SetIsAttackEnd(false);
 			}

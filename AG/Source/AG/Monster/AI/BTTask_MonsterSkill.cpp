@@ -132,6 +132,11 @@ void UBTTask_MonsterSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 	{
 		if (monster->CheckEnableSkill())
 		{
+			FVector direction = target->GetActorLocation() - monster->GetActorLocation();
+			direction.Z = 0.f;
+			FRotator targetRotation = FRotationMatrix::MakeFromX(direction.GetSafeNormal2D()).Rotator();
+			monster->SetActorRotation(FMath::RInterpTo(monster->GetActorRotation(), targetRotation, GetWorld()->GetDeltaSeconds(), 2.f));
+
 			monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::SKILL1);
 		}
 		else

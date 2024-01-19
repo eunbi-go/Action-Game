@@ -65,6 +65,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_PlayRataReset();
 
+	UFUNCTION()
+	void AnimNotify_SkillStart();
+
 
 public:
 	void Hit();

@@ -39,6 +39,15 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 		return false;
 	}
 
+
+	//---------------
+	// 스킬 사용중이면 체크X (스킬 사용(시작/끝 부분 제외) 중 회전 못하도록)
+	//---------------
+	if (!monsterAnimInst->GetIsSkillEnd())
+	{
+			return false;
+	}
+
 	//---------------
 	// 몬스터와 타겟의 거리를 구해 attack/trace Distance 와 비교한다.
 	//---------------
@@ -71,5 +80,6 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 		break;
 	}
 
+	
 	return distance <= checkDistance;
 }

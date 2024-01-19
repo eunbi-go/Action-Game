@@ -47,6 +47,8 @@ EBTNodeResult::Type UBTTask_TargetTrace::ExecuteTask(UBehaviorTreeComponent& Own
 		controller->StopMovement();
 		return EBTNodeResult::Failed;
 	}
+	if (!monsterAnimInst->GetIsSkillEnd())
+		return EBTNodeResult::Failed;
 
 	monsterAnimInst->SetMonsterMotionType(MONSTER_MOTION::CHASE);
 	UAIBlueprintHelperLibrary::SimpleMoveToActor(controller, target);
@@ -93,7 +95,7 @@ void UBTTask_TargetTrace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	//---------------
 	// Target 이 없으면 Idle -> Task 종료.
 	//---------------
-	if (!IsValid(target))
+	if (!IsValid(target) || !monsterAnimInst->GetIsSkillEnd())
 	{
 		controller->StopMovement();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
