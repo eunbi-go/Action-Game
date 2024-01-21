@@ -24,7 +24,7 @@ public:
 };
 
 UCLASS()
-class AG_API AValkyrie : public AAGPlayer
+class AG_API AValkyrie : public AAGPlayer, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -41,6 +41,8 @@ public:
 
 	void Delay(float _customTimeDilation, float _timeRate, bool _isLoop);
 	void UnequipSword();
+
+	virtual void GetHit(const FVector& _impactPoint) override;
 
 private:
 	virtual void InitAbilityActorInfo() override;

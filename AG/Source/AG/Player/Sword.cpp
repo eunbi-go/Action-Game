@@ -7,6 +7,7 @@
 #include "../Player/CharacterStatComponent.h"
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "ValkyriePlayerState.h"
+#include "../Particle/ParticleNiagara.h"
 
 ASword::ASword()
 {
@@ -120,6 +121,19 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		}
 
 		mIgnoreActors.AddUnique(boxHit.GetActor());
+
+		FActorSpawnParameters	SpawnParam;
+		SpawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AParticleNiagara* Particle =
+			GetWorld()->SpawnActor<AParticleNiagara>(
+				boxHit.ImpactPoint,
+				boxHit.ImpactNormal.Rotation(),
+				SpawnParam);
+
+		Particle->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Impacts/NS_Holy_Slash_Impact.NS_Holy_Slash_Impact'"));
+
 	}
 }
 

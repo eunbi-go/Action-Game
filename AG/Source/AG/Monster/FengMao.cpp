@@ -48,10 +48,10 @@ AFengMao::AFengMao()
 
 	mSkill4Count = 0;
 	originalPos = FVector(0.0f);
-	isEnableSkill4Respawn = true;
+	mIsEnableSkill4Respawn = true;
 
 	mSkill1Count = 0;
-	isEnableSkill1Respawn = true;
+	mIsEnableSkill1Respawn = true;
 	mSkill1CenterPosition = FVector(0.0f);
 
 	mSkill3Index = 0;
@@ -98,15 +98,15 @@ void AFengMao::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (mSkill4Count >= 7 && isEnableSkill4Respawn)
+	if (mSkill4Count >= 7 && mIsEnableSkill4Respawn)
 	{
-		isEnableSkill4Respawn = false;
+		mIsEnableSkill4Respawn = false;
 		mSkill4Count = 0;
 	}
 
-	if (mSkill1Count >= 5 && isEnableSkill1Respawn)
+	if (mSkill1Count >= 5 && mIsEnableSkill1Respawn)
 	{
-		isEnableSkill1Respawn = false;
+		mIsEnableSkill1Respawn = false;
 		mSkill1Count = 0;
 	}
 
@@ -172,7 +172,7 @@ float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	int32 randomValue = FMath::RandRange(10, 20);
 	damage -= randomValue;
 	damage = fabsf(damage);
-	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
+	Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
 	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
@@ -275,6 +275,8 @@ void AFengMao::NormalAttackCheck()
 }
 
 // 슬래시 날림.
+
+
 void AFengMao::Skill1()
 {
 	//------------------------
@@ -288,7 +290,7 @@ void AFengMao::Skill1()
 	if (!IsValid(target))
 		return;
 
-	isEnableSkill1Respawn = true;
+	mIsEnableSkill1Respawn = true;
 
 
 	FActorSpawnParameters	params;
@@ -320,16 +322,13 @@ void AFengMao::Skill1()
 	particle->SetParticle(effect);
 	particle->SetActorScale3D(FVector(0.3f));
 	particle->SetActorRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
 	particle->SetTarget(target);
 
-	//particle->mReSpawn.AddDynamic(this, &AFengMao::RespawnSkill1);
 
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
 	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
 
 
-	mPreSlash = particle;
 	// 0.2초 간격으로 순차적으로 생성
 	GetWorld()->GetTimerManager().SetTimer(
 		mSkillTimerHandle, this, &AFengMao::RespawnSkill1, 0.3f, false
@@ -341,7 +340,7 @@ void AFengMao::Skill1()
 
 void AFengMao::RespawnSkill1()
 {
-	if (!isEnableSkill1Respawn || mSkill1Count == 5)
+	if (!mIsEnableSkill1Respawn || mSkill1Count == 5)
 	{
 		return;
 	}
@@ -420,7 +419,6 @@ void AFengMao::RespawnSkill1()
 	particle->mOnHit.AddDynamic(this, &AFengMao::Hit);
 	mSkill1MoveStart.AddDynamic(particle, &ARampageSlash::MoveStart);
 
-	mPreSlash = particle;
 	// 0.2초 간격으로 순차적으로 생성
 	GetWorld()->GetTimerManager().SetTimer(
 		mSkillTimerHandle, this, &AFengMao::RespawnSkill1, 0.3f, false
@@ -435,6 +433,8 @@ void AFengMao::Skill2()
 }
 
 // 메테오 낙하.
+
+
 void AFengMao::Skill3()
 {
 	//------------------------
@@ -515,10 +515,7 @@ void AFengMao::SpawnSkill3()
 		//------------------------
 		// 스폰할 위치를 정한 후, 스폰한다.
 		//------------------------
-
-
 		FVector position = skill3PositionArray[mSkill3Index++];
-		//position.Z = 0.0f;
 
 		FActorSpawnParameters	params;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -533,7 +530,6 @@ void AFengMao::SpawnSkill3()
 		//------------------------
 		// 이펙트와 델리게이트를 설정한다.
 		//------------------------
-
 		UNiagaraSystem* effect = nullptr;
 		int32 effectCount = mSkillInfoArray[mUsingSkillIndex].effectArray.Num();
 
@@ -544,12 +540,14 @@ void AFengMao::SpawnSkill3()
 
 		particle->SetParticle(effect);
 		particle->SetActorScale3D(FVector(0.7f));
-		particle->mOnHittd.AddDynamic(this, &AFengMao::Temp);
+		particle->mOnHittd.AddDynamic(this, &AFengMao::MeteoHit);
 		particle->mCameraShake.AddDynamic(this, &AFengMao::CameraShake);
 
 	}
 
 	// 1초 뒤, 데칼 없어지고 나이아가라 생성.
+
+
 	if (mSkill3SpawnCount == 0)
 	{
 		GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AFengMao::SpawnSkill3, 0.1f, false);
@@ -565,6 +563,9 @@ void AFengMao::SpawnSkill3()
 }
 
 // 돌
+
+
+
 void AFengMao::Skill4()
 {
 	//------------------------
@@ -578,7 +579,7 @@ void AFengMao::Skill4()
 		return;
 	mSkill4Count = 0;
 
-	isEnableSkill4Respawn = true;
+	mIsEnableSkill4Respawn = true;
 	mSkill4Count++;
 
 	//------------------------
@@ -620,7 +621,7 @@ void AFengMao::Skill4()
 
 void AFengMao::RespawnSkill4(ARockBurst* particles)
 {
-	if (!isEnableSkill4Respawn)
+	if (!mIsEnableSkill4Respawn)
 	{
 		return;
 	}
@@ -637,7 +638,6 @@ void AFengMao::RespawnSkill4(ARockBurst* particles)
 	//------------------------
 	// 스폰할 위치를 정한 후, 스폰한다.
 	//------------------------
-	//FVector position = GetActorLocation();
 
 	for (int32 i = 0; i < 3; ++i)
 	{
@@ -726,7 +726,7 @@ void AFengMao::PlaySkillMontage(MONSTER_MOTION motion)
 
 
 
-void AFengMao::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
+void AFengMao::MeteoHit(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)
 {
 	IHitInterface* hitInterface = Cast<IHitInterface>(hitActor);
 	if (hitInterface)

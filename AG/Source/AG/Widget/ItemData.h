@@ -19,8 +19,19 @@ public:
 	~UItemData();
 
 
+private:
+	FString		mIconPath;		// 아이콘 이미지 경로
+	FString		mDescription;	// 아이템 설명
+	int32		mItemCount;		// 아이템 수량
+	int32		mItemIndex;		// 아이템 인덱스 (퀵슬롯에서 사용)
+	EITEM_ID	mId;			// 아이템 OD
 public:
+	TSubclassOf<UGameplayEffect> mEffect;	// 아이템이 가지고 있는 효과
+
 	void ApplyEffect(ACharacter* target);
+
+
+
 
 	void SetIconPath(const FString& _IconPath) 
 	{ 
@@ -77,12 +88,6 @@ public:
 		mEffect = effect;
 	}
 
-private:
-	FString		mIconPath;		// 아이콘 이미지 경로
-	FString		mDescription;	// 아이템 설명
-	int32		mItemCount;	// 아이템 수량
-	int32		mItemIndex;	// 아이템 인덱스 (퀵슬롯에서 사용)
-	EITEM_ID	mId;
-public:
-	TSubclassOf<UGameplayEffect> mEffect;
+
+
 };

@@ -9,11 +9,11 @@ UAGAttributeSet::UAGAttributeSet()
 {
 	InitmHp(50.f);
 	InitmMaxHp(100.f);
-	InitmMp(100.f);
+	InitmMp(50.f);
 	InitmMaxMp(100.f);
 	InitmCoin(100.f);
-	InitmAttack(100.f);
-	InitmDefense(100.f);
+	InitmAttack(40.f);
+	InitmDefense(40.f);
 }
 
 void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

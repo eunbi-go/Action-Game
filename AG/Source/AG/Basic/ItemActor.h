@@ -3,6 +3,9 @@
 #pragma once
 
 #include "../BasicInfo.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "ItemActor.generated.h"
 
@@ -15,15 +18,40 @@ public:
 	AItemActor();
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
 
 	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
+		bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	USceneComponent* mRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UStaticMeshComponent* mMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UNiagaraComponent* mNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UParticleSystemComponent* mParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UBoxComponent* mBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	USphereComponent* mSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UCapsuleComponent* mCapsule;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EITEM_ID	mItemId;
+
+
 
 
 public:
@@ -38,6 +66,11 @@ public:
 	}
 
 	void SetStaticMesh(const FString& _path);
+	void SetNiagara(UNiagaraSystem* Niagara);
+	void SetNiagara(const FString& Path);
+	void SetParticle(UParticleSystem* _particle);
+	void SetParticle(const FString& _path);
+
 	void SetItemId(EITEM_ID _id) 
 	{
 		mItemId = _id; 
@@ -46,30 +79,16 @@ public:
 
 	float TransformedSin();
 
-	void SetOverlapEnable()
-	{
-		mBox->OnComponentBeginOverlap.AddDynamic(this, &AItemActor::OnOverlap);
-	}
-
 protected:
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	UStaticMeshComponent* mMesh;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	UBoxComponent* mBox;
-
-	UPROPERTY()
-	FTimerHandle mTimerHandle;
-
-	EITEM_ID	mItemId;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine params")
-		float	amplitude = 0.25f;
+	float	amplitude = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine params")
-		float	timeConstant = 5.f;
+	float	timeConstant = 5.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		float	runningTime = 0.f;
+	float	runningTime = 0.f;
 };

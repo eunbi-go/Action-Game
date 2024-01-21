@@ -16,6 +16,7 @@ DECLARE_MULTICAST_DELEGATE(FOnJumpEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSpawnFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnResetFresnelDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDelayDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHitEndDelegate);
 
 UENUM(BlueprintType)
 enum class EMoveDirection : uint8
@@ -75,6 +76,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_Dash();
 
+	UFUNCTION()
+	void AnimNotify_HitEnd();
+
 	UPROPERTY(BlueprintReadOnly)
 	class AValkyrie* mCharacter;
 
@@ -91,6 +95,7 @@ public:
 	FOnSpawnFresnelDelegate		mSpawnFresnel;
 	FOnResetFresnelDelegate		mResetFresnel;
 	FOnDelayDelegate			mOnDelay;
+	FOnHitEndDelegate			mOnHitEnd;
 
 	bool GetIsJumpAttackEnd() { return mIsJumpAttackEnd; }
 	bool GetIsCrouch() { return mIsCrouch; }

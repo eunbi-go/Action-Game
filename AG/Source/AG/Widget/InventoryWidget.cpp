@@ -35,8 +35,14 @@ void UInventoryWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 
 void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 {
-	const FItemDataTable2* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
+	//---------------------------------
+	// _id번 아이템의 정보를 가져온다.
+	//---------------------------------
+	const FItemDataTable* table = UInventoryManager::GetInst(GetWorld())->GetItemInfo(_id);
 
+	//---------------------------------
+	// Map에 _id번 아이템이 있으면 개수만 변경시킨다.
+	//---------------------------------
 	if (mItemMap.Contains(_id))
 	{
 		TArray<UObject*> item = mTileView->GetListItems();
@@ -57,6 +63,10 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 		itemData->SetItemCount(itemData->GetItemCount() + 1);
 		mTileView->RegenerateAllEntries();
 	}
+	//---------------------------------
+	// Map에 _id번 아이템이 없으면 
+	// ItemData 를 생성해서 인벤토리와 mItemMap에 추가한다.
+	//---------------------------------
 	else
 	{
 		UItemData* item = NewObject<UItemData>();
@@ -76,10 +86,13 @@ void UInventoryWidget::AddItemByKey(EITEM_ID _id)
 
 void UInventoryWidget::UseItem(EITEM_ID _id, ACharacter* userCharacter)
 {
-	// 인벤토리 업데이트.
 	TArray<UObject*> itemArray = mTileView->GetListItems();
 	int32 num = itemArray.Num();
 
+	//---------------------------------
+	// _id번 아이템이 있으면 개수를 변경한다.
+	//		- 만약 0개가 되면 아이템을 삭제한다.
+	//---------------------------------
 	for (int32 i = 0; i < num; ++i)
 	{
 		UItemData* item = Cast<UItemData>(itemArray[i]);
@@ -102,22 +115,21 @@ void UInventoryWidget::UseItem(EITEM_ID _id, ACharacter* userCharacter)
 }
 
 // item: 클릭된 아이템.
+
+
 void UInventoryWidget::Clicked(UObject* item)
 {
-	//PrintViewport(20.f, FColor::Yellow, TEXT("click"));
 
 	UItemData* itemData = Cast<UItemData>(item);
 
+	//---------------------------------
+	// 선택된 아이템 (item)의 데이터를 퀵슬롯에 전달한다.
+	//---------------------------------
 	if (IsValid(itemData))
 	{
-		AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-
-		// 알아낸 게임모드가 AAGGameModeBase 가 아니라면 캐스팅 실패 == 현재 월드가 메인 레벨이 아니라는 뜻
-		if (nullptr == GameMode)
+		AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (nullptr == gameMode)
 			return;
-
-
-		// 현재 게임모드가 AAGGameModeBase 가 맞다면, MainHUD 에 접근해서 InventoryWiget 의 Visible 여부를 확인한다.
 		AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 		if (!IsValid(hud))
 			return;
@@ -126,7 +138,6 @@ void UInventoryWidget::Clicked(UObject* item)
 			return;
 		UItemQuickSlot* quickSlot = mainWidget->GetItemQuickSlot();
 
-		EITEM_ID id = itemData->GetItemId();
 		quickSlot->AddItemToQuickSlot(itemData);
 	}
 }

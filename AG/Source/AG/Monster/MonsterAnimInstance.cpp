@@ -9,6 +9,8 @@
 #include "../Basic/ItemActor.h"
 #include "../Player/PlayerCharacter.h"
 #include "../Manager/InventoryManager.h"
+#include "../AGGameInstance.h"
+#include "../Manager/InventoryManager.h"
 
 UMonsterAnimInstance::UMonsterAnimInstance()
 {
@@ -33,77 +35,16 @@ void UMonsterAnimInstance::NativeInitializeAnimation()
 void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-
-	if (mCurSkillMontagIndex != -1)
-	{
-		int32 cnt = mSkillMontageArray.Num();
-		for (int32 i = 0; i < cnt; ++i)
-		{
-			//if (Montage_IsPlaying(mSkillMontageArray[i]))
-				//mMonsterMotionType = MONSTER_MOTION::SKILL1;
-		}
-	}
 }
 
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
-	for (int32 i = 0; i < mItemCount; ++i)
-		mItems[i]->SetOverlapEnable();
-	Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
-	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
-}
-
-void UMonsterAnimInstance::AnimNotify_SpawnItem()
-{
-	FVector position = TryGetPawnOwner()->GetActorLocation();
-	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
-
-	mItemCount = FMath::RandRange(1, 5);
-
-	for (int32 i = 0; i < mItemCount; ++i)
-	{
-		int32 randomItemValue = FMath::RandRange(1, 2);
-		float randomXPlus = FMath::RandRange(10.0f, 100.0f);
-		float randomYPlus = FMath::RandRange(10.0f, 100.0f);
-
-		float randomXMinus = FMath::RandRange(10.0f, 100.0f);
-		float randomYMinus = FMath::RandRange(10.0f, 100.0f);
-
-		FActorSpawnParameters	params;
-		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		position.X += randomXPlus;
-		position.Y += randomYPlus;
-
-		position.X -= randomXMinus;
-		position.Y -= randomYMinus;
-
-		AItemActor* item = GetWorld()->SpawnActor<AItemActor>(
-			position,
-			rotation,
-			params);
-
-		// 코인.
-		if (item && randomItemValue == 1)
-		{
-			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Coin.SM_Coin'"));
-			item->GetMesh()->SetRelativeScale3D(FVector(10.f));
-			item->GetBoxComponent()->SetBoxExtent(FVector(15.0f));
-			item->GetBoxComponent()->SetActive(false);
-			item->SetItemId(EITEM_ID::COIN);
-		}
-
-		// 랜덤 아이템.
-		else if (item && randomItemValue == 2)
-		{
-			item->SetStaticMesh(TEXT("StaticMesh'/Game/CharacterBodyFX/Meshes/SM_Diamond.SM_Diamond'"));
-			item->GetMesh()->SetRelativeScale3D(FVector(3.f));
-			item->GetBoxComponent()->SetBoxExtent(FVector(35.0f));
-			item->SetItemId(EITEM_ID::END);
-		}
-
-		mItems.Add(item);
-	}
+	SpawnItem();
+	GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
+		Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
+		Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
+		}), 1.f, false);
+	
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()
@@ -170,11 +111,11 @@ void UMonsterAnimInstance::AnimNotify_Skill1()
 
 void UMonsterAnimInstance::AnimNotify_Skill1End()
 {
-	AMonster* monster = Cast<AMonster>(TryGetPawnOwner());
+	AFengMao* monster = Cast<AFengMao>(TryGetPawnOwner());
 
 	if (IsValid(monster))
 	{
-		Cast<AFengMao>(monster)->mSkill1MoveStart.Broadcast();
+		monster->mSkill1MoveStart.Broadcast();
 	}
 }
 
@@ -213,6 +154,33 @@ void UMonsterAnimInstance::AnimNotify_PlayRataReset()
 void UMonsterAnimInstance::AnimNotify_SkillStart()
 {
 	mIsSkillEnd = false;
+}
+
+void UMonsterAnimInstance::SpawnItem()
+{
+	float randomXPlus = FMath::RandRange(10.0f, 100.0f);
+	float randomYPlus = FMath::RandRange(10.0f, 100.0f);
+
+	float randomXMinus = FMath::RandRange(10.0f, 100.0f);
+	float randomYMinus = FMath::RandRange(10.0f, 100.0f);
+
+	FVector position = TryGetPawnOwner()->GetActorLocation();
+	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
+
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	position.X += randomXPlus;
+	position.Y += randomYPlus;
+
+	position.X -= randomXMinus;
+	position.Y -= randomYMinus;
+
+	UAGGameInstance* game = Cast<UAGGameInstance>(GetWorld()->GetGameInstance());
+	const FName& name = UInventoryManager::GetInst(GetWorld())->GetRandomItem();
+	const FItemAsset* it = game->FindItemAssetTable(name);
+
+	GetWorld()->SpawnActor<AItemActor>(it->asset, position, rotation, params);
 }
 
 void UMonsterAnimInstance::Hit()

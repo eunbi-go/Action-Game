@@ -31,9 +31,10 @@ public:
 
 	bool IsInventoryOn();
 	void SetItemInfoTable(UDataTable* _Table);
-	const FItemDataTable2* GetItemInfo(EITEM_ID _ItemID);
+	const FItemDataTable* GetItemInfo(EITEM_ID _ItemID);
 
 
+	const FName& GetRandomItem();
 
 private:
 	static	UWorld* mWorld;
@@ -41,6 +42,8 @@ private:
 public:
 	UDataTable*				mItemTable;
 	TMap<EITEM_ID, FName>	mRownameMap;
-
+	TMap<EITEM_ID, FString>	mRowIconPathMap;
+	TArray<EITEM_ID>		mRandomItemArray;
+	TArray<FItemDataTable*> mAllItemInfo;
 	int32					mPreTime; // 이전 시간
 };

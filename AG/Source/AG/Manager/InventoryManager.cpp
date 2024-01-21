@@ -127,30 +127,43 @@ void UInventoryManager::SetItemInfoTable(UDataTable* _Table)
 {
 	mItemTable = _Table;
 
-	// 데이터 테이블에 들어있는 모든 구조체 정보
+	//---------------------------------
+	// _Table에 들어있는 모든 구조체 정보(mAllItemInfo)와
+	// _Table에 있는 모든 행 이름(AllRowname)을 가져온다.
+	//---------------------------------
 	FString str;
-	TArray<FItemDataTable2*> AllItemInfo;
-	mItemTable->GetAllRows<FItemDataTable2>(str, AllItemInfo);
+	mItemTable->GetAllRows<FItemDataTable>(str, mAllItemInfo);
 
-	// 데이터 테이블에 들어있는 모든 행 이름
 	TArray<FName> AllRowname;
 	AllRowname = mItemTable->GetRowNames();
 
+	//---------------------------------
 	// 테이블정보를 다 받아와서 전체 반복문을 돈다.
-	// ItemID 를 키값으로, 해당 아이템의 RowName 을 데이터로 연결한다.
-	for (int i = 0; i < AllItemInfo.Num(); ++i)
+	// mRownameMap에 {key : 아이템ID, Value : 아이템 이름} 추가한다.
+	//---------------------------------
+	for (int i = 0; i < mAllItemInfo.Num(); ++i)
 	{
-		mRownameMap.Add(AllItemInfo[i]->id, AllRowname[i]);
+		mRownameMap.Add(mAllItemInfo[i]->id, AllRowname[i]);
+		mRandomItemArray.Add(mAllItemInfo[i]->id);
 	}
 }
 
-const FItemDataTable2* UInventoryManager::GetItemInfo(EITEM_ID _ItemID)
+const FItemDataTable* UInventoryManager::GetItemInfo(EITEM_ID _ItemID)
 {
-	// ItemID 에 연결해둔 RowName 을 찾아서
+	//---------------------------------
+	// _ItemID 를 key로 갖는 아이템의 이름을 가져와서
+	// 데이터 테이블(mItemTable)에서 찾아서 그 결과(_ItemID번 아이템 정보)를 반환한다.
+	//---------------------------------
 	FName RowName = mRownameMap.FindRef(_ItemID);
-
-	// 데이터 테이블에서 검색을 한다.
-	FItemDataTable2* ItemInfo = mItemTable->FindRow<FItemDataTable2>(RowName, nullptr);
+	FItemDataTable* ItemInfo = mItemTable->FindRow<FItemDataTable>(RowName, nullptr);
 
 	return ItemInfo;
+}
+
+const FName& UInventoryManager::GetRandomItem()
+{
+	int32 max_cnt = mRandomItemArray.Num() - 1;
+	int32 idx = FMath::RandRange(0, max_cnt);
+
+	return mRownameMap[mRandomItemArray[idx]];
 }

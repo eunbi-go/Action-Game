@@ -60,7 +60,7 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 	distance -= target->GetCapsuleComponent()->GetScaledCapsuleRadius();
 
 	float checkDistance = 0.f;
-	bool ch = false;
+	bool check_skill = false;
 	switch (mCheckType)
 	{
 	case CHECK_TYPE::ATTACK:
@@ -72,11 +72,10 @@ bool UBTDecorator_CheckDistance::CalculateRawConditionValue(UBehaviorTreeCompone
 		break;
 
 	case CHECK_TYPE::Skill:
-		ch = monster->CheckEnableSkill();
-		if (ch && monsterAnimInst->GetIsSkillEnd())
-			checkDistance = 5000.f;
-		else
-			checkDistance = 0.f;
+		check_skill = monster->CheckEnableSkill();
+		if (check_skill && monsterAnimInst->GetIsSkillEnd())
+			return true;
+		return false;
 		break;
 	}
 

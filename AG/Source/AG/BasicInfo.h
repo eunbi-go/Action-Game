@@ -457,7 +457,7 @@ public:
 UENUM(BlueprintType)
 enum class EITEM_TYPE : uint8
 {
-	CONSUME, WEAPON, ARMOAR, PANTS, SHOES, ACCESARY, END
+	POTION, CONSUME, WEAPON, ARMOAR, PANTS, SHOES, ACCESARY, END
 };
 
 
@@ -466,37 +466,13 @@ enum class EITEM_ID : uint8
 {
 	POTION_HP_MIN, POTION_HP_MAX, POTION_MP_MIN, POTION_MP_MAX,
 	COIN, 
+	DEFENSE, ATTACK,
 	SWORD1, END
 };
 
 
 USTRUCT(BlueprintType)
 struct FItemDataTable : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		EITEM_TYPE type;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		EITEM_ID id;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		FString name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		FString description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		FString		iconPath;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		float value;
-};
-
-USTRUCT(BlueprintType)
-struct FItemDataTable2 : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -523,6 +499,21 @@ public:
 	TSubclassOf<UGameplayEffect> effect;
 };
 
+USTRUCT(BlueprintType)
+struct FItemAsset : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EITEM_TYPE type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EITEM_ID id;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	TSubclassOf<AActor> asset;
+};
 
 
 UENUM(BlueprintType)

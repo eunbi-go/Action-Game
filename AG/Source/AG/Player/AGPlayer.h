@@ -27,7 +27,7 @@ enum class ESkillState : uint8
 };
 
 UCLASS()
-class AG_API AAGPlayer : public AAGBaseCharacter, public IHitInterface
+class AG_API AAGPlayer : public AAGBaseCharacter
 {
 	GENERATED_BODY()
 
@@ -39,7 +39,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
-	virtual void GetHit(const FVector& _impactPoint) override;
+	
 
 	bool AddItem(EITEM_ID _itemID);
 	EITEM_ID SelectItem();

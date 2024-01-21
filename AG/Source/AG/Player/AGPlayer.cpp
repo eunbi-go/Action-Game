@@ -15,6 +15,9 @@
 #include "../Widget/HUD/AGHUD.h"
 #include "ValkyriePlayerState.h"
 #include "../AbilitySystem/AGAttributeSet.h"
+#include "../Widget/ItemData.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 AAGPlayer::AAGPlayer()
 {
@@ -247,18 +250,62 @@ void AAGPlayer::Item1Key()
 
 void AAGPlayer::Item2Key()
 {
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
+
+	mainWidget->GetItemQuickSlot()->UseItem(2, this);
 }
 
 void AAGPlayer::Item3Key()
 {
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
+
+	mainWidget->GetItemQuickSlot()->UseItem(3, this);
 }
 
 void AAGPlayer::Item4Key()
 {
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
+
+	mainWidget->GetItemQuickSlot()->UseItem(4, this);
 }
 
 void AAGPlayer::Item5Key()
 {
+	AAGGameModeBase* gameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(mainWidget))
+		return;
+
+	mainWidget->GetItemQuickSlot()->UseItem(5, this);
 }
 
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)
@@ -305,91 +352,44 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	return 0.0f;
 }
 
-void AAGPlayer::GetHit(const FVector& _impactPoint)
-{
-	FVector position = GetActorLocation();
-	FVector impactPosition = FVector(_impactPoint.X, _impactPoint.Y, position.Z);
-	FVector direction = (impactPosition - position).GetSafeNormal();
-
-	// Forward * direction = |forward| * |direction| * cos(theta)
-	// 근데 |forward|, |direction| 이 2개는 크기가 1이므로 
-	// 내적의 결과는 cos(theta)가 된다.
-	float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
-	// theta값을 얻는다
-	// 라디안과 삼각함수는 일반적으로 각도 대신 라디안을 사용한다
-	float degree = UKismetMathLibrary::Acos(innerProduct);
-	// 라디안을 실제 각도(몇도)로 변환한다
-	degree = FMath::RadiansToDegrees(degree);
-
-	// 오른쪽/왼쪽 구분
-	// outProdouct가 위를 향하고 있다 -> 오른쪽 (양수)
-	// 아래 -> 왼쪽 (음수)
-	FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
-	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
-
-	float angle = sign * degree;
-
-
-
-	FString angleString = TEXT("");
-
-	// 오른쪽.
-	if (angle >= 0.f)
-	{
-		if (degree >= 50.f && angle <= 130.f)
-			angleString = TEXT("Right");
-		else if (degree < 50.f)
-			angleString = TEXT("Front");
-		else
-			angleString = TEXT("Back");
-	}
-	 
-	// 왼쪽
-	else if (angle < 0.f)
-	{
-		if (degree <= -50.f && angle >= -130.f)
-			angleString = TEXT("Left");
-		else if (degree > -50.f)
-			angleString = TEXT("Front");
-		else
-			angleString = TEXT("Back");
-	}
-
-	//mAnimInst->SetHitDirection(angleString);
-}
-
 bool AAGPlayer::AddItem(EITEM_ID _itemID)
 {
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	UAGGameInstance* gameInst = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	if (_itemID == EITEM_ID::COIN)
 	{
-		attributeSet->SetmCoin(attributeSet->GetmCoin() + 10);
-	}
-	else if (_itemID == EITEM_ID::END)	// random
-	{
-		// randomItem
-		_itemID = SelectItem();
+		const FItemAsset* item = gameInst->FindItemAssetTable("Coin");
+		// 아이템 효과 적용
 
-		if (_itemID != EITEM_ID::END)
-		{
-			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-			if (nullptr == GameMode)
-				return false;
-			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-			if (!IsValid(hud))
-				return false;
-			UMainWidget* mainWidget = hud->mMainWidget;
-			if (!IsValid(hud))
-				return false;
-			UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
-			inventoryWidget->AddItemByKey(_itemID);
-			//PrintViewport(3.f, FColor::Black, FString("Add Item"));
-		}
+		UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+		if (targetASC == nullptr)
+			return false;
+
+		FGameplayEffectContextHandle ecHandle = targetASC->MakeEffectContext();
+		//ecHandle.AddSourceObject(this);
+
+		const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(*item->asset, 1.f, ecHandle);
+		const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
+
+		//attributeSet->SetmCoin(attributeSet->GetmCoin() + 10);
+		return true;
 	}
-	else
+	if (_itemID == EITEM_ID::END)
 		return false;
+
+	AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (nullptr == GameMode)
+		return false;
+	AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (!IsValid(hud))
+		return false;
+	UMainWidget* mainWidget = hud->mMainWidget;
+	if (!IsValid(hud))
+		return false;
+	UInventoryWidget* inventoryWidget = mainWidget->GetInventoryWidget();
+	inventoryWidget->AddItemByKey(_itemID);
 
 
 	return true;

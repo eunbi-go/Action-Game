@@ -57,7 +57,7 @@ public:
 
 
 	UFUNCTION()
-	void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
+	void MeteoHit(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
 	UFUNCTION()
 	void CameraShake(class AMeteo* niagara);
 	UFUNCTION()
@@ -72,7 +72,7 @@ public:
 public:
 	void EndSkill4() 
 	{ 
-		isEnableSkill4Respawn = false; 
+		mIsEnableSkill4Respawn = false;
 	}
 
 	void StartJump();
@@ -97,10 +97,10 @@ public:
 	int32	mSkill4Count;
 
 	FVector originalPos;
-	bool	isEnableSkill4Respawn;
+	bool	mIsEnableSkill4Respawn;
 
 	int32	mSkill1Count;
-	bool	isEnableSkill1Respawn;
+	bool	mIsEnableSkill1Respawn;
 	FVector	mSkill1CenterPosition;
 	FVector mSkill1TargetPosition;
 

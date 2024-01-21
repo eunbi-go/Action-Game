@@ -98,6 +98,38 @@ AValkyrie::AValkyrie()
 	}
 	mMontages.Add(FName("DoubleJump"), montage6);
 
+	UAnimMontage* montage7;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> hit_right(TEXT("AnimMontage'/Game/Blueprints/Player/Animation/Hit/AM_Valkyrie_Hit_Right.AM_Valkyrie_Hit_Right'"));
+	if (hit_right.Succeeded())
+	{
+		montage7 = hit_right.Object;
+	}
+	mMontages.Add(FName("hit_right"), montage7);
+
+	UAnimMontage* montage8;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> hit_left(TEXT("AnimMontage'/Game/Blueprints/Player/Animation/Hit/AM_Valkyrie_Hit_Left.AM_Valkyrie_Hit_Left'"));
+	if (hit_left.Succeeded())
+	{
+		montage8 = hit_left.Object;
+	}
+	mMontages.Add(FName("hit_left"), montage8);
+
+	UAnimMontage* montage9;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> hit_front(TEXT("AnimMontage'/Game/Blueprints/Player/Animation/Hit/AM_Valkyrie_Hit_Front.AM_Valkyrie_Hit_Front'"));
+	if (hit_front.Succeeded())
+	{
+		montage9 = hit_front.Object;
+	}
+	mMontages.Add(FName("hit_front"), montage9);
+
+	UAnimMontage* montage10;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> hit_back(TEXT("AnimMontage'/Game/Blueprints/Player/Animation/Hit/AM_Valkyrie_Hit_Back.AM_Valkyrie_Hit_Back'"));
+	if (hit_back.Succeeded())
+	{
+		montage10 = hit_back.Object;
+	}
+	mMontages.Add(FName("hit_back"), montage10);
+
 
 	mAttackMaxIndex = 4;
 	NormalAttackEnd();
@@ -648,6 +680,20 @@ void AValkyrie::SpawnEffect()
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	FVector location = FVector();
 
+	switch (mActionState)
+	{
+	case EActionState::EAS_Attack:
+		AValkyrieBlinkFire* slash = GetWorld()->SpawnActor<AValkyrieBlinkFire>(
+			GetActorLocation(),
+			GetActorRotation(),
+			SpawnParam
+		);
+		slash->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Blink_Fire.NS_Blink_Fire'"));
+		return;
+		break;
+	}
+	
+
 	switch (mSkillState)
 	{
 	case ESkillState::ESS_Sprint:
@@ -689,17 +735,7 @@ void AValkyrie::SpawnEffect()
 	break;
 	}
 
-	switch (mActionState)
-	{
-	case EActionState::EAS_Attack:
-		AValkyrieBlinkFire* slash = GetWorld()->SpawnActor<AValkyrieBlinkFire>(
-			GetActorLocation(),
-			GetActorRotation(),
-			SpawnParam
-			);
-		slash->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Blink_Fire.NS_Blink_Fire'"));
-		break;
-	}
+
 }
 
 void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
@@ -739,6 +775,63 @@ void AValkyrie::UnequipSword()
 		mCharacterState = ECharacterState::ECS_Unequipped;
 		mDirection = 0.f;
 	}
+}
+
+void AValkyrie::GetHit(const FVector& _impactPoint)
+{
+	if (mSkillState != ESkillState::ESS_None || mActionState == EActionState::EAS_Attack)
+		return;
+	FVector position = GetActorLocation();
+	FVector impactPosition = FVector(_impactPoint.X, _impactPoint.Y, position.Z);
+	FVector direction = (impactPosition - position).GetSafeNormal();
+
+	// Forward * direction = |forward| * |direction| * cos(theta)
+	// 근데 |forward|, |direction| 이 2개는 크기가 1이므로 
+	// 내적의 결과는 cos(theta)가 된다.
+	float innerProduct = FVector::DotProduct(GetActorForwardVector(), direction);
+	// theta값을 얻는다
+	// 라디안과 삼각함수는 일반적으로 각도 대신 라디안을 사용한다
+	float degree = UKismetMathLibrary::Acos(innerProduct);
+	// 라디안을 실제 각도(몇도)로 변환한다
+	degree = FMath::RadiansToDegrees(degree);
+
+	// 오른쪽/왼쪽 구분
+	// outProdouct가 위를 향하고 있다 -> 오른쪽 (양수)
+	// 아래 -> 왼쪽 (음수)
+	FVector outProduct = FVector::CrossProduct(GetActorForwardVector(), direction);
+	float sign = UKismetMathLibrary::SignOfFloat(outProduct.Z);
+
+	float angle = sign * degree;
+
+
+
+	FName angleString = TEXT("");
+
+	// 오른쪽.
+	if (angle >= 0.f)
+	{
+		if (degree >= 50.f && angle <= 130.f)
+			angleString = TEXT("hit_right");
+		else if (degree < 50.f)
+			angleString = TEXT("hit_front");
+		else
+			angleString = TEXT("hit_back");
+	}
+
+	// 왼쪽
+	else if (angle < 0.f)
+	{
+		if (degree <= -50.f && angle >= -130.f)
+			angleString = TEXT("hit_left");
+		else if (degree > -50.f)
+			angleString = TEXT("hit_front");
+		else
+			angleString = TEXT("hit_back");
+	}
+
+	PlayMontage(angleString);
+
+	//mAnimInst->SetHitDirection(angleString);
 }
 
 
@@ -788,6 +881,7 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
+		mSkillState = ESkillState::ESS_None;
 		if (mSkillState == ESkillState::ESS_Sprint)
 		{
 			CameraSwitch(false);
@@ -842,5 +936,9 @@ void AValkyrie::SetAnimDelegate()
 			GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake);
 		CustomTimeDilation = 1.f;
 		}), 0.2f, false);
+		});
+
+	mAnimInst->mOnHitEnd.AddLambda([this]()-> void {
+		mWeapon->SetTrailOnOff(false);
 		});
 }

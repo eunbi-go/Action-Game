@@ -42,5 +42,7 @@ public:
 
 private:
 	class UTileView* mTileView;
+
+
 	TMap<EITEM_ID, class UItemData*> mItemMap;
 };

@@ -28,9 +28,6 @@ public:
 	void AnimNotify_DeathEnd();
 
 	UFUNCTION()
-	void AnimNotify_SpawnItem();
-
-	UFUNCTION()
 	void AnimNotify_HitEnd();
 
 	UFUNCTION()
@@ -68,6 +65,9 @@ public:
 	UFUNCTION()
 	void AnimNotify_SkillStart();
 
+
+private:
+	void SpawnItem();
 
 public:
 	void Hit();
@@ -126,5 +126,6 @@ protected:
 
 	int32		mItemCount;
 
-	TArray<AItemActor*>	mItems;
+	UPROPERTY()
+	FTimerHandle	mTimer;
 };

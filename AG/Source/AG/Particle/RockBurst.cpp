@@ -17,11 +17,15 @@ void ARockBurst::BeginPlay()
 	Super::BeginPlay();
 
 	mParticle->OnParticleCollide.AddDynamic(this, &ARockBurst::ParticleColiision);
-	mParticle->OnComponentHit.AddDynamic(this, &ARockBurst::ParticleHit);
 	GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &ARockBurst::Spawn, 0.2f, false);
 }
-
-void ARockBurst::ParticleColiision(FName EventName, float EmitterTime, int32 ParticleTime, FVector Location, FVector Velocity, FVector Direction, FVector Normal, FName BoneName, UPhysicalMaterial* PhysMat)
+void ARockBurst::Spawn()
+{
+	mReSpawn.Broadcast(this);
+}
+void ARockBurst::ParticleColiision(FName EventName, float EmitterTime, int32 ParticleTime, 
+									FVector Location, FVector Velocity, FVector Direction, 
+									FVector Normal, FName BoneName, UPhysicalMaterial* PhysMat)
 {
 	if (!mIsCollide)
 	{
@@ -31,12 +35,10 @@ void ARockBurst::ParticleColiision(FName EventName, float EmitterTime, int32 Par
 	}
 }
 
+
+
 void ARockBurst::ParticleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//mOnHit.Broadcast(OtherActor);
 }
 
-void ARockBurst::Spawn()
-{
-	mReSpawn.Broadcast(this);
-}

@@ -288,30 +288,12 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	
 	int32 randomValue = FMath::RandRange(10, 20);
 	damage -= randomValue;
+	damage = fabsf(damage);
 
 	Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
 
-	if (IsValid(mWidgetComopnent))
-	{
-		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
-		if (IsValid(HPWidget))
-		{
-			HPWidget->SetTargetRatio((float)Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() / Cast<UAGAttributeSet>(mAttributeSet)->GetmMaxHp());
-		}
-
-		if (Cast<AFengMao>(this))
-		{
-			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-			if (!IsValid(hud))
-				return damage;
-			UMainWidget* mainWidget = hud->mMainWidget;
-			if (!IsValid(mainWidget))
-				return damage;
-			mainWidget->BossInfoOnOff(false);
-		}
-	}
+	
 
 	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
 	{
@@ -327,6 +309,28 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 		mSpawnPoint->RemoveMonster(this);
 	}
+
+	if (IsValid(mWidgetComopnent))
+	{
+		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+		if (IsValid(HPWidget))
+		{
+			HPWidget->SetTargetRatio((float)Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() / Cast<UAGAttributeSet>(mAttributeSet)->GetmMaxHp());
+		}
+
+		/*if (Cast<AFengMao>(this))
+		{
+			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			if (!IsValid(hud))
+				return damage;
+			UMainWidget* mainWidget = hud->mMainWidget;
+			if (!IsValid(mainWidget))
+				return damage;
+			mainWidget->BossInfoOnOff(false);
+		}*/
+	}
+
 	return damage;
 }
 

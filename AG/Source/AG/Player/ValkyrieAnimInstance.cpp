@@ -103,7 +103,6 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 			mMoveDirection = EMoveDirection::EMD_Right;
 		}
 	}
-	else
 		//PrintViewport(3.f, FColor::Yellow, FString("No Movement"));
 	if (mIsCrouch && mGroundSpeed)
 	{
@@ -191,4 +190,9 @@ void UValkyrieAnimInstance::AnimNotify_Dash()
 		SpawnParam
 		);
 	niagara->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Dash_Fire.NS_Dash_Fire'"));
+}
+
+void UValkyrieAnimInstance::AnimNotify_HitEnd()
+{
+	mOnHitEnd.Broadcast();
 }
