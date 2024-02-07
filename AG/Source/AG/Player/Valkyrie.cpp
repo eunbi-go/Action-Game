@@ -75,7 +75,8 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Sprint"), montage3);
 
 	UAnimMontage* montage4;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Ribbon.AM_Valkyrie_Ribbon'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Ribbon.AM_Valkyrie_Ribbon'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ribbonMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Ribbon2.AM_Valkyrie_Ribbon2'"));
 	if (ribbonMontage.Succeeded())
 	{
 		montage4 = ribbonMontage.Object;
@@ -131,6 +132,14 @@ AValkyrie::AValkyrie()
 	}
 	mMontages.Add(FName("hit_back"), montage10);
 
+	UAnimMontage* montage11;
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> hard_attack(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_HardAttack.AM_Valkyrie_HardAttack'"));
+	if (hard_attack.Succeeded())
+	{
+		montage11 = hard_attack.Object;
+	}
+	mMontages.Add(FName("HardAttack"), montage11);
+
 
 	mAttackMaxIndex = 4;
 	NormalAttackEnd();
@@ -143,8 +152,10 @@ AValkyrie::AValkyrie()
 	mTempCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TempCamera"));
 	mTempCameraComp->SetActive(false);
 	mTempCameraComp->SetupAttachment(GetMesh());
-	mTempCameraComp->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
-	mTempCameraComp->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));
+	/*mTempCameraComp->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
+	mTempCameraComp->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));*/
+	mTempCameraComp->SetRelativeLocation(FVector(-130.f, -145.f, 225.f));
+	mTempCameraComp->SetRelativeRotation(FRotator(-35.f, 45.f, 10.f));
 	mTempCameraComp->bAutoActivate = false;
 
 
@@ -511,6 +522,15 @@ void AValkyrie::Skill3Key()
 	PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
 }
 
+void AValkyrie::Skill4Key()
+{
+	mSkillState = ESkillState::ESS_HardAttack;
+	PlayMontage(FName("HardAttack"));
+
+	UAnimMontage* montage = *mMontages.Find(FName("HardAttack"));
+	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+}
+
 void AValkyrie::TargetingKey()
 {
 	mTargetingComp->SetTargetLock();
@@ -790,6 +810,18 @@ void AValkyrie::SpawnEffect()
 		}
 	}
 	break;
+
+	case ESkillState::ESS_HardAttack:
+	{
+		CameraSwitch(true);
+		AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+			GetActorLocation() + GetActorForwardVector() * 50.f,
+			GetActorRotation(),
+			SpawnParam
+		);
+		slash->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SwordAttack.NS_SwordAttack'"));
+	}
+	break;
 	}
 
 
@@ -818,6 +850,8 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill2Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill3Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill4"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::Skill4Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
 	
@@ -955,6 +989,13 @@ void AValkyrie::SetAnimDelegate()
 			mIsNextSlashEnable = false;
 			mIsNextSlashInput = false;
 			mIsSlash = false;
+		}
+		else if (mSkillState == ESkillState::ESS_HardAttack)
+		{
+
+			CameraSwitch(false);
+			UAnimMontage* montage = *mMontages.Find(FName("HardAttack"));
+			mAnimInst->Montage_SetPlayRate(montage, 1.f);
 		}
 		mSkillState = ESkillState::ESS_None;
 

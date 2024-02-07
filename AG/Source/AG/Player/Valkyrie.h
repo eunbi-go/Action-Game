@@ -57,6 +57,7 @@ protected:
 	void Skill1Key();
 	void Skill2Key();
 	void Skill3Key();
+	void Skill4Key();
 	void TargetingKey();
 	virtual void CrouchKey() override;
 
