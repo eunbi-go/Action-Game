@@ -196,3 +196,8 @@ void UValkyrieAnimInstance::AnimNotify_HitEnd()
 {
 	mOnHitEnd.Broadcast();
 }
+
+void UValkyrieAnimInstance::AnimNotify_SlashEnable()
+{
+	mOnSlashEnable.Broadcast();
+}

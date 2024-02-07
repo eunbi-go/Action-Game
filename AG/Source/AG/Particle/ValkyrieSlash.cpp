@@ -14,7 +14,7 @@ void AValkyrieSlash::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrieSlash::Stop, 0.1f, false);
+	//GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrieSlash::Stop, 0.1f, false);
 
 	//
 	FActorSpawnParameters	SpawnParam;
@@ -79,29 +79,29 @@ void AValkyrieSlash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector location = GetActorLocation();
-	location += mDirection * 1000.f * DeltaTime;
+	//FVector location = GetActorLocation();
+	//location += mDirection * 1000.f * DeltaTime;
 
-	SetActorLocation(location);
+	//SetActorLocation(location);
 
-	FVector loc = mLeftCollisionActor->GetInitLocation();
-	loc += mDirection * 1000.f * DeltaTime;
-	mLeftCollisionActor->SetInitLocation(loc);
+	//FVector loc = mLeftCollisionActor->GetInitLocation();
+	//loc += mDirection * 1000.f * DeltaTime;
+	//mLeftCollisionActor->SetInitLocation(loc);
 
-	FVector loc2 = mRightCollisionActor->GetInitLocation();
-	loc2 += mDirection * 1000.f * DeltaTime;
-	mRightCollisionActor->SetInitLocation(loc2);
+	//FVector loc2 = mRightCollisionActor->GetInitLocation();
+	//loc2 += mDirection * 1000.f * DeltaTime;
+	//mRightCollisionActor->SetInitLocation(loc2);
 
-	FVector loc3 = mCenterCollisionActor->GetInitLocation();
-	loc3 += mDirection * 1000.f * DeltaTime;
-	mCenterCollisionActor->SetInitLocation(loc3);
+	//FVector loc3 = mCenterCollisionActor->GetInitLocation();
+	//loc3 += mDirection * 1000.f * DeltaTime;
+	//mCenterCollisionActor->SetInitLocation(loc3);
 
-	if (IsValid(mLeftCollisionActor))
-		mLeftCollisionActor->mCollisionBox->SetWorldLocation(loc);
-	if (IsValid(mRightCollisionActor))
-		mRightCollisionActor->mCollisionBox->SetWorldLocation(loc2);
-	if (IsValid(mCenterCollisionActor))
-		mCenterCollisionActor->mCollisionBox->SetWorldLocation(loc3);
+	//if (IsValid(mLeftCollisionActor))
+	//	mLeftCollisionActor->mCollisionBox->SetWorldLocation(loc);
+	//if (IsValid(mRightCollisionActor))
+	//	mRightCollisionActor->mCollisionBox->SetWorldLocation(loc2);
+	//if (IsValid(mCenterCollisionActor))
+	//	mCenterCollisionActor->mCollisionBox->SetWorldLocation(loc3);
 }
 
 void AValkyrieSlash::OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -130,7 +130,7 @@ void AValkyrieSlash::SetDirection(const FVector& _value)
 void AValkyrieSlash::Stop()
 {
 	mParticle->SetPaused(true);
-	GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrieSlash::Start, 0.2f, false);
+	//GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrieSlash::Start, 0.2f, false);
 }
 
 void AValkyrieSlash::Start()

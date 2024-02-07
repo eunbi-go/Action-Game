@@ -83,7 +83,8 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("Ribbon"), montage4);
 
 	UAnimMontage* montage5;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Slash.AM_Valkyrie_Slash'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_Slash.AM_Valkyrie_Slash'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> slashMontage(TEXT("AnimMontage'/Game/Blueprints/Valkyrie_BP/Animations/Montages/AM_Valkyrie_SlashSkills.AM_Valkyrie_SlashSkills'"));
 	if (slashMontage.Succeeded())
 	{
 		montage5 = slashMontage.Object;
@@ -488,8 +489,26 @@ void AValkyrie::Skill3Key()
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
 	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
 
-	PlayMontage(FName("Slash"));
+	
 	mWeapon->SetCollisionOnOff(false);
+	
+
+	if (mIsSlash)
+	{
+		if (mIsNextSlashEnable)
+			mIsNextSlashInput = true;
+	}
+	else
+	{
+		mIsSlash = true;
+
+		mIsNextSlashEnable = true;
+		mIsNextSlashInput = false;
+
+		PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
+	}
+
+	PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
 }
 
 void AValkyrie::TargetingKey()
@@ -705,7 +724,9 @@ void AValkyrie::SpawnEffect()
 			FRotator::ZeroRotator,
 			SpawnParam
 			);
-		niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LaserAttack.NS_LaserAttack'"));
+		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LaserAttack.NS_LaserAttack'"));
+		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Slash_GuDef_01.NS_Slash_GuDef_01'"));
+		niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_SlashRing_05.NS_SlashRing_05'"));
 		//niagara->SetNiagaraScale(FVector(0.1f));
 	}
 		break;
@@ -723,14 +744,50 @@ void AValkyrie::SpawnEffect()
 
 	case ESkillState::ESS_Slash:
 	{
-		FRotator rotation = FRotator(0.f, GetControlRotation().Yaw-90.f, 0.f);
-		AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-			GetActorLocation() + GetActorForwardVector() * 100.f,
-			rotation,
-			SpawnParam
+		if (mSlashSkillIndex == 0)
+		{
+			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+				GetActorLocation()/* + GetActorForwardVector() * 100.f*/,
+				GetActorRotation(),
+				SpawnParam
 			);
-		slash->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Fire_Slash.NS_Fire_Slash'"));
-		slash->SetDirection(GetActorForwardVector());
+			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_12.NS_Col_SL_12'"));
+			slash->SetDirection(GetActorForwardVector());
+		}
+		else if (mSlashSkillIndex == 1)
+		{
+			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+				GetActorLocation(),
+				GetActorRotation(),
+				SpawnParam
+			);
+			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_13.NS_Col_SL_13'"));
+			slash->SetDirection(GetActorForwardVector());
+		}
+		else if (mSlashSkillIndex == 2)
+		{
+			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+				GetActorLocation(),
+				GetActorRotation(),
+				SpawnParam
+			);
+			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Blade_Sl_10.NS_Blade_Sl_10'"));
+			slash->SetDirection(GetActorForwardVector());
+		}
+		else if (mSlashSkillIndex == 3)
+		{
+			FVector forward = GetActorForwardVector();
+			forward.Y = 0.f;
+			forward.Z = 0.f;
+			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+				GetActorLocation(),
+				FRotator(0.f, GetControlRotation().Yaw - 90.f, 0.f),
+				SpawnParam
+			);
+			slash->SetActorScale3D(FVector(0.5f));
+			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Slash_HeavyAb_03.NS_Slash_HeavyAb_03'"));
+			slash->SetDirection(GetActorForwardVector());
+		}
 	}
 	break;
 	}
@@ -881,19 +938,26 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
-		mSkillState = ESkillState::ESS_None;
 		if (mSkillState == ESkillState::ESS_Sprint)
 		{
-			CameraSwitch(false);
+			//CameraSwitch(false);
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
-			mSkillState = ESkillState::ESS_None;
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 			ResetFresnel();
-			mSkillState = ESkillState::ESS_None;
 		}
+		else if (mSkillState == ESkillState::ESS_Slash)
+		{
+			PrintViewport(2.f, FColor::Red, FString("Slash End"));
+			mSlashSkillIndex = -1;
+			mIsNextSlashEnable = false;
+			mIsNextSlashInput = false;
+			mIsSlash = false;
+		}
+		mSkillState = ESkillState::ESS_None;
+
 	});
 
 	mAnimInst->mChangeCamera.AddLambda([this]() -> void {
@@ -940,5 +1004,20 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnHitEnd.AddLambda([this]()-> void {
 		mWeapon->SetTrailOnOff(false);
+		});
+
+	mAnimInst->mOnSlashEnable.AddLambda([this]()-> void {
+
+		mIsNextSlashEnable = false;
+		if (mIsNextSlashInput)
+		{
+			//NormalAttackStart();
+
+			mIsNextSlashEnable = true;
+			mIsNextSlashInput = false;
+			PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
+		}
+
+		
 		});
 }
