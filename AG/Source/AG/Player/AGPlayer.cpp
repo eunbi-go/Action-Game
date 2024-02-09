@@ -54,6 +54,10 @@ AAGPlayer::AAGPlayer()
 	//TPPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TPPCamera"));
 	mCameraComp->SetupAttachment(mSpringArmComp);
 	
+	mDash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DashEffect"));
+	mDash->SetupAttachment(GetMesh());
+	mDash->SetRelativeLocation(FVector(0.f, 0.f, 90.f));
+	mDash->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
 	//mStat = CreateDefaultSubobject<UCharacterStatComponent>(TEXT("Stat"));
 
 	mIsAttacking = false;
@@ -132,6 +136,17 @@ void AAGPlayer::BeginPlay()
 	//UMainWidget* mainWidget = gameMode->GetMainWidget();
 	//mainWidget->SetCharacterStat(mStat);
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+
+
+	//---------------------------
+	// Dash Niagara.
+	//---------------------------
+	UNiagaraSystem* Particle = LoadObject<UNiagaraSystem>(
+		nullptr, TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Dash_Fire.NS_Dash_Fire'"));
+	if (IsValid(Particle))
+		mDash->SetAsset(Particle);
+	mDash->SetActive(false);
 }
 
 void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -151,6 +166,8 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::JumpKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Crouch"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::CrouchKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Dash"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::DashKey);
 
 	/**
 	 * Item
@@ -306,6 +323,25 @@ void AAGPlayer::Item5Key()
 		return;
 
 	mainWidget->GetItemQuickSlot()->UseItem(5, this);
+}
+
+void AAGPlayer::DashKey()
+{
+	//mDash->SetVisibility(true);
+	mDash->SetActive(true);
+
+	FLatentActionInfo Info;
+	Info.CallbackTarget = this;
+	UKismetSystemLibrary::MoveComponentTo(
+		GetCapsuleComponent(),
+		GetActorLocation() + GetActorForwardVector() * 1000.f,
+		GetActorForwardVector().Rotation(),
+		true,
+		true,
+		0.35f,
+		false,
+		EMoveComponentAction::Type::Move,
+		Info);
 }
 
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)

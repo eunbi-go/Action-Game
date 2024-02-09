@@ -76,6 +76,7 @@ protected:
 	void Item3Key();
 	void Item4Key();
 	void Item5Key();
+	void DashKey();
 
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void SpawnEffect();
@@ -108,6 +109,8 @@ protected:
 	UPROPERTY()
 	FTimerHandle	mTimer;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	UNiagaraComponent* mDash;
 
 public:
 	float GetDirection() { return mDirection; }
