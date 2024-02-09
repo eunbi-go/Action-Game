@@ -201,3 +201,9 @@ void UValkyrieAnimInstance::AnimNotify_SlashEnable()
 {
 	mOnSlashEnable.Broadcast();
 }
+
+void UValkyrieAnimInstance::AnimNotify_Pause()
+{
+	Montage_Pause();
+	mOnPause.Broadcast();
+}

@@ -35,7 +35,7 @@ AAGPlayer::AAGPlayer()
 	//mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	mSpringArmComp->SetupAttachment(GetRootComponent());
-	mSpringArmComp->TargetArmLength = 400.f;
+	mSpringArmComp->TargetArmLength = 500.f;
 	mSpringArmComp->bUsePawnControlRotation = true;
 	
 

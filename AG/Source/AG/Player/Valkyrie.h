@@ -56,6 +56,8 @@ protected:
 	virtual void JumpKey() override;
 	void Skill1Key();
 	void Skill2Key();
+	void Skill2KeyUp();
+	void Skill2KeyPressing();
 	void Skill3Key();
 	void Skill4Key();
 	void TargetingKey();
@@ -171,6 +173,8 @@ private:
 	bool	mIsNextSlashEnable = false;
 	bool	mIsNextSlashInput = false;
 	bool	mIsSlash = false;
+
+	float	mSkill2PressingTime = 0.f;
 	
 public:
 	bool GetIsJumpAttackEnable() { return mActionState == EActionState::EAS_JumpAttack; }

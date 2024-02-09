@@ -427,69 +427,64 @@ void AValkyrie::Skill1Key()
 
 void AValkyrie::Skill2Key()
 {
-	mSkillState = ESkillState::ESS_Ribbon;
+	//PrintViewport(10.f, FColor::Black, FString("Skill2Key"));
+
+	if (mSkillState != ESkillState::ESS_Ribbon)
+	{
+		PlayMontage(FName("Ribbon"));
+		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+	}
 	
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
 	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
 
-	PlayMontage(FName("Ribbon"));
 	mWeapon->SetCollisionOnOff(false);
 
 	FVector location = GetActorLocation();
 	FRotator rotation = GetActorRotation();
+}
+
+void AValkyrie::Skill2KeyPressing()
+{
+	mSkillState = ESkillState::ESS_Ribbon;
+	mSkill2PressingTime += GetWorld()->GetDeltaSeconds();
+}
+
+void AValkyrie::Skill2KeyUp()
+{
+	//PrintViewport(60.f, FColor::Yellow, FString::Printf(TEXT("Skill2KeyUp: %f"), mSkill2PressingTime));
 	
+	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+	mAnimInst->Montage_Resume(montage);
+	mAnimInst->Montage_SetPlayRate(montage, 0.5f);
 
-	
 
-	{
-		FVector dir = GetActorForwardVector() + GetActorRightVector();	// 1
-		FVector targetLocation = GetActorLocation() + dir * 300.f;
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
-			targetLocation);
+	FActorSpawnParameters	SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		location = targetLocation;
-		rotation = targetRotation;
+	AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+		GetActorLocation(),
+		GetActorRotation(),
+		SpawnParam
+	);
+	float size = 0.6f + mSkill2PressingTime;
+	slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Cut_Sl_04.NS_Cut_Sl_04'"));
+	mSkill2PressingTime = 0.f;
 
-		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon1"), targetLocation, targetRotation);
-	}
-	
-	{
-		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + dir * 300.f;
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
-			targetLocation);
+	/*slash->SetActorScale3D(FVector(size));
+	if (mSkill2PressingTime >= 0.7f)
+		slash->SetActorScale3D(FVector(1.3f));
+	else if (mSkill2PressingTime >= 0.5f)
+		slash->SetActorScale3D(FVector(1.f));
+	else if (mSkill2PressingTime >= 0.3f)
+		slash->SetActorScale3D(FVector(0.7f));
+	else
+		slash->SetActorScale3D(FVector(0.5f));*/
 
-		location = targetLocation;
-		rotation = targetRotation;
 
-		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon2"), targetLocation, targetRotation);
-	}
-
-	{
-		FVector right = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + right * 300.f;
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
-			targetLocation);
-
-		location = targetLocation;
-		rotation = targetRotation;
-
-		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon3"), targetLocation, targetRotation);
-	}
-
-	{
-		FVector dir = UKismetMathLibrary::GetRightVector(rotation);
-		FVector targetLocation = location + dir * 300.f;
-		
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(location,
-			targetLocation);
-
-		location = targetLocation;
-		rotation = targetRotation;
-
-		mMotionWarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(FName("Ribbon4"), targetLocation, targetRotation);
-	}
 }
 
 void AValkyrie::Skill3Key()
@@ -848,6 +843,11 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill1Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill2Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
+		this, &AValkyrie::Skill2KeyUp);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Repeat,
+		this, &AValkyrie::Skill2KeyPressing);
+
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::Skill3Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill4"), EInputEvent::IE_Pressed,
@@ -1059,6 +1059,17 @@ void AValkyrie::SetAnimDelegate()
 			PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
 		}
 
-		
+		});
+
+	mAnimInst->mOnPause.AddLambda([this]()-> void {
+
+		if (mSkillState == ESkillState::ESS_Ribbon)
+		{
+			if (mSkill2PressingTime <= 0.f)
+			{
+				UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+				mAnimInst->Montage_Resume(montage);
+			}
+		}
 		});
 }
