@@ -62,6 +62,7 @@ protected:
 	void Skill4Key();
 	void TargetingKey();
 	virtual void CrouchKey() override;
+	virtual void GuardKey() override;
 
 	void NormalAttackStart();
 	void NormalAttackEnd();

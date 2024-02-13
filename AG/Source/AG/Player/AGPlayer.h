@@ -67,6 +67,7 @@ protected:
 	void LookUp(float _value);
 	virtual void JumpKey();
 	virtual void CrouchKey();
+	virtual void GuardKey();
 
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();
@@ -112,7 +113,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UNiagaraComponent* mDash;
 
+	bool mIsGuard = false;
+
 public:
 	float GetDirection() { return mDirection; }
 	ECharacterState GetCharacterState() { return mCharacterState; }
+	bool GetIsGuard() { return mIsGuard; }
 };

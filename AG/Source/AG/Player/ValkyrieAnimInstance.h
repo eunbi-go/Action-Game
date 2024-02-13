@@ -120,6 +120,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float mCrouchValue = 0.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float mGuardValue = 0.f;
+
 
 
 	UPROPERTY(VisibleAnywhere, Category = "DistanceMatching", BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -156,6 +159,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 		bool	mIsCrouch;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	bool	mIsGuard;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 		EActionState	mActionState;

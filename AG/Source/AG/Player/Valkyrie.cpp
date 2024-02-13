@@ -234,6 +234,8 @@ void AValkyrie::BeginPlay()
 	mWeapon->SetCollisionOnOff(false);
 	mWeapon->SetSwordOwner(this);
 
+
+
 	SetAnimDelegate();
 
 	mCurveUpdateDelegate.BindUFunction(this, FName("CurveUpdate"));
@@ -553,6 +555,11 @@ void AValkyrie::CrouchKey()
 		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
 		GetCapsuleComponent()->SetCapsuleHalfHeight(mCapsuleHalfHeight);
 	}
+}
+
+void AValkyrie::GuardKey()
+{
+	mIsGuard = !mIsGuard;
 }
 
 void AValkyrie::NormalAttackStart()

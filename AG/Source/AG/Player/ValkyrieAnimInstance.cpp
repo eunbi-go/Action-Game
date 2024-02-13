@@ -41,6 +41,7 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		mIsInAir = mMovementComp->IsFalling();
 		mActionState = mCharacter->GetActionState();
 		mIsCrouch = mCharacter->GetIsCrouch();
+		mIsGuard = mCharacter->GetIsGuard();
 
 		// 디스턴스 매칭이 필요한 변수 세팅.
 		// 현재 가속도 반환
@@ -111,6 +112,16 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 	else
 	{
 		mCrouchValue = 0.f;
+	}
+
+	
+	if (mIsGuard && mGroundSpeed)
+	{
+		mGuardValue = 1.f;
+	}
+	else
+	{
+		mGuardValue = 0.f;
 	}
 }
 

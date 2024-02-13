@@ -168,6 +168,8 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::CrouchKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Dash"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::DashKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Guard"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::GuardKey);
 
 	/**
 	 * Item
@@ -230,6 +232,11 @@ void AAGPlayer::JumpKey()
 
 void AAGPlayer::CrouchKey()
 {
+}
+
+void AAGPlayer::GuardKey()
+{
+	
 }
 
 void AAGPlayer::EquipWeaponKey()
