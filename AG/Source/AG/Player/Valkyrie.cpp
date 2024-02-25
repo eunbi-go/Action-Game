@@ -22,6 +22,7 @@
 #include "AGPlayerController.h"
 #include "../Widget/HUD/AGHUD.h"
 #include "../AbilitySystem/AGAttributeSet.h"
+#include "Shield.h"
 
 AValkyrie::AValkyrie()
 {
@@ -234,6 +235,10 @@ void AValkyrie::BeginPlay()
 	mWeapon->SetCollisionOnOff(false);
 	mWeapon->SetSwordOwner(this);
 
+
+	mGuardShield = GetWorld()->SpawnActor<AShield>(AShield::StaticClass(), SpawnParam);
+	mGuardShield->SetSkeletalMesh(TEXT("SkeletalMesh'/Game/Goblin/Mesh/Weapons/SK_Shield_A.SK_Shield_A'"));
+	mGuardShield->Equip(GetMesh(), TEXT("Guard"), this, this);
 
 
 	SetAnimDelegate();
@@ -560,6 +565,15 @@ void AValkyrie::CrouchKey()
 void AValkyrie::GuardKey()
 {
 	mIsGuard = !mIsGuard;
+
+	if (mIsGuard)
+	{
+		mGuardShield->SetShieldVisibility(true);
+	}
+	else
+	{
+		mGuardShield->SetShieldVisibility(false);
+	}
 }
 
 void AValkyrie::NormalAttackStart()
@@ -861,6 +875,9 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::Skill4Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Shield"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::GuardKey);
+
 	
 }
 

@@ -149,6 +149,8 @@ protected:
 	// TempCameraComp -> CameraComp : true
 	bool mToCameraComp = true;
 	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	class AShield* mGuardShield;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
