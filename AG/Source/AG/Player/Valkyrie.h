@@ -43,6 +43,7 @@ public:
 	void UnequipSword();
 
 	virtual void GetHit(const FVector& _impactPoint) override;
+	void SetActionState(EActionState2 NewActionState, bool IsStateOn);
 
 private:
 	virtual void InitAbilityActorInfo() override;
@@ -157,10 +158,12 @@ protected:
 	UTimelineComponent* mCrouchTimeLineComp;
 	FOnTimelineFloat mCrouchCurveUpdateDelegate;
 
-	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, meta = (Bitmask, BitmaskEnum = "EActionState2"))
+	uint8 mStateType;
 
 private:
 	void SetAnimDelegate();
+	void CheckActionState(EActionState2 ActionState, bool IsPrintViewport);
 
 	FVector tempLocation;
 

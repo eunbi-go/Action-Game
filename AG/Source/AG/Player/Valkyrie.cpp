@@ -309,6 +309,8 @@ void AValkyrie::Tick(float DeltaTime)
 
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
+
+	CheckActionState(EActionState2::EAS_Jump2, true);
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -379,6 +381,9 @@ void AValkyrie::JumpKey()
 	{
 		Jump();
 		mIsJump = true;
+		
+		// bitflag
+		SetActionState(EActionState2::EAS_Jump2, true);
 	}
 }
 
@@ -949,6 +954,32 @@ void AValkyrie::GetHit(const FVector& _impactPoint)
 	//mAnimInst->SetHitDirection(angleString);
 }
 
+void AValkyrie::SetActionState(EActionState2 NewActionState, bool IsStateOn)
+{
+
+	mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
+
+	if (IsStateOn)
+	{
+		if (NewActionState == EActionState2::EAS_Idle2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Idle2));
+		else if (NewActionState == EActionState2::EAS_Move2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Move2));
+		else if (NewActionState == EActionState2::EAS_Jump2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
+	}
+	else
+	{
+		if (NewActionState == EActionState2::EAS_Idle2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Idle2));
+		else if (NewActionState == EActionState2::EAS_Move2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Move2));
+		else if (NewActionState == EActionState2::EAS_Jump2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Jump2));
+	}
+	
+}
+
 
 void AValkyrie::SetAnimDelegate()
 {
@@ -1039,6 +1070,7 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
 		mActionState = EActionState::EAS_Idle;
+		SetActionState(EActionState2::EAS_Jump2, false);
 		mIsJump = false;
 	});
 
@@ -1097,3 +1129,36 @@ void AValkyrie::SetAnimDelegate()
 		}
 		});
 }
+
+void AValkyrie::CheckActionState(EActionState2 ActionState, bool IsPrintViewport)
+{
+	bool isState = false;
+	FString str = "";
+
+	if (ActionState == EActionState2::EAS_Idle2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
+		str = "Idle ";
+	}
+	else if (ActionState == EActionState2::EAS_Move2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
+		str = "Move ";
+	}
+	else if (ActionState == EActionState2::EAS_Jump2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
+		str = "EAS_Jump2 ";
+	}
+
+	if (isState)
+		str += "On";
+	else
+		str += "Off";
+
+	if (IsPrintViewport)
+	{
+		PrintViewport(1.f, FColor::Black, str);
+	}
+}
+

@@ -47,7 +47,18 @@ enum class EActionState : uint8
 	EAS_Skill UMETA(DisplayName = "Skill"),
 	EAS_Jump UMETA(DisplayName = "Jump"),
 	EAS_JumpAttack UMETA(DisplayName = "JumpAttack"),
+	EAS_Guard UMETA(DisplayName = "Guard"),
+	EAS_Crouch UMETA(DisplayName = "Crouch")
 };
+
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EActionState2 : uint8
+{
+	EAS_Idle2 = 0,
+	EAS_Move2 = 1,
+	EAS_Jump2 = 2
+};
+ENUM_CLASS_FLAGS(EActionState2)
 
 
 
