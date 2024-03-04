@@ -56,7 +56,9 @@ enum class EActionState2 : uint8
 {
 	EAS_Idle2 = 0,
 	EAS_Move2 = 1,
-	EAS_Jump2 = 2
+	EAS_Jump2 = 2,
+	EAS_Crouch2 = 3,
+	EAS_Guard2 = 4,
 };
 ENUM_CLASS_FLAGS(EActionState2)
 

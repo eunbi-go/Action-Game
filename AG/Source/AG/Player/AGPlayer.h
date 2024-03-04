@@ -49,6 +49,13 @@ public:
 		return mStat;
 	}
 
+
+	void SetActionState(EActionState2 NewActionState, bool IsStateOn);
+	bool CheckActionState(EActionState2 ActionState, bool IsPrintViewport);
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, meta = (Bitmask, BitmaskEnum = "EActionState2"))
+	uint8 mStateType;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	UCameraComponent* mCameraComp;
 
@@ -85,6 +92,8 @@ protected:
 	
 
 
+	float mForwardInputValue = 0.f;
+	float mHorizontalInputValue = 0.f;
 
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	class UValkyrieAnimInstance* mAnimInst;

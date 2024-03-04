@@ -189,8 +189,26 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AAGPlayer::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (mHorizontalInputValue == 0.f && mForwardInputValue == 0.f)
+	{
+		SetActionState(EActionState2::EAS_Idle2, true);
+		SetActionState(EActionState2::EAS_Move2, false);
+	}
+	else
+	{
+		SetActionState(EActionState2::EAS_Idle2, false);
+		SetActionState(EActionState2::EAS_Move2, true);
+	}
+}
+
 void AAGPlayer::MoveForward(float _value)
 {
+	mForwardInputValue = _value;
+
 	if ((_value != 0.f) && Controller && mActionState != EActionState::EAS_Attack)
 	{
 		mActionState = EActionState::EAS_Move;
@@ -203,6 +221,8 @@ void AAGPlayer::MoveForward(float _value)
 
 void AAGPlayer::MoveHorizontal(float _value)
 {
+	mHorizontalInputValue = _value;
+
 	if ((_value != 0.f) && Controller && mActionState != EActionState::EAS_Attack)
 	{
 		mActionState = EActionState::EAS_Move;
@@ -360,14 +380,6 @@ void AAGPlayer::SpawnEffect()
 {
 }
 
-void AAGPlayer::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-
-
 float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -455,3 +467,77 @@ EITEM_ID AAGPlayer::SelectItem()
 }
 
 
+void AAGPlayer::SetActionState(EActionState2 NewActionState, bool IsStateOn)
+{
+	if (IsStateOn)
+	{
+		if (NewActionState == EActionState2::EAS_Idle2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Idle2));
+		else if (NewActionState == EActionState2::EAS_Move2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Move2));
+		else if (NewActionState == EActionState2::EAS_Jump2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
+		else if (NewActionState == EActionState2::EAS_Crouch2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
+		else if (NewActionState == EActionState2::EAS_Guard2)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Guard2));
+	}
+	else
+	{
+		if (NewActionState == EActionState2::EAS_Idle2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Idle2));
+		else if (NewActionState == EActionState2::EAS_Move2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Move2));
+		else if (NewActionState == EActionState2::EAS_Jump2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Jump2));
+		else if (NewActionState == EActionState2::EAS_Crouch2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
+		else if (NewActionState == EActionState2::EAS_Guard2)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Guard2));
+	}
+
+}
+
+bool AAGPlayer::CheckActionState(EActionState2 ActionState, bool IsPrintViewport)
+{
+	bool isState = false;
+	FString str = "";
+
+	if (ActionState == EActionState2::EAS_Idle2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
+		str = "Idle ";
+	}
+	else if (ActionState == EActionState2::EAS_Move2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
+		str = "Move ";
+	}
+	else if (ActionState == EActionState2::EAS_Jump2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
+		str = "EAS_Jump2 ";
+	}
+	else if (ActionState == EActionState2::EAS_Crouch2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Crouch2)));
+		str = "EAS_Crouch2 ";
+	}
+	else if (ActionState == EActionState2::EAS_Guard2)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Guard2)));
+		str = "EAS_Guard2 ";
+	}
+
+	if (isState)
+		str += "On";
+	else
+		str += "Off";
+
+	if (IsPrintViewport)
+	{
+		PrintViewport(1.f, FColor::Black, str);
+	}
+
+	return isState;
+}

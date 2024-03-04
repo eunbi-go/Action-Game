@@ -310,7 +310,7 @@ void AValkyrie::Tick(float DeltaTime)
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
 
-	CheckActionState(EActionState2::EAS_Jump2, true);
+	PrintAllActionState();
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -545,9 +545,11 @@ void AValkyrie::TargetingKey()
 
 void AValkyrie::CrouchKey()
 {
-	if (!mIsCrouch)
+	bool isCrouch = CheckActionState(EActionState2::EAS_Crouch2, false);
+	if (!isCrouch)
 	{
-		mIsCrouch = true;
+		SetActionState(EActionState2::EAS_Crouch2, true);
+
 		mCrouchTimeLineComp->ReverseFromEnd();
 		GetCharacterMovement()->MaxWalkSpeed = 100.f;
 
@@ -557,7 +559,8 @@ void AValkyrie::CrouchKey()
 	}
 	else
 	{
-		mIsCrouch = false;
+		SetActionState(EActionState2::EAS_Crouch2, false);
+
 		mCrouchTimeLineComp->PlayFromStart();
 		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
@@ -569,15 +572,21 @@ void AValkyrie::CrouchKey()
 
 void AValkyrie::GuardKey()
 {
-	mIsGuard = !mIsGuard;
+	//mIsGuard = !mIsGuard;
 
-	if (mIsGuard)
+	
+
+	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
+
+	if (isGuard)
 	{
-		mGuardShield->SetShieldVisibility(true);
+		SetActionState(EActionState2::EAS_Guard2, false);
+		mGuardShield->SetShieldVisibility(false);
 	}
 	else
 	{
-		mGuardShield->SetShieldVisibility(false);
+		SetActionState(EActionState2::EAS_Guard2, true);
+		mGuardShield->SetShieldVisibility(true);
 	}
 }
 
@@ -954,33 +963,6 @@ void AValkyrie::GetHit(const FVector& _impactPoint)
 	//mAnimInst->SetHitDirection(angleString);
 }
 
-void AValkyrie::SetActionState(EActionState2 NewActionState, bool IsStateOn)
-{
-
-	mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
-
-	if (IsStateOn)
-	{
-		if (NewActionState == EActionState2::EAS_Idle2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Idle2));
-		else if (NewActionState == EActionState2::EAS_Move2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Move2));
-		else if (NewActionState == EActionState2::EAS_Jump2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
-	}
-	else
-	{
-		if (NewActionState == EActionState2::EAS_Idle2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Idle2));
-		else if (NewActionState == EActionState2::EAS_Move2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Move2));
-		else if (NewActionState == EActionState2::EAS_Jump2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Jump2));
-	}
-	
-}
-
-
 void AValkyrie::SetAnimDelegate()
 {
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
@@ -1130,35 +1112,36 @@ void AValkyrie::SetAnimDelegate()
 		});
 }
 
-void AValkyrie::CheckActionState(EActionState2 ActionState, bool IsPrintViewport)
+void AValkyrie::PrintAllActionState()
 {
-	bool isState = false;
+	TArray<bool> check;
+	TArray<FString> checkStr;
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
+	checkStr.Add("Idle");
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
+	checkStr.Add("Move");
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
+	checkStr.Add("Jump");
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Crouch2)));
+	checkStr.Add("Crouch");
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Guard2)));
+	checkStr.Add("Guard");
+
+	int i = 0, cnt = check.Num();
 	FString str = "";
+	for (i = 0; i < cnt; ++i)
+	{
+		str += checkStr[i];
+		if (check[i])
+			str += " O\n";
+		else
+			str += " X\n";
+	}
+	PrintViewport(1.f, FColor::Blue, str);
 
-	if (ActionState == EActionState2::EAS_Idle2)
-	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
-		str = "Idle ";
-	}
-	else if (ActionState == EActionState2::EAS_Move2)
-	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
-		str = "Move ";
-	}
-	else if (ActionState == EActionState2::EAS_Jump2)
-	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
-		str = "EAS_Jump2 ";
-	}
-
-	if (isState)
-		str += "On";
-	else
-		str += "Off";
-
-	if (IsPrintViewport)
-	{
-		PrintViewport(1.f, FColor::Black, str);
-	}
 }
-
