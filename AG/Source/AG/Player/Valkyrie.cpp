@@ -310,7 +310,11 @@ void AValkyrie::Tick(float DeltaTime)
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
 
-	PrintAllActionState();
+	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), 
+		GetActorLocation().X, 
+		GetActorLocation().Y,
+		GetActorLocation().Z));
+	//PrintAllActionState();
 }
 
 void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
@@ -553,7 +557,6 @@ void AValkyrie::CrouchKey()
 		mCrouchTimeLineComp->ReverseFromEnd();
 		GetCharacterMovement()->MaxWalkSpeed = 100.f;
 
-		GetCapsuleComponent()->SetRelativeLocation(FVector(0.f, 0.f, -60.f));
 		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, 30.f));
 		GetCapsuleComponent()->SetCapsuleHalfHeight(mCrouchCapsuleHalfHeight);
 	}
@@ -564,7 +567,6 @@ void AValkyrie::CrouchKey()
 		mCrouchTimeLineComp->PlayFromStart();
 		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
-		GetCapsuleComponent()->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
 		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
 		GetCapsuleComponent()->SetCapsuleHalfHeight(mCapsuleHalfHeight);
 	}

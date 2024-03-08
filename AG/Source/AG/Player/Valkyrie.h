@@ -157,6 +157,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
 	UTimelineComponent* mCrouchTimeLineComp;
 	FOnTimelineFloat mCrouchCurveUpdateDelegate;
+	
 
 	
 
