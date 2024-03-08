@@ -4,6 +4,7 @@
 #include "BTService_TargetDetect.h"
 #include "../MonsterAIController.h"
 #include "../Monster.h"
+#include "../../Player/Valkyrie.h"
 
 
 UBTService_TargetDetect::UBTService_TargetDetect()
@@ -67,6 +68,11 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (isCollision)
 	{
+		AValkyrie* target = Cast<AValkyrie>(resultArray[0].GetActor());
+		if (!IsValid(target)) return;
+		// Target이 Crouch 상태이면 탐지X
+		if (target->CheckActionState(EActionState2::EAS_Crouch2, false)) return;
+
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	}
 	
