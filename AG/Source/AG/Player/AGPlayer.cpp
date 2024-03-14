@@ -390,7 +390,11 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	if (damage < 1)
 		damage = 1;
 
-	
+	// Guard 상태일 경우, 데미지 피해량 감소
+	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
+	if (isGuard)
+		damage /= 2;
+
 	int hp = attributeSet->GetmHp();
 
 	// death
