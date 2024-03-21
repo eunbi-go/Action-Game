@@ -165,7 +165,6 @@ AValkyrie::AValkyrie()
 	mCameraCompRef->SetRelativeLocation(FVector(-400.f, 0.f, 0.f));
 	mCameraCompRef->SetActive(false);
 	mCameraCompRef->bAutoActivate = false;
-	tempLocation = FVector(0.f);
 
 	JumpMaxCount = 2;
 	GetCharacterMovement()->JumpZVelocity = 500.f;
@@ -261,6 +260,20 @@ void AValkyrie::BeginPlay()
 	GetCharacterMovement()->BrakingDecelerationWalking = 100.f;
 }
 
+void AValkyrie::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (mFresnelInfo.mFresnelEnable)
+		SpawnFresnel();
+
+	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
+		GetActorLocation().X,
+		GetActorLocation().Y,
+		GetActorLocation().Z));
+	//PrintAllActionState();
+}
+
 void AValkyrie::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -302,28 +315,34 @@ void AValkyrie::InitAbilityActorInfo()
 	}
 }
 
-
-void AValkyrie::Tick(float DeltaTime)
+void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::Tick(DeltaTime);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (mFresnelInfo.mFresnelEnable)
-		SpawnFresnel();
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::Skill1Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::Skill2Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
+		this, &AValkyrie::Skill2KeyUp);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Repeat,
+		this, &AValkyrie::Skill2KeyPressing);
 
-	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"), 
-		GetActorLocation().X, 
-		GetActorLocation().Y,
-		GetActorLocation().Z));
-	//PrintAllActionState();
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::Skill3Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill4"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::Skill4Key);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::TargetingKey);
+	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Shield"), EInputEvent::IE_Pressed,
+		this, &AValkyrie::GuardKey);
+
+
 }
 
-void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
-{
-	UAnimMontage* montage = *mMontages.Find(_montageName);
-	mAnimInst->Montage_Play(montage);
-	if (_sectionName != "")
-		mAnimInst->Montage_JumpToSection(_sectionName, montage);
-}
+//-------------------------------
+// Input Functions
+//-------------------------------
 
 void AValkyrie::EquipWeaponKey()
 {
@@ -373,23 +392,78 @@ void AValkyrie::NormalAttackKey()
 
 }
 
+void AValkyrie::TargetingKey()
+{
+	mTargetingComp->SetTargetLock();
+}
+
+void AValkyrie::CrouchKey()
+{
+	bool isCrouch = CheckActionState(EActionState2::EAS_Crouch2, false);
+	if (!isCrouch)
+	{
+		SetActionState(EActionState2::EAS_Crouch2, true);
+
+		mCrouchTimeLineComp->ReverseFromEnd();
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+
+		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, 30.f));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(mCrouchCapsuleHalfHeight);
+	}
+	else
+	{
+		SetActionState(EActionState2::EAS_Crouch2, false);
+
+		mCrouchTimeLineComp->PlayFromStart();
+		GetCharacterMovement()->MaxWalkSpeed = 400.f;
+
+		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(mCapsuleHalfHeight);
+	}
+}
+
+void AValkyrie::GuardKey()
+{
+	//mIsGuard = !mIsGuard;
+
+
+
+	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
+
+	if (isGuard)
+	{
+		SetActionState(EActionState2::EAS_Guard2, false);
+		mGuardShield->SetShieldVisibility(false);
+	}
+	else
+	{
+		SetActionState(EActionState2::EAS_Guard2, true);
+		mGuardShield->SetShieldVisibility(true);
+	}
+}
+
 void AValkyrie::JumpKey()
 {
-	if (mIsJump)
+	bool isJump = CheckActionState(EActionState2::EAS_Jump2, false);
+
+	// 이미 점프중이라면 더블점프한다.
+	if (isJump)
 	{
-		mIsJump = false;
+		//mIsJump = false;
 		LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
 		PlayMontage(FName("DoubleJump"));
 	}
 	else
 	{
 		Jump();
-		mIsJump = true;
-		
-		// bitflag
 		SetActionState(EActionState2::EAS_Jump2, true);
 	}
 }
+
+
+//-------------------------------
+// Skill Functions
+//-------------------------------
 
 void AValkyrie::Skill1Key()
 {
@@ -470,8 +544,6 @@ void AValkyrie::Skill2KeyPressing()
 
 void AValkyrie::Skill2KeyUp()
 {
-	//PrintViewport(60.f, FColor::Yellow, FString::Printf(TEXT("Skill2KeyUp: %f"), mSkill2PressingTime));
-	
 	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
 	mAnimInst->Montage_Resume(montage);
 	mAnimInst->Montage_SetPlayRate(montage, 0.5f);
@@ -489,6 +561,7 @@ void AValkyrie::Skill2KeyUp()
 	float size = 0.6f + mSkill2PressingTime;
 	slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Cut_Sl_04.NS_Cut_Sl_04'"));
 	mSkill2PressingTime = 0.f;
+	slash->SetActorScale3D(FVector(size));
 
 	/*slash->SetActorScale3D(FVector(size));
 	if (mSkill2PressingTime >= 0.7f)
@@ -542,55 +615,10 @@ void AValkyrie::Skill4Key()
 	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
 }
 
-void AValkyrie::TargetingKey()
-{
-	mTargetingComp->SetTargetLock();
-}
 
-void AValkyrie::CrouchKey()
-{
-	bool isCrouch = CheckActionState(EActionState2::EAS_Crouch2, false);
-	if (!isCrouch)
-	{
-		SetActionState(EActionState2::EAS_Crouch2, true);
-
-		mCrouchTimeLineComp->ReverseFromEnd();
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
-
-		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, 30.f));
-		GetCapsuleComponent()->SetCapsuleHalfHeight(mCrouchCapsuleHalfHeight);
-	}
-	else
-	{
-		SetActionState(EActionState2::EAS_Crouch2, false);
-
-		mCrouchTimeLineComp->PlayFromStart();
-		GetCharacterMovement()->MaxWalkSpeed = 400.f;
-
-		GetMesh()->SetRelativeLocation(GetMesh()->GetRelativeLocation() + FVector(0.f, 0.f, -30.f));
-		GetCapsuleComponent()->SetCapsuleHalfHeight(mCapsuleHalfHeight);
-	}
-}
-
-void AValkyrie::GuardKey()
-{
-	//mIsGuard = !mIsGuard;
-
-	
-
-	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
-
-	if (isGuard)
-	{
-		SetActionState(EActionState2::EAS_Guard2, false);
-		mGuardShield->SetShieldVisibility(false);
-	}
-	else
-	{
-		SetActionState(EActionState2::EAS_Guard2, true);
-		mGuardShield->SetShieldVisibility(true);
-	}
-}
+//-------------------------------
+// Combat Functions
+//-------------------------------
 
 void AValkyrie::NormalAttackStart()
 {
@@ -612,6 +640,29 @@ void AValkyrie::NormalAttackEnd()
 	mActionState = EActionState::EAS_Idle;
 }
 
+void AValkyrie::UnequipSword()
+{
+	if (mWeapon)
+	{
+		mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
+		mWeapon->SetCollisionOnOff(false);
+		mCharacterState = ECharacterState::ECS_Unequipped;
+		mDirection = 0.f;
+	}
+}
+
+//-------------------------------
+// Animation Montage Functions
+//-------------------------------
+
+void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
+{
+	UAnimMontage* montage = *mMontages.Find(_montageName);
+	mAnimInst->Montage_Play(montage);
+	if (_sectionName != "")
+		mAnimInst->Montage_JumpToSection(_sectionName, montage);
+}
+
 void AValkyrie::SetMontagePlayRate()
 {
 	UAnimMontage* montage;
@@ -628,6 +679,10 @@ void AValkyrie::SetMontagePlayRate()
 		break;
 	}
 }
+
+//-------------------------------
+// Fresnel Functions
+//-------------------------------
 
 void AValkyrie::SpawnFresnel()
 {
@@ -668,6 +723,10 @@ void AValkyrie::ResetFresnel()
 	mFresnelInfo.mFresnelCreateTime = 0.f;
 	mFresnelInfo.mFresnelCreateTimeEnd = 0.4f;
 }
+
+//-------------------------------
+// Timeline/Curve Functions
+//-------------------------------
 
 void AValkyrie::TimeLineFinish()
 {
@@ -743,6 +802,10 @@ void AValkyrie::CameraSwitch(bool _value)
 		mTimeLineComp->ReverseFromEnd();
 	}
 }
+
+//-------------------------------
+// Combat Effect Functions
+//-------------------------------
 
 void AValkyrie::SpawnEffect()
 {
@@ -872,41 +935,9 @@ void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
 	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake);
 }
 
-void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill1Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill2Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
-		this, &AValkyrie::Skill2KeyUp);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Repeat,
-		this, &AValkyrie::Skill2KeyPressing);
 
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill3Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill4"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill4Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::TargetingKey);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Shield"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::GuardKey);
 
-	
-}
-
-void AValkyrie::UnequipSword()
-{
-	if (mWeapon)
-	{
-		mWeapon->Equip(GetMesh(), TEXT("UnEquipSword"), this, this);
-		mWeapon->SetCollisionOnOff(false);
-		mCharacterState = ECharacterState::ECS_Unequipped;
-		mDirection = 0.f;
-	}
-}
 
 void AValkyrie::GetHit(const FVector& _impactPoint)
 {
@@ -1055,7 +1086,6 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
 		mActionState = EActionState::EAS_Idle;
 		SetActionState(EActionState2::EAS_Jump2, false);
-		mIsJump = false;
 	});
 
 	mAnimInst->mSpawnFresnel.AddLambda([this]() -> void {

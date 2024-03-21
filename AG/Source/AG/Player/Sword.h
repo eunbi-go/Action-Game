@@ -72,6 +72,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	ACharacter* mOwner;
-
-public:	
 };

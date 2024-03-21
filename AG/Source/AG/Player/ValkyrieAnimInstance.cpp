@@ -39,7 +39,7 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		mDirection = mCharacter->GetDirection();
 		//mCharacterState = mCharacter->GetCharacterState();
 		mIsInAir = mMovementComp->IsFalling();
-		mActionState = mCharacter->GetActionState();
+		//mActionState = mCharacter->GetActionState();
 		mIsCrouch = mCharacter->CheckActionState(EActionState2::EAS_Crouch2, false);
 		mIsGuard = mCharacter->CheckActionState(EActionState2::EAS_Guard2, false);
 
