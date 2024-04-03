@@ -8,7 +8,8 @@
 #include "InventoryWidget.h"
 #include "ItemQuickSlot.h"
 #include "BossInfoWidget.h"
-#include "WidgetController/MainWidgetController.h"
+#include "MessageWidget.h"
+
 
 void UMainWidget::NativeConstruct()
 {
@@ -18,6 +19,7 @@ void UMainWidget::NativeConstruct()
 	mInventory = Cast<UInventoryWidget>(GetWidgetFromName(FName(TEXT("Inventory"))));
 	mItemQuickSlot = Cast<UItemQuickSlot>(GetWidgetFromName(FName(TEXT("ItemQuickSlot"))));
 	mBossInfo = Cast<UBossInfoWidget>(GetWidgetFromName(FName(TEXT("BossInfo"))));
+	mMessage = Cast<UMessageWidget>(GetWidgetFromName(FName(TEXT("Message"))));
 
 	mBossInfo->SetVisibility(ESlateVisibility::Hidden);
 	mInventory->SetVisibility(ESlateVisibility::Hidden);
@@ -27,6 +29,8 @@ void UMainWidget::NativeConstruct()
 	Cast<UMainWidgetController>(mWidgetController)->mOnMaxMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMaxMp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnCoinChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewCoin);
+
+	Cast<UMainWidgetController>(mWidgetController)->mOnMessageWidgetRowChange.AddDynamic(mMessage, &UMessageWidget::SetMessage);
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
@@ -50,4 +54,9 @@ void UMainWidget::BossInfoOnOff(bool _value)
 		mBossInfo->SetVisibility(ESlateVisibility::Visible);
 	else
 		mBossInfo->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UMainWidget::Tmp(const FUIWidgetRow Row)
+{
+	PrintViewport(2.f, FColor::Red, Row.message.ToString());
 }

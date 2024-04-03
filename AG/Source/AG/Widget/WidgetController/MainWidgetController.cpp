@@ -4,6 +4,7 @@
 #include "MainWidgetController.h"
 #include "../../AbilitySystem/AGAttributeSet.h"
 #include "../../AbilitySystem/AGAbilitySystemComponent.h"
+#include "../../AGGameInstance.h"
 
 void UMainWidgetController::BroadcastInitValues()
 {
@@ -37,15 +38,22 @@ void UMainWidgetController::BindCallbacksToDependecies()
 		as->GetmCoinAttribute()).AddUObject(
 			this, &UMainWidgetController::CoinChange);
 
+
+	UAGGameInstance* gameInst = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+
 	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->mEffectAssetTags.AddLambda(
-		[](const FGameplayTagContainer& AssetTags)
+		[gameInst, this](const FGameplayTagContainer& AssetTags)
 		{
 			for (const FGameplayTag& tag : AssetTags)
 			{
-				// 위젯 컨트롤러로 태그를 브로드캐스트한다. 
-				// -> GameplayEffect가 적용되면 해당 Effect Blueprint에 추가한 모든 Asset tag를 얻을 수 있다.
-				const FString msg = FString::Printf(TEXT("GE Tag : %s"), *tag.ToString());
-				PrintViewport(5.f, FColor::Red, msg);
+				FGameplayTag messageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+				if (tag.MatchesTag(messageTag))
+				{
+					// 위젯 테이블에서 적용된 태그를 검색하고 싶다.
+					const FUIWidgetRow* row = gameInst->GetDataTableRowByTag<FUIWidgetRow>(tag);
+					mOnMessageWidgetRowChange.Broadcast(*row);
+				}
 			}
 		}
 	);

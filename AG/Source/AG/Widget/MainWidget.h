@@ -7,6 +7,7 @@
 #include "../BasicInfo.h"
 
 #include "PlayerInfoWidget.h"
+#include "WidgetController/MainWidgetController.h"
 
 #include "Blueprint/UserWidget.h"
 #include "MainWidget.generated.h"
@@ -27,12 +28,14 @@ public:
 	void SetWidgetController(UMainWidgetController* widgetController);
 
 	// 시스템에서 데이터를 가져와서 모든 위젯에 브로드캐스팅한다.
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	UObject* mWidgetController;
 
 	void UpdateBossHp(float _hp, float _maxHp);
 	void BossInfoOnOff(bool _value);
 
+	UFUNCTION()
+	void Tmp(const FUIWidgetRow Row);
 
 	class UInventoryWidget* GetInventoryWidget() 
 	{ 
@@ -50,6 +53,7 @@ private:
 
 	class UInventoryWidget* mInventory;
 	class UItemQuickSlot*	mItemQuickSlot;
+	class UMessageWidget* mMessage;
 public:
 	class UBossInfoWidget* mBossInfo;
 };

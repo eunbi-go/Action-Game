@@ -41,6 +41,14 @@ UAGGameInstance::UAGGameInstance()
 	{
 		mItemAssetTable = itemAssetTable.Object;
 	}
+
+
+	static ConstructorHelpers::FObjectFinder<UDataTable>	messageDataTable(TEXT("DataTable'/Game/Blueprints/UMG/Data/DT_MessageWidgetData.DT_MessageWidgetData'"));
+	if (messageDataTable.Succeeded())
+	{
+		mMessageDataTable = messageDataTable.Object;
+	}
+	
 }
 
 UAGGameInstance::~UAGGameInstance()

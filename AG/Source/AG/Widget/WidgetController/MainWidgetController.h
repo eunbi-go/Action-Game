@@ -8,6 +8,7 @@
 
 class UMainWidget;
 
+
 USTRUCT(BlueprintType)
 struct FUIWidgetRow : public FTableRowBase
 {
@@ -21,12 +22,11 @@ struct FUIWidgetRow : public FTableRowBase
 
 	// 메세지를 띄울 화면
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UMainWidget> messageWidget;
+	TSubclassOf<class UMainWidget> messageWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UTexture2D* image = nullptr;
 };
-
 
 /**
  * 
@@ -41,6 +41,7 @@ class AG_API UMainWidgetController : public UAGWidgetController
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMpChange, float, newMp);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxMpChange, float, newMaxMp);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCoinChange, float, newCoin);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 
 public:
 	virtual void BroadcastInitValues() override;
@@ -52,6 +53,7 @@ public:
 	FOnMpChange mOnMpChange;
 	FOnMaxMpChange mOnMaxMpChange;
 	FOnCoinChange	mOnCoinChange;
+	FMessageWidgetRowSignature mOnMessageWidgetRowChange;
 
 protected:
 	void HpChange(const FOnAttributeChangeData& data) const;
@@ -59,7 +61,4 @@ protected:
 	void MpChange(const FOnAttributeChangeData& data) const;
 	void MaxMpChange(const FOnAttributeChangeData& data) const;
 	void CoinChange(const FOnAttributeChangeData& data) const;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data");
-	UDataTable* mMessageDataTable;
 };
