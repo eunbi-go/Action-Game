@@ -36,11 +36,7 @@ class AG_API UMainWidgetController : public UAGWidgetController
 {
 	GENERATED_BODY()
 		//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHpChange, float, newHp);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHpChange, float, newMaxHp);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMpChange, float, newMp);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxMpChange, float, newMaxMp);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCoinChange, float, newCoin);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChange, float, NewValue);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 
 public:
@@ -48,17 +44,11 @@ public:
 	
 	virtual void BindCallbacksToDependecies() override;
 
-	FOnHpChange mOnHpChange;
-	FOnMaxHpChange mOnMaxHpChange;
-	FOnMpChange mOnMpChange;
-	FOnMaxMpChange mOnMaxMpChange;
-	FOnCoinChange	mOnCoinChange;
-	FMessageWidgetRowSignature mOnMessageWidgetRowChange;
+	FOnAttributeChange mOnHpChange;
+	FOnAttributeChange mOnMaxHpChange;
+	FOnAttributeChange mOnMpChange;
+	FOnAttributeChange mOnMaxMpChange;
+	FOnAttributeChange	mOnCoinChange;
 
-protected:
-	void HpChange(const FOnAttributeChangeData& data) const;
-	void MaxHpChange(const FOnAttributeChangeData& data) const;
-	void MpChange(const FOnAttributeChangeData& data) const;
-	void MaxMpChange(const FOnAttributeChangeData& data) const;
-	void CoinChange(const FOnAttributeChangeData& data) const;
+	FMessageWidgetRowSignature mOnMessageWidgetRowChange;
 };

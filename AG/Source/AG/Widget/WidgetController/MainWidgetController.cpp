@@ -21,22 +21,39 @@ void UMainWidgetController::BindCallbacksToDependecies()
 	const UAGAttributeSet* as = CastChecked<UAGAttributeSet>(mAttributeSet);
 
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
-		as->GetmHpAttribute()).AddUObject(
-			this, &UMainWidgetController::HpChange);
+		as->GetmHpAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				mOnHpChange.Broadcast(Data.NewValue);
+			});
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
-		as->GetmMaxHpAttribute()).AddUObject(
-			this, &UMainWidgetController::MaxHpChange);
+		as->GetmMaxHpAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				mOnMaxHpChange.Broadcast(Data.NewValue);
+			});
+
 
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
-		as->GetmMpAttribute()).AddUObject(
-			this, &UMainWidgetController::MpChange);
+		as->GetmMpAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				mOnMpChange.Broadcast(Data.NewValue);
+			});
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
-		as->GetmMaxMpAttribute()).AddUObject(
-			this, &UMainWidgetController::MaxMpChange);
+		as->GetmMaxMpAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				mOnMaxMpChange.Broadcast(Data.NewValue);
+			});
 
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
-		as->GetmCoinAttribute()).AddUObject(
-			this, &UMainWidgetController::CoinChange);
+		as->GetmCoinAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				mOnCoinChange.Broadcast(Data.NewValue);
+			});
+
 
 
 	UAGGameInstance* gameInst = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -57,30 +74,4 @@ void UMainWidgetController::BindCallbacksToDependecies()
 			}
 		}
 	);
-}
-
-void UMainWidgetController::HpChange(const FOnAttributeChangeData& data) const
-{
-	// NewValue : 방금 변경된 새로운 값을 얻는다.
-	mOnHpChange.Broadcast(data.NewValue);
-}
-
-void UMainWidgetController::MaxHpChange(const FOnAttributeChangeData& data) const
-{
-	mOnMaxHpChange.Broadcast(data.NewValue);
-}
-
-void UMainWidgetController::MpChange(const FOnAttributeChangeData& data) const
-{
-	mOnMpChange.Broadcast(data.NewValue);
-}
-
-void UMainWidgetController::MaxMpChange(const FOnAttributeChangeData& data) const
-{
-	mOnMaxMpChange.Broadcast(data.NewValue);
-}
-
-void UMainWidgetController::CoinChange(const FOnAttributeChangeData& data) const
-{
-	mOnCoinChange.Broadcast(data.NewValue);
 }
