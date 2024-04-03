@@ -6,6 +6,26 @@
 #include "../AGWidgetController.h"
 #include "MainWidgetController.generated.h"
 
+class UMainWidget;
+
+USTRUCT(BlueprintType)
+struct FUIWidgetRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag messageTag = FGameplayTag();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText message = FText();
+
+	// 메세지를 띄울 화면
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UMainWidget> messageWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTexture2D* image = nullptr;
+};
 
 
 /**
@@ -39,4 +59,7 @@ protected:
 	void MpChange(const FOnAttributeChangeData& data) const;
 	void MaxMpChange(const FOnAttributeChangeData& data) const;
 	void CoinChange(const FOnAttributeChangeData& data) const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data");
+	UDataTable* mMessageDataTable;
 };

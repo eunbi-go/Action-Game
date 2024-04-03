@@ -55,6 +55,12 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	
 	FEffectProperties props;
 	SetEffectProperties(Data, props);
+
+	// 속성 확인
+	if (Data.EvaluatedData.Attribute == GetmHpAttribute())
+	{
+
+	}
 }
 
 void UAGAttributeSet::OnRep_Hp(const FGameplayAttributeData& preHp) const

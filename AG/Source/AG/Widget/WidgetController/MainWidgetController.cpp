@@ -3,6 +3,7 @@
 
 #include "MainWidgetController.h"
 #include "../../AbilitySystem/AGAttributeSet.h"
+#include "../../AbilitySystem/AGAbilitySystemComponent.h"
 
 void UMainWidgetController::BroadcastInitValues()
 {
@@ -35,6 +36,19 @@ void UMainWidgetController::BindCallbacksToDependecies()
 	mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
 		as->GetmCoinAttribute()).AddUObject(
 			this, &UMainWidgetController::CoinChange);
+
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->mEffectAssetTags.AddLambda(
+		[](const FGameplayTagContainer& AssetTags)
+		{
+			for (const FGameplayTag& tag : AssetTags)
+			{
+				// 위젯 컨트롤러로 태그를 브로드캐스트한다. 
+				// -> GameplayEffect가 적용되면 해당 Effect Blueprint에 추가한 모든 Asset tag를 얻을 수 있다.
+				const FString msg = FString::Printf(TEXT("GE Tag : %s"), *tag.ToString());
+				PrintViewport(5.f, FColor::Red, msg);
+			}
+		}
+	);
 }
 
 void UMainWidgetController::HpChange(const FOnAttributeChangeData& data) const
