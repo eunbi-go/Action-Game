@@ -37,6 +37,9 @@ void UAGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
+	// 수식자를 쿼리하여 반환되는 값만 변경된다. 
+	// 실제 hp를 변경하지 않는다. 
+
 	// 인수가 Hp 속성인가?
 	if (Attribute == GetmHpAttribute())
 	{
@@ -59,7 +62,12 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	// 속성 확인
 	if (Data.EvaluatedData.Attribute == GetmHpAttribute())
 	{
-
+		// 실제 hp를 변경한다. 
+		SetmHp(FMath::Clamp(GetmHp(), 0.f, GetmMaxHp()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetmMpAttribute())
+	{
+		SetmMp(FMath::Clamp(GetmMp(), 0.f, GetmMaxMp()));
 	}
 }
 
