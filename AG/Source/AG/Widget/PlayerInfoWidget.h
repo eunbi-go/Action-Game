@@ -29,15 +29,9 @@ public:
 	void SetNewMaxHp(float newMaxHp);
 
 	UFUNCTION()
-	void SetNewMp(float newMp)
-	{
-		mNewMp = newMp;
-	}
+	void SetNewMp(float newMp);
 	UFUNCTION()
-	void SetNewMaxMp(float newMaxMp)
-	{
-		mNewMaxMp = newMaxMp;
-	}
+	void SetNewMaxMp(float newMaxMp);
 	
 	UFUNCTION()
 	void SetNewCoin(float newCoin)
@@ -61,13 +55,23 @@ public:
 
 
 private:
+	UPROPERTY()
+	FTimerHandle mTimerHandle;
+
 	UProgressBar*	mHpBar;
 	UProgressBar*	mMpBar;
+	UProgressBar*	mGhostMpBar;
+	UProgressBar*	mGhostHpBar;
 	class UTextBlock* mCoinTxt;
 
 	float			mNewHp;
 	float			mNewMp;
 	float			mNewMaxHp;
 	float			mNewMaxMp;
+
+	float			mGhostMpTarget;
+
 	int				mNewCoin;
+	bool			mIsInitMp = false;
+	bool			mIsInitHp = false;
 };

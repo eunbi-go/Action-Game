@@ -7,12 +7,91 @@
 
 void UPlayerInfoWidget::SetNewHp(float newHp)
 {
-	mNewHp = newHp;
+	if (!mIsInitHp)
+	{
+		mIsInitHp = true;
+		mNewHp = newHp;
+		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
+		return;
+	}
+
+	if (newHp >= mNewHp)
+	{
+		// ghost bar 먼저 늘어남
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newHp]() {
+				mNewHp = newHp;
+				}), 0.2f, false);
+
+		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
+	}
+	else
+	{
+		// bar 먼저 줄어들고, 그 다음에 ghost bar 줄어듦
+		mNewHp = newHp;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newHp]() {
+				mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
+				}), 0.3f, false);
+	}
 }
 
 void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 {
 	mNewMaxHp = newMaxHp;
+	GetWorld()->GetTimerManager().SetTimer(
+		mTimerHandle,
+		FTimerDelegate::CreateLambda([this, newMaxHp]() {
+			mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, newMaxHp));
+			}), 0.3f, false);
+}
+
+void UPlayerInfoWidget::SetNewMp(float newMp)
+{
+	if (!mIsInitMp)
+	{
+		mIsInitMp = true;
+		mNewMp = newMp;
+		mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(newMp, mNewMaxMp));
+		return;
+	}
+
+	if (newMp >= mNewMp)
+	{
+		// ghost bar 먼저 늘어남
+		mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(newMp, mNewMaxMp));
+
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMp]() {
+				mNewMp = newMp;
+				}), 0.2f, false);
+
+	}
+	else
+	{
+		// bar 먼저 줄어들고, 그 다음에 ghost bar 줄어듦
+		mNewMp = newMp;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMp]() {
+				mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(newMp, mNewMaxMp));
+				}), 0.3f, false);
+	}
+}
+
+void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
+{
+	mNewMaxMp = newMaxMp;
+	GetWorld()->GetTimerManager().SetTimer(
+		mTimerHandle,
+		FTimerDelegate::CreateLambda([this, newMaxMp]() {
+			mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, newMaxMp));
+			}), 0.3f, false);
 }
 
 void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)
@@ -25,6 +104,8 @@ void UPlayerInfoWidget::NativeConstruct()
 
 	mHpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("Hp_Bar"))));
 	mMpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("Mp_Bar"))));
+	mGhostMpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("MpBar_Ghost"))));
+	mGhostHpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("HpBar_Ghost"))));
 	mCoinTxt = Cast<UTextBlock>(GetWidgetFromName(FName(TEXT("CoinText"))));
 }
 
