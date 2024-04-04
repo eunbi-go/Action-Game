@@ -9,6 +9,7 @@
 
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UGameplayEffect;
 
 UCLASS(Abstract)	// 추상 클래스로 만든다.
 class AG_API AAGBaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -33,4 +34,10 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> mAttributeSet;
+
+	// init AGAttributes by GameplayEffect
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> mDefaultCombatAttributes;
+	// init AGAttributes by GameplayEffect
+	void InitializeCombatAttributes() const;
 };

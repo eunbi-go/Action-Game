@@ -1,4 +1,6 @@
+
 #include "AGBaseCharacter.h"
+#include "AbilitySystemComponent.h"
 
 AAGBaseCharacter::AAGBaseCharacter()
 {
@@ -22,4 +24,14 @@ void AAGBaseCharacter::BeginPlay()
 
 void AAGBaseCharacter::InitAbilityActorInfo()
 {
+}
+
+void AAGBaseCharacter::InitializeCombatAttributes() const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(mDefaultCombatAttributes);
+
+	const FGameplayEffectContextHandle handle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle specHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(mDefaultCombatAttributes, 1.f, handle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*specHandle.Data.Get(), GetAbilitySystemComponent());
 }

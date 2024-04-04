@@ -209,7 +209,12 @@ AValkyrie::AValkyrie()
 	mCrouchCapsuleHalfHeight = 60.f;
 	mCapsuleHalfHeight = 88.f;
 
-	
+	// init AGAttributes by GameplayEffect
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultCombatAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/GE_ValkyrieInitAttributes.GE_ValkyrieInitAttributes_C'"));
+	if (defaultCombatAttributes.Succeeded())
+	{
+		mDefaultCombatAttributes = defaultCombatAttributes.Class;
+	}
 }
 
 void AValkyrie::BeginPlay()
@@ -267,10 +272,10 @@ void AValkyrie::Tick(float DeltaTime)
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
 
-	PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
-		GetActorLocation().X,
-		GetActorLocation().Y,
-		GetActorLocation().Z));
+	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
+	//	GetActorLocation().X,
+	//	GetActorLocation().Y,
+	//	GetActorLocation().Z));
 	//PrintAllActionState();
 }
 
@@ -313,6 +318,9 @@ void AValkyrie::InitAbilityActorInfo()
 			hud->InitMainWidget(pc, state, mAbilitySystemComp, mAttributeSet);
 		}
 	}
+
+	// init AGAttributes by GameplayEffect
+	InitializeCombatAttributes();
 }
 
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

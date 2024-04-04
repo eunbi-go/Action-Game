@@ -15,6 +15,18 @@ AValkyriePlayerState::AValkyriePlayerState()
 	mAttributeSet = CreateDefaultSubobject<UAGAttributeSet>("AttributeSet");
 
 	NetUpdateFrequency = 100.f;
+
+	//// init AGAttributes by Data Table
+	//FAttributeDefaults attributes;
+
+	//static ConstructorHelpers::FObjectFinder<UDataTable>	valkyrieDataTable(TEXT("DataTable'/Game/Blueprints/DataTable/DT_InitValkyrie.DT_InitValkyrie'"));
+	//if (valkyrieDataTable.Succeeded())
+	//{
+	//	attributes.DefaultStartingTable = valkyrieDataTable.Object;
+	//}
+	//attributes.Attributes = UAGAttributeSet::StaticClass();
+
+	//mAbilitySystemComp->DefaultStartingData.Add(attributes);
 }
 
 UAbilitySystemComponent* AValkyriePlayerState::GetAbilitySystemComponent() const
