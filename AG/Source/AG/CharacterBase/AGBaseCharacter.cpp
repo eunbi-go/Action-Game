@@ -26,12 +26,18 @@ void AAGBaseCharacter::InitAbilityActorInfo()
 {
 }
 
-void AAGBaseCharacter::InitializeCombatAttributes() const
+void AAGBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
-	check(mDefaultCombatAttributes);
+	check(GameplayEffectClass);
 
 	const FGameplayEffectContextHandle handle = GetAbilitySystemComponent()->MakeEffectContext();
-	const FGameplayEffectSpecHandle specHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(mDefaultCombatAttributes, 1.f, handle);
+	const FGameplayEffectSpecHandle specHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, handle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*specHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AAGBaseCharacter::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(mDefaultFirstAttributes, 1.f);
+	ApplyEffectToSelf(mDefaultSecondAttributes, 1.f);
 }

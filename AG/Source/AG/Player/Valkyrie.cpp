@@ -210,10 +210,15 @@ AValkyrie::AValkyrie()
 	mCapsuleHalfHeight = 88.f;
 
 	// init AGAttributes by GameplayEffect
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultCombatAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/GE_ValkyrieInitAttributes.GE_ValkyrieInitAttributes_C'"));
-	if (defaultCombatAttributes.Succeeded())
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
+	if (defaultFirstAttributes.Succeeded())
 	{
-		mDefaultCombatAttributes = defaultCombatAttributes.Class;
+		mDefaultFirstAttributes = defaultFirstAttributes.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecondAttributes.GE_ValkyrieSecondAttributes_C'"));
+	if (defaultSecondAttributes.Succeeded())
+	{
+		mDefaultSecondAttributes = defaultSecondAttributes.Class;
 	}
 }
 
@@ -320,7 +325,7 @@ void AValkyrie::InitAbilityActorInfo()
 	}
 
 	// init AGAttributes by GameplayEffect
-	InitializeCombatAttributes();
+	InitializeDefaultAttributes();
 }
 
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

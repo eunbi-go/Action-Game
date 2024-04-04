@@ -72,36 +72,76 @@ public:
 	// 복제 지정자 ReplicatedUsing: 복제 변수로 만든다.
 	// -> 클라에서 서버로 변경된 값을 알린다.
 	// -> 서버에서 변경되면 클라이언트는 업데이트된 값을 받게 된다.
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Hp)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital", ReplicatedUsing = OnRep_Hp)
 	FGameplayAttributeData mHp;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mHp);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHp)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital", ReplicatedUsing = OnRep_MaxHp)
 	FGameplayAttributeData mMaxHp;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mMaxHp);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mp)
-		FGameplayAttributeData mMp;
+	UPROPERTY(BlueprintReadOnly, Category = "Vital", ReplicatedUsing = OnRep_Mp)
+	FGameplayAttributeData mMp;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mMp);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMp)
-		FGameplayAttributeData mMaxMp;
+	UPROPERTY(BlueprintReadOnly, Category = "Vital", ReplicatedUsing = OnRep_MaxMp)
+	FGameplayAttributeData mMaxMp;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mMaxMp);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Coin)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital", ReplicatedUsing = OnRep_Coin)
 	FGameplayAttributeData mCoin;
 	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mCoin);
 
 	/**
-	 * Combat 
+	 * First Attributes 
 	 **/
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Defense)
-	FGameplayAttributeData mDefense;
-	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mDefense);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Attack)
-	FGameplayAttributeData mAttack;
-	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mAttack);
+	UPROPERTY(BlueprintReadOnly, Category = "First Attributes", ReplicatedUsing = OnRep_Strength)
+	FGameplayAttributeData mStrength;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mStrength);
+
+	UPROPERTY(BlueprintReadOnly, Category = "First Attributes", ReplicatedUsing = OnRep_Intelligence)
+	FGameplayAttributeData mIntelligence;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mIntelligence);
+
+	UPROPERTY(BlueprintReadOnly, Category = "First Attributes", ReplicatedUsing = OnRep_Resilience)
+	FGameplayAttributeData mResilience;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mResilience);
+
+	UPROPERTY(BlueprintReadOnly, Category = "First Attributes", ReplicatedUsing = OnRep_Dexterity)
+	FGameplayAttributeData mDexterity;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mDexterity);
+
+
+	/**
+	 * Second Attributes
+	 **/
+
+	UPROPERTY(BlueprintReadOnly, Category = "Second Attributes", ReplicatedUsing = OnRep_Armor)
+	FGameplayAttributeData mArmor;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mArmor);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Second Attributes", ReplicatedUsing = OnRep_BlockPercent)
+	FGameplayAttributeData mBlockPercent;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mBlockPercent);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Second Attributes", ReplicatedUsing = OnRep_CriticalPercent)
+	FGameplayAttributeData mCriticalPercent;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mCriticalPercent);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Second Attributes", ReplicatedUsing = OnRep_CriticalDamage)
+	FGameplayAttributeData mCriticalDamage;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mCriticalDamage);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Second Attributes", ReplicatedUsing = OnRep_CriticalResistance)
+	FGameplayAttributeData mCriticalResistance;
+	ATTRIBUTE_ACCESSORS(UAGAttributeSet, mCriticalResistance);
+
+
+
+
+
+
 
 	UFUNCTION()
 	void OnRep_Hp(const FGameplayAttributeData& preHp) const;
@@ -116,14 +156,38 @@ public:
 	void OnRep_MaxMp(const FGameplayAttributeData& prMaxMp) const;
 
 	UFUNCTION()
-	void OnRep_Defense(const FGameplayAttributeData& preDefense) const;
-
-	UFUNCTION()
-	void OnRep_Attack(const FGameplayAttributeData& preAttack) const;
-
-	UFUNCTION()
 	void OnRep_Coin(const FGameplayAttributeData& preCoin) const;
 
+
+
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& PreStrength) const;
+
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& preIntelligence) const;
+
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& PreResilience) const;
+
+	UFUNCTION()
+	void OnRep_Dexterity(const FGameplayAttributeData& PreDexterity) const;
+
+	
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& PreArmor) const;
+
+	UFUNCTION()
+	void OnRep_BlockPercent(const FGameplayAttributeData& PreBlockPercent) const;
+
+	UFUNCTION()
+	void OnRep_CriticalPercent(const FGameplayAttributeData& PreCriticalPercent) const;
+
+	UFUNCTION()
+	void OnRep_CriticalDamage(const FGameplayAttributeData& PreCriticalDamage) const;
+
+	UFUNCTION()
+	void OnRep_CriticalResistance(const FGameplayAttributeData& PreCriticalResistance) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;

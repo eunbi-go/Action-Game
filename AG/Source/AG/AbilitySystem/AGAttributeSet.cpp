@@ -7,13 +7,11 @@
 #include "AbilitySystemBlueprintLibrary.h"
 UAGAttributeSet::UAGAttributeSet()
 {
-	InitmHp(50.f);
+	InitmHp(10.f);
 	InitmMaxHp(100.f);
 	InitmMp(50.f);
 	InitmMaxMp(100.f);
 	InitmCoin(100.f);
-	InitmAttack(40.f);
-	InitmDefense(40.f);
 }
 
 void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -22,14 +20,26 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	// 복제하려는 모든 항목에 대한 복제할 상태를 등록한다.
 	// - COND_None : 아무런 조건없이 복제된다.
+
+	// vital
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mHp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCoin, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mAttack, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDefense, COND_None, REPNOTIFY_Always);
+	// first
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mStrength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mIntelligence, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mResilience, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDexterity, COND_None, REPNOTIFY_Always);
+
+	// second
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mArmor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mBlockPercent, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalPercent, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalResistance, COND_None, REPNOTIFY_Always);
 
 }
 
@@ -96,19 +106,54 @@ void UAGAttributeSet::OnRep_MaxMp(const FGameplayAttributeData& prMaxeMp) const
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mMaxMp, prMaxeMp);
 }
 
-void UAGAttributeSet::OnRep_Defense(const FGameplayAttributeData& preDefense) const
+void UAGAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& preIntelligence) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mDefense, preDefense);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mIntelligence, preIntelligence);
 }
 
-void UAGAttributeSet::OnRep_Attack(const FGameplayAttributeData& preAttack) const
+void UAGAttributeSet::OnRep_Strength(const FGameplayAttributeData& PreStrength) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mAttack, preAttack);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mStrength, PreStrength);
+}
+
+void UAGAttributeSet::OnRep_Resilience(const FGameplayAttributeData& PreResilience) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mResilience, PreResilience);
+}
+
+void UAGAttributeSet::OnRep_Dexterity(const FGameplayAttributeData& PreDexterity) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mDexterity, PreDexterity);
 }
 
 void UAGAttributeSet::OnRep_Coin(const FGameplayAttributeData& preCoin) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mCoin, preCoin);
+}
+
+void UAGAttributeSet::OnRep_Armor(const FGameplayAttributeData& PreArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mArmor, PreArmor);
+}
+
+void UAGAttributeSet::OnRep_BlockPercent(const FGameplayAttributeData& PreBlockPercent) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mBlockPercent, PreBlockPercent);
+}
+
+void UAGAttributeSet::OnRep_CriticalPercent(const FGameplayAttributeData& PreCriticalPercent) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mCriticalPercent, PreCriticalPercent);
+}
+
+void UAGAttributeSet::OnRep_CriticalDamage(const FGameplayAttributeData& PreCriticalDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mCriticalDamage, PreCriticalDamage);
+}
+
+void UAGAttributeSet::OnRep_CriticalResistance(const FGameplayAttributeData& PreCriticalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAGAttributeSet, mCriticalResistance, PreCriticalResistance);
 }
 
 void UAGAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -149,3 +194,4 @@ void UAGAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 		Props.targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.targetAvatarActor);
 	}
 }
+

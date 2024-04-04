@@ -37,7 +37,12 @@ protected:
 
 	// init AGAttributes by GameplayEffect
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> mDefaultCombatAttributes;
+	TSubclassOf<UGameplayEffect> mDefaultFirstAttributes;
+
+	// mDefaultFirstAttributes에 의존해서 변화되는 Attributes
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> mDefaultSecondAttributes;
 	// init AGAttributes by GameplayEffect
-	void InitializeCombatAttributes() const;
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+	void InitializeDefaultAttributes() const;
 };
