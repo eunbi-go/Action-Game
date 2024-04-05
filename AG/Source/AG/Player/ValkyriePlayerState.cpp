@@ -4,7 +4,7 @@
 #include "ValkyriePlayerState.h"
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
 #include "../AbilitySystem/AGAttributeSet.h"
-
+#include "Net/UnrealNetwork.h"
 
 AValkyriePlayerState::AValkyriePlayerState()
 {
@@ -29,7 +29,18 @@ AValkyriePlayerState::AValkyriePlayerState()
 	//mAbilitySystemComp->DefaultStartingData.Add(attributes);
 }
 
+void AValkyriePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AValkyriePlayerState, mLevel);
+}
+
 UAbilitySystemComponent* AValkyriePlayerState::GetAbilitySystemComponent() const
 {
 	return mAbilitySystemComp;
+}
+
+void AValkyriePlayerState::OnRep_Level(int32 PreLevel)
+{
 }

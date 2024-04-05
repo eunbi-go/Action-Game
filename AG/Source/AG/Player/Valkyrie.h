@@ -44,6 +44,11 @@ public:
 
 	virtual void GetHit(const FVector& _impactPoint) override;
 	
+	//-------------------------------
+	// Combat Interface
+	//-------------------------------
+	virtual int32 GetPlayerLevel() override;
+
 
 private:
 	virtual void InitAbilityActorInfo() override;

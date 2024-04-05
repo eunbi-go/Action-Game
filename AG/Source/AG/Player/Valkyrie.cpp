@@ -305,6 +305,13 @@ void AValkyrie::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 AValkyrie::GetPlayerLevel()
+{
+	const AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	check(state);
+	return state->GetPlayerLevel();
+}
+
 void AValkyrie::InitAbilityActorInfo()
 {
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
@@ -324,7 +331,7 @@ void AValkyrie::InitAbilityActorInfo()
 		}
 	}
 
-	// init AGAttributes by GameplayEffect
+	// Default Attribute를 설정한다.
 	InitializeDefaultAttributes();
 }
 

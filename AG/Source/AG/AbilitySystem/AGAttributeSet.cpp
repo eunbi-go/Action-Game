@@ -7,10 +7,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 UAGAttributeSet::UAGAttributeSet()
 {
-	InitmHp(10.f);
-	InitmMaxHp(100.f);
+	InitmHp(50.f);
+	//InitmMaxHp(100.f);
 	InitmMp(50.f);
-	InitmMaxMp(100.f);
+	//InitmMaxMp(100.f);
 	InitmCoin(100.f);
 }
 

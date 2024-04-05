@@ -31,7 +31,9 @@ void AAGBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEf
 	check(IsValid(GetAbilitySystemComponent()));
 	check(GameplayEffectClass);
 
-	const FGameplayEffectContextHandle handle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectContextHandle handle = GetAbilitySystemComponent()->MakeEffectContext();
+	// 이 함수를 호출하는 객체 자체가 Source Object이다. 
+	handle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle specHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, handle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*specHandle.Data.Get(), GetAbilitySystemComponent());
 }

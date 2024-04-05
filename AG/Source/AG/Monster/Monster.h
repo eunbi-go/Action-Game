@@ -59,6 +59,12 @@ public:
 	virtual void Skill4();
 
 	//-------------------------------------------------------------------
+	// Combat Interface
+	//-----------------------------
+	virtual int32 GetPlayerLevel() override;
+
+
+	//-------------------------------------------------------------------
 	// Boss Skill Behavior Tree
 	//-----------------------------
 public:
@@ -80,6 +86,7 @@ private:
 	TArray<int32> enableSkillIndexArray;
 	//-------------------------------------------------------------------
 
+	
 public:
 	virtual void NormalAttackCheck();
 
@@ -211,6 +218,10 @@ public:
 	}
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Clas")
+	int32 mLevel = 1;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montages", meta = (AllowPrivateAccess = true))
 	TMap<FName, UAnimMontage*>	mMontages;
 

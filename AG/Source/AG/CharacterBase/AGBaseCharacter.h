@@ -4,6 +4,7 @@
 
 #include "../BasicInfo.h"
 #include "AbilitySystemInterface.h"
+#include "../Interface/CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "AGBaseCharacter.generated.h"
 
@@ -12,7 +13,7 @@ class UAttributeSet;
 class UGameplayEffect;
 
 UCLASS(Abstract)	// 추상 클래스로 만든다.
-class AG_API AAGBaseCharacter : public ACharacter, public IAbilitySystemInterface
+class AG_API AAGBaseCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 

@@ -21,8 +21,14 @@ class AG_API AValkyriePlayerState : public APlayerState, public IAbilitySystemIn
 public:
 	AValkyriePlayerState();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return mAttributeSet; }
+
+	FORCEINLINE int32 GetPlayerLevel() const
+	{
+		return mLevel;
+	}
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -30,4 +36,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		TObjectPtr<UAttributeSet> mAttributeSet;
+
+private:
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
+	int32	mLevel = 1;
+
+	UFUNCTION()
+	void OnRep_Level(int32 PreLevel);
 };

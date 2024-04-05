@@ -177,6 +177,8 @@ void AMonster::InitAbilityActorInfo()
 	// 소유자와 아바타 모두 본인.
 	mAbilitySystemComp->InitAbilityActorInfo(this, this);
 	// 캐릭터는 ASC에 의존함. ASC는 캐릭터에 대해 알 필요X
+	// 캐릭터가 ASC에 따라 달라진다. 
+	// ASC가 델리게이트를 바인딩하는 것과 같은 작업을 할 수 있게 됨.
 	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityActorInfoSet();
 }
 
@@ -282,7 +284,7 @@ void AMonster::GetHit(const FVector& _impactPoint)
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmDefense();
+	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmIntelligence();
 	if (damage < 1)
 		damage = 1;
 	
@@ -395,6 +397,11 @@ void AMonster::Skill3()
 
 void AMonster::Skill4()
 {
+}
+
+int32 AMonster::GetPlayerLevel()
+{
+	return mLevel;
 }
 
 bool AMonster::CheckEnableSkill()
