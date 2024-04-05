@@ -41,12 +41,36 @@ void UPlayerInfoWidget::SetNewHp(float newHp)
 
 void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 {
-	mNewMaxHp = newMaxHp;
-	GetWorld()->GetTimerManager().SetTimer(
-		mTimerHandle,
-		FTimerDelegate::CreateLambda([this, newMaxHp]() {
-			mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, newMaxHp));
-			}), 0.3f, false);
+	if (!mIsInitMaxHp)
+	{
+		mIsInitMaxHp = true;
+		mNewMaxHp = newMaxHp;
+		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
+		return;
+	}
+
+	if (newMaxHp >= mNewMaxHp)
+	{
+		// bar 먼저 줄어들고, 그 다음에 ghost bar 줄어듦
+		mNewMaxHp = newMaxHp;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMaxHp]() {
+				mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
+				}), 0.3f, false);
+	}
+	else
+	{
+		// ghost bar 먼저 늘어남
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMaxHp]() {
+				mNewMaxHp = newMaxHp;
+				}), 0.2f, false);
+
+		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
+	}
 }
 
 void UPlayerInfoWidget::SetNewMp(float newMp)
@@ -86,12 +110,37 @@ void UPlayerInfoWidget::SetNewMp(float newMp)
 
 void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
 {
-	mNewMaxMp = newMaxMp;
-	GetWorld()->GetTimerManager().SetTimer(
-		mTimerHandle,
-		FTimerDelegate::CreateLambda([this, newMaxMp]() {
-			mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, newMaxMp));
-			}), 0.3f, false);
+	if (!mIsInitMaxMp)
+	{
+		mIsInitMaxMp = true;
+		mNewMaxMp = newMaxMp;
+		mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp));
+		return;
+	}
+
+	if (newMaxMp >= mNewMaxMp)
+	{
+		// bar 먼저 줄어들고, 그 다음에 ghost bar 줄어듦
+		mNewMaxMp = newMaxMp;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMaxMp]() {
+				mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp));
+				}), 0.3f, false);
+
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			mTimerHandle,
+			FTimerDelegate::CreateLambda([this, newMaxMp]() {
+				mNewMaxMp = newMaxMp;
+				}), 0.2f, false);
+
+		// ghost bar 먼저 늘어남
+		mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp));
+	}
 }
 
 void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)

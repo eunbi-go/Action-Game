@@ -74,4 +74,6 @@ private:
 	int				mNewCoin;
 	bool			mIsInitMp = false;
 	bool			mIsInitHp = false;
+	bool			mIsInitMaxHp = false;
+	bool			mIsInitMaxMp = false;
 };
