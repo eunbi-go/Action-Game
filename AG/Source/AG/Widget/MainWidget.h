@@ -54,6 +54,7 @@ private:
 	class UInventoryWidget* mInventory;
 	class UItemQuickSlot*	mItemQuickSlot;
 	class UMessageWidget* mMessage;
+	class UStatMenuButton* mStatMenuButton;
 public:
 	class UBossInfoWidget* mBossInfo;
 };

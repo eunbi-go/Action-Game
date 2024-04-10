@@ -9,7 +9,8 @@
 #include "ItemQuickSlot.h"
 #include "BossInfoWidget.h"
 #include "MessageWidget.h"
-
+#include "Button/StatMenuButton.h"
+#include "Stat/StatWidget.h"
 
 void UMainWidget::NativeConstruct()
 {
@@ -20,6 +21,7 @@ void UMainWidget::NativeConstruct()
 	mItemQuickSlot = Cast<UItemQuickSlot>(GetWidgetFromName(FName(TEXT("ItemQuickSlot"))));
 	mBossInfo = Cast<UBossInfoWidget>(GetWidgetFromName(FName(TEXT("BossInfo"))));
 	mMessage = Cast<UMessageWidget>(GetWidgetFromName(FName(TEXT("Message"))));
+	mStatMenuButton = Cast<UStatMenuButton>(GetWidgetFromName(FName(TEXT("StatMenuButton"))));
 
 	mBossInfo->SetVisibility(ESlateVisibility::Hidden);
 	mInventory->SetVisibility(ESlateVisibility::Hidden);
