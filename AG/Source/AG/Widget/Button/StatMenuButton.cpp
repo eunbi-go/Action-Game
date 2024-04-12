@@ -38,13 +38,12 @@ void UStatMenuButton::ButtonClicked()
 		if (UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UUserWidget>())
 		{
 			mStatWidget = CreateWidget<UStatWidget>(GetWorld(), MyWidgetClass);
-
-			mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
-			mAttributeWidgetController->BindCallbacksToDependecies();
-			mStatWidget->SetWidgetController(mAttributeWidgetController);
-
 			mStatWidget->AddToViewport();
 			mStatWidget->SetPositionInViewport(FVector2D(50.f, 50.f));
+
+			mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
+			mStatWidget->SetWidgetController(mAttributeWidgetController);
+
 
 			mStatWidget->mOnCloseButtonClickedDelegate.AddLambda([this]()
 				{

@@ -23,9 +23,47 @@ UAGAttributeSet::UAGAttributeSet()
 	dexDelegate.BindStatic(UAGAttributeSet::GetmDexterityAttribute);
 	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Dexterity, dexDelegate);
 
+	FAttributeSignature resilienceDelegate;
+	resilienceDelegate.BindStatic(UAGAttributeSet::GetmResilienceAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Resilience, resilienceDelegate);
+
+	FAttributeSignature coinDelegate;
+	coinDelegate.BindStatic(UAGAttributeSet::GetmCoinAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Coin, coinDelegate);
+
+
+
+
+
+
+
+	FAttributeSignature armorDelegate;
+	armorDelegate.BindStatic(UAGAttributeSet::GetmArmorAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_Armor, armorDelegate);
+
 	FAttributeSignature blockPercentDelegate;
 	blockPercentDelegate.BindStatic(UAGAttributeSet::GetmBlockPercentAttribute);
 	mTagsToAttributes.Add(gameplayTags.Attributes_Second_BlockPercent, blockPercentDelegate);
+
+	FAttributeSignature criticalPercentDelegate;
+	criticalPercentDelegate.BindStatic(UAGAttributeSet::GetmCriticalPercentAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_CriticalPercent, criticalPercentDelegate);
+
+	FAttributeSignature criticalDamageDelegate;
+	criticalDamageDelegate.BindStatic(UAGAttributeSet::GetmCriticalDamageAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_CriticalDamage, criticalDamageDelegate);
+
+	FAttributeSignature criticalResilienceDelegate;
+	criticalResilienceDelegate.BindStatic(UAGAttributeSet::GetmCriticalResistanceAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_CriticalResistance, criticalResilienceDelegate);
+
+	FAttributeSignature maxHpDelegate;
+	maxHpDelegate.BindStatic(UAGAttributeSet::GetmMaxHpAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_MaxHp, maxHpDelegate);
+
+	FAttributeSignature maxMpDelegate;
+	maxMpDelegate.BindStatic(UAGAttributeSet::GetmMaxMpAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_MaxMp, maxMpDelegate);
 
 	//FAttributeSignature intelligenceDelegate;
 	//intelligenceDelegate.BindStatic(UAGAttributeSet::GetmIntelligenceAttribute);

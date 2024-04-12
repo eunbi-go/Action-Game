@@ -19,29 +19,47 @@ void UStatWidget::NativeConstruct()
 	
 
 
-	mFirstAttributeScrollBox = Cast<UScrollBox>(GetWidgetFromName(FName(TEXT("ScrollBox_FirstAttributes"))));
-	mDexterityRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Strength"))));
-	mBlockPercentRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_BlockPercent"))));
-	//mIntelligenceRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Row_Intelligence"))));
+	mStrengthRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Stength"))));
+	mDexterityRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Dexterity"))));
+	mIntelligenceRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Intelligence"))));
+	mResilienceRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Resilience"))));
+	mCoinRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("First_Coin"))));
 
+
+
+	mArmorRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_Armor"))));
+	mBlockPercentRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_BlockPercent"))));
+	mCriticalPercentRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_CriticalPercent"))));
+	mCriticalResistanceRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_CriticalResistance"))));
+	mCriticalDamageRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_CriticalDamage"))));
+	mMaxHpRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_MaxHp"))));
+	mMaxMpRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_MaxMp"))));
 	
 
-	//mFirstAttributeScrollBox->AddChild(mStrengthRow);
-	//mFirstAttributeScrollBox->AddChild(mIntelligenceRow);
 
+	// Attribute Row에 Tag 할당
+
+	mStrengthRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Strength;
+	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
+	mIntelligenceRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Intelligence;
+	mResilienceRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Resilience;
+	mCoinRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Coin;
+
+
+
+	mArmorRow->mTag = FAGGameplayTags::Get().Attributes_Second_Armor;
+	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
+	mCriticalPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_CriticalPercent;
+	mCriticalResistanceRow->mTag = FAGGameplayTags::Get().Attributes_Second_CriticalResistance;
+	mCriticalDamageRow->mTag = FAGGameplayTags::Get().Attributes_Second_CriticalDamage;
+	mMaxHpRow->mTag = FAGGameplayTags::Get().Attributes_Second_MaxHp;
+	mMaxMpRow->mTag = FAGGameplayTags::Get().Attributes_Second_MaxMp;
 
 	// Set WidgetController
 	mWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(GetWorld());
 
-	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
-	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
 
-	// Attribute Row에 Tag 할당
-	SetAttributeTag();
 
-	
-
-	Cast<UAttributeWidgetController>(mWidgetController)->BroadcastInitValues();
 }
 
 void UStatWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
@@ -49,11 +67,7 @@ void UStatWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 	Super::NativeTick(_geo, _DeltaTime);
 }
 
-void UStatWidget::SetAttributeTag()
-{
-	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
-	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
-}
+
 
 void UStatWidget::CloseButtonClicked()
 {
@@ -69,4 +83,5 @@ void UStatWidget::SetWidgetController(UAttributeWidgetController* widgetControll
 	checkf(mWidgetController, TEXT("UStatWidget::SetWidgetController() widgetController : nullptr"))
 
 	Cast<UAttributeWidgetController>(mWidgetController)->BroadcastInitValues();
+	Cast<UAttributeWidgetController>(mWidgetController)->BindCallbacksToDependecies();
 }

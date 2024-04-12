@@ -23,8 +23,6 @@ class AG_API UStatWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
-	
-	void SetAttributeTag();
 
 
 	UFUNCTION()
@@ -39,10 +37,48 @@ public:
 	void SetWidgetController(UAttributeWidgetController* widgetController);
 
 
-	UScrollBox* mFirstAttributeScrollBox;
+	//-------------------------------------------------
+	// First Attributes
+	//-------------------------------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAGAttributeValueButtonRow* mStrengthRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAGAttributeValueButtonRow* mDexterityRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAGAttributeValueButtonRow* mIntelligenceRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAGAttributeValueButtonRow* mResilienceRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mCoinRow;
+
+
+
+	//-------------------------------------------------
+	// Second Attributes
+	//-------------------------------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mArmorRow;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAttributeValueRow* mBlockPercentRow;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAGAttributeValueButtonRow* mDexterityRow;
+	UAttributeValueRow* mCriticalPercentRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mCriticalResistanceRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mCriticalDamageRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mMaxHpRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mMaxMpRow;
+	
 };

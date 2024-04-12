@@ -28,6 +28,6 @@ public:
 	UPROPERTY()
 	UTextBlock* mAttributeValue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	FGameplayTag mTag;
 };
