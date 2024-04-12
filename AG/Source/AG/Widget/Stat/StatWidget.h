@@ -11,6 +11,7 @@ class UCloseButton;
 DECLARE_MULTICAST_DELEGATE(FOnCloseButtonClicked);
 class UAttributeWidgetController;
 class UAttributeValueRow;
+class UAGAttributeValueButtonRow;
 /**
  * 
  */
@@ -39,6 +40,9 @@ public:
 
 
 	UScrollBox* mFirstAttributeScrollBox;
-	UAttributeValueRow* mStrengthRow;
-	UAttributeValueRow* mIntelligenceRow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAttributeValueRow* mBlockPercentRow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAGAttributeValueButtonRow* mDexterityRow;
 };

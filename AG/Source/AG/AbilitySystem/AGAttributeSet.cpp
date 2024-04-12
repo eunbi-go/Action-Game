@@ -11,9 +11,6 @@ UAGAttributeSet::UAGAttributeSet()
 {
 	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
 
-	/*mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Strength, GetmStrengthAttribute);
-	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Intelligence, GetmIntelligenceAttribute);*/
-
 	FAttributeSignature strengthDelegate;
 	strengthDelegate.BindStatic(UAGAttributeSet::GetmStrengthAttribute);
 	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Strength, strengthDelegate);
@@ -21,6 +18,14 @@ UAGAttributeSet::UAGAttributeSet()
 	FAttributeSignature intelligenceDelegate;
 	intelligenceDelegate.BindStatic(UAGAttributeSet::GetmIntelligenceAttribute);
 	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Intelligence, intelligenceDelegate);
+
+	FAttributeSignature dexDelegate;
+	dexDelegate.BindStatic(UAGAttributeSet::GetmDexterityAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Dexterity, dexDelegate);
+
+	FAttributeSignature blockPercentDelegate;
+	blockPercentDelegate.BindStatic(UAGAttributeSet::GetmBlockPercentAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Second_BlockPercent, blockPercentDelegate);
 
 	//FAttributeSignature intelligenceDelegate;
 	//intelligenceDelegate.BindStatic(UAGAttributeSet::GetmIntelligenceAttribute);
@@ -41,17 +46,17 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	// first
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mStrength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDexterity, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mIntelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mResilience, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDexterity, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCoin, COND_None, REPNOTIFY_Always);
 
 	// second
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mArmor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mBlockPercent, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalPercent, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
 

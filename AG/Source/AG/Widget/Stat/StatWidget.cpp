@@ -8,6 +8,7 @@
 #include "AttributeValueRow.h"
 #include "../../AbilitySystem/AGAbilitySystemLibrary.h"
 #include "../../AGGameplayTags.h"
+#include "AGAttributeValueButtonRow.h"
 
 void UStatWidget::NativeConstruct()
 {
@@ -19,17 +20,21 @@ void UStatWidget::NativeConstruct()
 
 
 	mFirstAttributeScrollBox = Cast<UScrollBox>(GetWidgetFromName(FName(TEXT("ScrollBox_FirstAttributes"))));
-	mStrengthRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Row_Strength"))));
-	mIntelligenceRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Row_Intelligence"))));
+	mDexterityRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Strength"))));
+	mBlockPercentRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_BlockPercent"))));
+	//mIntelligenceRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Row_Intelligence"))));
 
 	
 
-	mFirstAttributeScrollBox->AddChild(mStrengthRow);
-	mFirstAttributeScrollBox->AddChild(mIntelligenceRow);
+	//mFirstAttributeScrollBox->AddChild(mStrengthRow);
+	//mFirstAttributeScrollBox->AddChild(mIntelligenceRow);
 
 
 	// Set WidgetController
 	mWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(GetWorld());
+
+	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
+	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
 
 	// Attribute Row¿¡ Tag ÇÒ´ç
 	SetAttributeTag();
@@ -46,8 +51,8 @@ void UStatWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 
 void UStatWidget::SetAttributeTag()
 {
-	mStrengthRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Strength;
-	mIntelligenceRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Intelligence;
+	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
+	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
 }
 
 void UStatWidget::CloseButtonClicked()

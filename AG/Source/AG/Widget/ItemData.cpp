@@ -25,5 +25,4 @@ void UItemData::ApplyEffect(ACharacter* target)
 	ecHandle.AddSourceObject(this);
 
 	const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(mEffect, 1.f, ecHandle);
-	const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
-}
+	const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());}

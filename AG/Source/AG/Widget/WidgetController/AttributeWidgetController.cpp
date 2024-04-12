@@ -36,7 +36,7 @@ void UAttributeWidgetController::BroadcastInitValues()
 void UAttributeWidgetController::BindCallbacksToDependecies()
 {
 	UAGAttributeSet* as = CastChecked<UAGAttributeSet>(mAttributeSet);
-
+	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
 	
 
 	for (auto& pair : as->mTagsToAttributes)
@@ -51,5 +51,30 @@ void UAttributeWidgetController::BindCallbacksToDependecies()
 					mAttributeInfoDelegate.Broadcast(info);
 				}
 		);
+
+		mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
+			as->GetmDexterityAttribute()).AddLambda(
+				[this, pair, as](const FOnAttributeChangeData& Data)
+				{
+					FAGAttributeInfo info = mAttributeInfo->FindAttributeInfoByTag(pair.Key);
+					info.mAttributeValue = pair.Value.Execute().GetNumericValue(as);
+					info.mAttributeTag = pair.Key;
+					mAttributeInfoDelegate.Broadcast(info);
+				}
+		);
+
+		mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(
+			as->GetmBlockPercentAttribute()).AddLambda(
+				[this, pair, as](const FOnAttributeChangeData& Data)
+				{
+					FAGAttributeInfo info = mAttributeInfo->FindAttributeInfoByTag(pair.Key);
+					info.mAttributeValue = pair.Value.Execute().GetNumericValue(as);
+					info.mAttributeTag = pair.Key;
+					mAttributeInfoDelegate.Broadcast(info);
+				}
+		);
+
 	}
+
+
 }

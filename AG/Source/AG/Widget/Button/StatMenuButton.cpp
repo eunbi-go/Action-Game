@@ -39,7 +39,9 @@ void UStatMenuButton::ButtonClicked()
 		{
 			mStatWidget = CreateWidget<UStatWidget>(GetWorld(), MyWidgetClass);
 
-			
+			mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
+			mAttributeWidgetController->BindCallbacksToDependecies();
+			mStatWidget->SetWidgetController(mAttributeWidgetController);
 
 			mStatWidget->AddToViewport();
 			mStatWidget->SetPositionInViewport(FVector2D(50.f, 50.f));
@@ -50,15 +52,6 @@ void UStatMenuButton::ButtonClicked()
 				});
 
 
-			APlayerController* pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-			check(pc);
-
-			AAGHUD* hud = Cast<AAGHUD>(pc->GetHUD());
-			check(hud);
-
-			mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
-			mStatWidget->SetWidgetController(mAttributeWidgetController);
-			mAttributeWidgetController->BindCallbacksToDependecies();
 		}
 	}
 	else if (mButton->mButtonState == BUTTON_STATE::CLICKED)
