@@ -31,6 +31,11 @@
 #include <Components\TextBlock.h>
 #include "Components/TileView.h"
 #include <Components\ProgressBar.h>
+#include "Components/Button.h"
+#include "Components/SizeBox.h"
+#include "Components/TextBlock.h"
+#include "Components/ScrollBox.h"
+
 #include "GameplayEffect.h"
 
 #include "UObject/NoExportTypes.h"

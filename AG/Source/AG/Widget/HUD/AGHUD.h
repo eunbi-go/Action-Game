@@ -15,6 +15,8 @@ class UMainWidgetController;
 struct FWidgetControllerParams;
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UAttributeWidgetController;
+class UStatWidget;
 
 UCLASS()
 class AG_API AAGHUD : public AHUD
@@ -28,6 +30,7 @@ public:
 	UMainWidget* mMainWidget;
 
 	UMainWidgetController* GetMainWidgetController(const FWidgetControllerParams& params);
+	UAttributeWidgetController* GetAttributeWidgetController(const FWidgetControllerParams& params);
 
 	void InitMainWidget(APlayerController* pc, APlayerState* ps, UAbilitySystemComponent* asc, UAttributeSet* as);
 
@@ -44,4 +47,15 @@ private:
 	
 	UPROPERTY()
 	UMainWidgetController* mMainWidgetController;
+
+	///////////
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UStatWidget> mStatWidgetClass;
+
+	UPROPERTY()
+	UAttributeWidgetController* mAttributeWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeWidgetController> mAttributeWidgetControllerClass;
+	
 };

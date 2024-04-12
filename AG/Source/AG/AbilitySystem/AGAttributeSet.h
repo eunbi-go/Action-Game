@@ -13,6 +13,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature);
+
 USTRUCT()
 struct FEffectProperties
 {
@@ -68,6 +70,14 @@ public:
 	 * Attribute가 변경된 후, 호출된다.
 	 */
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+
+
+	//TMap<FGameplayTag, TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr> mTagsToAttributes;
+	TMap<FGameplayTag, FAttributeSignature> mTagsToAttributes;
+
+	//TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr mFunctionPointer;
+
 
 	// 복제 지정자 ReplicatedUsing: 복제 변수로 만든다.
 	// -> 클라에서 서버로 변경된 값을 알린다.

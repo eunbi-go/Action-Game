@@ -9,7 +9,8 @@
 class UCloseButton;
 
 DECLARE_MULTICAST_DELEGATE(FOnCloseButtonClicked);
-
+class UAttributeWidgetController;
+class UAttributeValueRow;
 /**
  * 
  */
@@ -22,10 +23,22 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
 	
+	void SetAttributeTag();
+
+
 	UFUNCTION()
 	void CloseButtonClicked();
-
-
 	UCloseButton* mCloseButton;
 	FOnCloseButtonClicked mOnCloseButtonClickedDelegate;
+	
+
+
+	UPROPERTY()
+	UObject* mWidgetController;
+	void SetWidgetController(UAttributeWidgetController* widgetController);
+
+
+	UScrollBox* mFirstAttributeScrollBox;
+	UAttributeValueRow* mStrengthRow;
+	UAttributeValueRow* mIntelligenceRow;
 };

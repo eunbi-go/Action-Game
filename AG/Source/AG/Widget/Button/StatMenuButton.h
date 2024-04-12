@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "StatMenuButton.generated.h"
 
+class UAttributeWidgetController;
+
 /**
  * 
  */
@@ -25,4 +27,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UStatWidget* mStatWidget;
+
+private:
+
+	UPROPERTY()
+	UAttributeWidgetController* mAttributeWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeWidgetController> mAttributeWidgetControllerClass;
 };

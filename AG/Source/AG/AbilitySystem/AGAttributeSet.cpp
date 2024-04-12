@@ -5,13 +5,29 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "../AGGameplayTags.h"
+
 UAGAttributeSet::UAGAttributeSet()
 {
-	InitmHp(50.f);
-	//InitmMaxHp(100.f);
-	InitmMp(50.f);
-	//InitmMaxMp(100.f);
-	InitmCoin(100.f);
+	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
+
+	/*mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Strength, GetmStrengthAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Intelligence, GetmIntelligenceAttribute);*/
+
+	FAttributeSignature strengthDelegate;
+	strengthDelegate.BindStatic(UAGAttributeSet::GetmStrengthAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Strength, strengthDelegate);
+
+	FAttributeSignature intelligenceDelegate;
+	intelligenceDelegate.BindStatic(UAGAttributeSet::GetmIntelligenceAttribute);
+	mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Intelligence, intelligenceDelegate);
+
+	//FAttributeSignature intelligenceDelegate;
+	//intelligenceDelegate.BindStatic(UAGAttributeSet::GetmIntelligenceAttribute);
+	//mTagsToAttributes.Add(gameplayTags.Attributes_Primary_Intelligence, intelligenceDelegate);
+
+	//mFunctionPointer = GetmIntelligenceAttribute;
+	//FGameplayAttribute attribute = mFunctionPointer();
 }
 
 void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -21,18 +37,14 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	// 복제하려는 모든 항목에 대한 복제할 상태를 등록한다.
 	// - COND_None : 아무런 조건없이 복제된다.
 
-	// vital
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mHp, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMp, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCoin, COND_None, REPNOTIFY_Always);
+
 
 	// first
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mStrength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mIntelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mResilience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mDexterity, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCoin, COND_None, REPNOTIFY_Always);
 
 	// second
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mArmor, COND_None, REPNOTIFY_Always);
@@ -40,6 +52,12 @@ void UAGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalPercent, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mCriticalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxHp, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMaxMp, COND_None, REPNOTIFY_Always);
+
+	// vital
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mHp, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAGAttributeSet, mMp, COND_None, REPNOTIFY_Always);
 
 }
 

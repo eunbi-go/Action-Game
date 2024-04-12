@@ -6,6 +6,8 @@
 #include "../WidgetController/MainWidgetController.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
+#include "../WidgetController/AttributeWidgetController.h"
+#include "../Stat/StatWidget.h"
 
 AAGHUD::AAGHUD()
 {
@@ -20,6 +22,9 @@ AAGHUD::AAGHUD()
 	{
 		mMainWidgetControllerClass = mwdc.Class;
 	}
+
+	mAttributeWidgetControllerClass = UAttributeWidgetController::StaticClass();
+	mStatWidgetClass = UStatWidget::StaticClass();
 }
 
 UMainWidgetController* AAGHUD::GetMainWidgetController(const FWidgetControllerParams& params)
@@ -34,6 +39,19 @@ UMainWidgetController* AAGHUD::GetMainWidgetController(const FWidgetControllerPa
 	}
 
 	return mMainWidgetController;
+}
+
+UAttributeWidgetController* AAGHUD::GetAttributeWidgetController(const FWidgetControllerParams& params)
+{
+	if (!mAttributeWidgetController)
+	{
+		mAttributeWidgetController = NewObject<UAttributeWidgetController>(this, mAttributeWidgetControllerClass);
+		mAttributeWidgetController->SetWidgetControllerParams(params);
+		mAttributeWidgetController->BindCallbacksToDependecies();
+
+		return mAttributeWidgetController;
+	}
+	return mAttributeWidgetController;
 }
 
 void AAGHUD::InitMainWidget(APlayerController* pc, APlayerState* ps, UAbilitySystemComponent* asc, UAttributeSet* as)
