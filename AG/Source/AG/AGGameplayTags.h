@@ -30,6 +30,16 @@ public:
 	FGameplayTag Attributes_Second_CriticalDamage;
 	FGameplayTag Attributes_Second_CriticalResistance;
 
+
+	FGameplayTag InputTag_FWD;
+	FGameplayTag InputTag_BWD;
+	FGameplayTag InputTag_RT;
+	FGameplayTag InputTag_LT;
+	FGameplayTag InputTag_1;
+	FGameplayTag InputTag_2;
+	FGameplayTag InputTag_3;
+	FGameplayTag InputTag_4;
+
 protected:
 private:
 	static FAGGameplayTags mGameplayTags;

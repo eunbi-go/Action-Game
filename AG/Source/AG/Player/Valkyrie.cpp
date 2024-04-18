@@ -23,6 +23,7 @@
 #include "../Widget/HUD/AGHUD.h"
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "Shield.h"
+#include "../AGGameplayTags.h"
 
 AValkyrie::AValkyrie()
 {
@@ -215,11 +216,28 @@ AValkyrie::AValkyrie()
 	{
 		mDefaultFirstAttributes = defaultFirstAttributes.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecondAttributes.GE_ValkyrieSecondAttributes_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecond.GE_ValkyrieSecond_C'"));
 	if (defaultSecondAttributes.Succeeded())
 	{
 		mDefaultSecondAttributes = defaultSecondAttributes.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieVitalAttributes.GE_ValkyrieVitalAttributes_C'"));
+	if (defaultVitalAttributes.Succeeded())
+	{
+		mDefaultVitalAttributes = defaultVitalAttributes.Class;
+	}
+
+
+
+
+
+	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_Test.GA_Test_C'"));
+	TSubclassOf<UGameplayAbility> ga;
+	if (testGameplayAbility.Succeeded())
+	{
+		ga = testGameplayAbility.Class;
+	}
+	mStartupAbilites.Add(ga);
 }
 
 void AValkyrie::BeginPlay()
@@ -295,6 +313,8 @@ void AValkyrie::PossessedBy(AController* NewController)
 
 	// Init ability actor info for the server.
 	InitAbilityActorInfo();
+
+	AddCharacterAbilities();
 }
 
 void AValkyrie::OnRep_PlayerState()
@@ -465,6 +485,7 @@ void AValkyrie::GuardKey()
 void AValkyrie::JumpKey()
 {
 	bool isJump = CheckActionState(EActionState2::EAS_Jump2, false);
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_2);
 
 	// 이미 점프중이라면 더블점프한다.
 	if (isJump)
@@ -833,6 +854,8 @@ void AValkyrie::SpawnEffect()
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	FVector location = FVector();
+
+	
 
 	switch (mActionState)
 	{

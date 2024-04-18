@@ -22,10 +22,11 @@ public class AG : ModuleRules
             "MotionWarping",
             "GameplayAbilities",
             "AnimGraphRuntime",
+            "EnhancedInput"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { 
-			
+			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks"
 		});

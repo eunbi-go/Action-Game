@@ -43,7 +43,18 @@ protected:
 	// mDefaultFirstAttributes에 의존해서 변화되는 Attributes
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> mDefaultSecondAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> mDefaultVitalAttributes;
+
 	// init AGAttributes by GameplayEffect
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	void InitializeDefaultAttributes() const;
+
+
+
+	void AddCharacterAbilities();
+
+	UPROPERTY(EditAnywhere, Category = "Ability")
+	TArray<TSubclassOf<UGameplayAbility>> mStartupAbilites;
 };

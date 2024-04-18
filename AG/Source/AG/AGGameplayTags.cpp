@@ -60,4 +60,41 @@ void FAGGameplayTags::InitializeNativeGameplayTags()
 		FString("Reduce Critical hit damage")
 	);
 
+
+
+
+
+
+	mGameplayTags.InputTag_FWD = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.FWD"),
+		FString("Input Tag for Forward")
+	);
+	mGameplayTags.InputTag_BWD = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.BWD"),
+		FString("Input Tag for Backward")
+	);
+	mGameplayTags.InputTag_RT = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.RT"),
+		FString("Input Tag for Right")
+	);
+	mGameplayTags.InputTag_LT = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.LT"),
+		FString("Input Tag for Left")
+	);
+	mGameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.1"),
+		FString("Input Tag for 1 key")
+	);
+	mGameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.2"),
+		FString("Input Tag for 2 key")
+	);
+	mGameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.3"),
+		FString("Input Tag for 3 key")
+	);
+	mGameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.4"),
+		FString("Input Tag for 4 key")
+	);
 }

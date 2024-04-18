@@ -23,6 +23,15 @@ public:
 
 	FEffectAssetTags mEffectAssetTags;
 
+	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+
+	// Valkyrie 입력이 있을 때, 호출한다.
+	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	
+
+
 protected:
 	// ASC에 적용되는 모든 효과에 호출된다.
 	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);

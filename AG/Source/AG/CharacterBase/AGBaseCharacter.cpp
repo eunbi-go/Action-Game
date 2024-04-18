@@ -1,6 +1,7 @@
 
 #include "AGBaseCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
 
 AAGBaseCharacter::AAGBaseCharacter()
 {
@@ -42,4 +43,16 @@ void AAGBaseCharacter::InitializeDefaultAttributes() const
 {
 	ApplyEffectToSelf(mDefaultFirstAttributes, 1.f);
 	ApplyEffectToSelf(mDefaultSecondAttributes, 1.f);
+	ApplyEffectToSelf(mDefaultVitalAttributes, 1.f);
+}
+
+void AAGBaseCharacter::AddCharacterAbilities()
+{
+	UAGAbilitySystemComponent* agAbilitySystemComp = CastChecked<UAGAbilitySystemComponent>(mAbilitySystemComp);
+	// Server에 Ability를 추가한다. 
+
+	if (!HasAuthority())
+		return;
+
+	agAbilitySystemComp->AddCharacterAbilities(mStartupAbilites);
 }

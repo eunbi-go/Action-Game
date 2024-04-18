@@ -2,6 +2,8 @@
 
 
 #include "AGAbilitySystemComponent.h"
+#include "../AGGameplayTags.h"
+#include "Ability/AGGameplayAbility.h"
 
 void UAGAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -13,8 +15,60 @@ void UAGAbilitySystemComponent::AbilityActorInfoSet()
 	* ASC에 적용되는 모든 효과에 대한 응답으로 호출되는 콜백(EffectApplied)을 적용함.
 	*/ 
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAGAbilitySystemComponent::EffectApplied);
+
+
+	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
 }
 
+
+void UAGAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
+{
+	for (TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
+	{
+		FGameplayAbilitySpec abilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		if (const UAGGameplayAbility* ability = Cast<UAGGameplayAbility>(abilitySpec.Ability))
+		{
+			abilitySpec.DynamicAbilityTags.AddTag(ability->mStartupInputTag);
+			// GiveAbility() : Ability 추가, 활성화X
+			GiveAbility(abilitySpec);
+			//// GiveAbilityAndActivateOnce() : Ability 추가, 활성화 O
+			//GiveAbilityAndActivateOnce(abilitySpec);
+		}
+		
+	}
+}
+
+void UAGAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+
+
+	for (FGameplayAbilitySpec& abilitySpec : GetActivatableAbilities())
+	{
+		if (abilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputPressed(abilitySpec);
+			if (!abilitySpec.IsActive())
+			{
+				TryActivateAbility(abilitySpec.Handle);
+			}
+		}
+	}
+}
+
+void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+
+
+	for (FGameplayAbilitySpec& abilitySpec : GetActivatableAbilities())
+	{
+		if (abilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputReleased(abilitySpec);
+		}
+	}
+}
 
 void UAGAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
