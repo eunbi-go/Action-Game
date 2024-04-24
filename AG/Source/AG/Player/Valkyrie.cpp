@@ -24,6 +24,8 @@
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "Shield.h"
 #include "../AGGameplayTags.h"
+#include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
+#include "../Skill/Valkyrie/ValkyrieSprint.h"
 
 AValkyrie::AValkyrie()
 {
@@ -231,13 +233,20 @@ AValkyrie::AValkyrie()
 
 
 
-	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_Test.GA_Test_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_ValkyrieNA.GA_ValkyrieNA_C'"));
 	TSubclassOf<UGameplayAbility> ga;
 	if (testGameplayAbility.Succeeded())
 	{
 		ga = testGameplayAbility.Class;
 	}
 	mStartupAbilites.Add(ga);
+
+	
+	TSubclassOf<UGameplayAbility> gaa = UValkyrieNormalAttack::StaticClass();
+	mStartupAbilites.Add(gaa);
+
+	TSubclassOf<AAGSkillActor> sprint = AValkyrieSprint::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_Sprint, sprint);
 }
 
 void AValkyrie::BeginPlay()
@@ -415,6 +424,7 @@ void AValkyrie::NormalAttackKey()
 		return;
 
 	mWeapon->SetCollisionOnOff(true);
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_NormalAttack);
 
 	if (mIsAttacking)
 	{
@@ -430,6 +440,11 @@ void AValkyrie::NormalAttackKey()
 	}
 
 
+}
+
+void AValkyrie::NormalAttackKeyReleased()
+{
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagReleased(FAGGameplayTags::Get().InputTag_NormalAttack);
 }
 
 void AValkyrie::TargetingKey()
@@ -517,42 +532,15 @@ void AValkyrie::Skill1Key()
 	mWeapon->SetCollisionOnOff(false);
 
 
-	TArray<AActor*> targetActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AValkyrie::GetClass(), targetActors);
-	
-	FVector location = GetActorLocation();
-	FVector targetLocation = FVector();
-	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
-	TArray<AActor*> ignoreActors;
-	TArray<AActor*> outActors;
+	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Sprint);
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+	sk->SetOwnerActor(this);
+	sk->FindTarget();
 
-	objectTypes.Add(UEngineTypes::ConvertToObjectType(
-		ECollisionChannel::ECC_GameTraceChannel3)
-	);
-	ignoreActors.Add(this);
+	mSkillActorMap.Add(EValkyrieSkill::EVS_Sprint, sk);
 
-	bool isOverlapped = UKismetSystemLibrary::SphereOverlapActors(
-		GetWorld(),
-		location,
-		5000.f,
-		objectTypes,
-		nullptr,
-		ignoreActors,
-		outActors
-	);
-
-	if (isOverlapped)
-	{
-		if (IsValid(Cast<AMonster>(outActors[0])))
-		{
-			targetLocation = outActors[0]->GetActorLocation();
-		}
-	}
-
-	FMotionWarpingTarget mwt;
-	mwt.Transform.SetLocation(targetLocation);
-	mwt.Transform.SetRotation(UKismetMathLibrary::FindLookAtRotation(location, targetLocation).Quaternion());
-	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget"), mwt);
 	PlayMontage(FName("Sprint"));
 }
 
@@ -875,17 +863,8 @@ void AValkyrie::SpawnEffect()
 	{
 	case ESkillState::ESS_Sprint:
 	{
-		location = GetActorLocation();
-		location.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		AValkyrieLightning* niagara = GetWorld()->SpawnActor<AValkyrieLightning>(
-			location,
-			FRotator::ZeroRotator,
-			SpawnParam
-			);
-		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_LaserAttack.NS_LaserAttack'"));
-		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Slash_GuDef_01.NS_Slash_GuDef_01'"));
-		niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_SlashRing_05.NS_SlashRing_05'"));
-		//niagara->SetNiagaraScale(FVector(0.1f));
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
+		sk->SpawnEffect();
 	}
 		break;
 
@@ -1039,6 +1018,14 @@ void AValkyrie::GetHit(const FVector& _impactPoint)
 	//mAnimInst->SetHitDirection(angleString);
 }
 
+void AValkyrie::SetMotionWarpingComponent(const FVector& TargetLocation)
+{
+	FMotionWarpingTarget mwt;
+	mwt.Transform.SetLocation(TargetLocation);
+	mwt.Transform.SetRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation).Quaternion());
+	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget"), mwt);
+}
+
 void AValkyrie::SetAnimDelegate()
 {
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
@@ -1087,8 +1074,11 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
 		if (mSkillState == ESkillState::ESS_Sprint)
 		{
-			//CameraSwitch(false);
 			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
+			sk->SkillEnd();
+			mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
+
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{

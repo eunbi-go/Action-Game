@@ -58,6 +58,16 @@ enum class EActionState : uint8
 	EAS_Crouch UMETA(DisplayName = "Crouch")
 };
 
+UENUM(BlueprintType)
+enum class EValkyrieSkill : uint8
+{
+	EVS_Sprint UMETA(DisplayName = "Sprint Skill")
+};
+
+
+
+
+
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EActionState2 : uint8
 {

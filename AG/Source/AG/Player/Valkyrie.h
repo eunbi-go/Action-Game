@@ -8,6 +8,7 @@
 
 class UMotionWarpingComponent;
 class UTargetingComponent;
+class AAGSkillActor;
 
 USTRUCT(BlueprintType)
 struct FresnelInfo
@@ -22,6 +23,7 @@ public:
 	float	mFresnelCreateTime;
 	float	mFresnelCreateTimeEnd;
 };
+
 
 UCLASS()
 class AG_API AValkyrie : public AAGPlayer, public IHitInterface
@@ -44,6 +46,9 @@ public:
 
 	virtual void GetHit(const FVector& _impactPoint) override;
 	
+
+	void SetMotionWarpingComponent(const FVector& TargetLocation);
+
 	//-------------------------------
 	// Combat Interface
 	//-------------------------------
@@ -64,6 +69,7 @@ protected:
 	//-------------------------------
 	virtual void EquipWeaponKey() override;
 	virtual void NormalAttackKey() override;
+	virtual void NormalAttackKeyReleased() override;
 	virtual void JumpKey() override;
 	void Skill1Key();
 	void Skill2Key();
@@ -122,6 +128,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mCameraShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability", meta = (AllowPrivateAccess = true))
+	TArray<TSubclassOf<UGameplayAbility>> mAbilites;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = true))
+	TMap<EValkyrieSkill, TSubclassOf<AAGSkillActor>> mSkillmap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = true))
+	TMap<EValkyrieSkill, AAGSkillActor*> mSkillActorMap;
+
 
 	//-------------------------------
 	// Components
