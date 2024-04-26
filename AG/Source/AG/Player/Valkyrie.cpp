@@ -27,6 +27,7 @@
 #include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
 #include "../Skill/Valkyrie/ValkyrieSprint.h"
 #include "../Skill/Valkyrie/ValkyrieRange.h"
+#include "../Skill/Valkyrie/ValkyrieContinuousSlash.h"
 
 AValkyrie::AValkyrie()
 {
@@ -251,6 +252,9 @@ AValkyrie::AValkyrie()
 
 	TSubclassOf<AAGSkillActor> range = AValkyrieRange::StaticClass();
 	mSkillmap.Add(EValkyrieSkill::EVS_Range, range);
+
+	TSubclassOf<AAGSkillActor> slash = AValkyrieContinuousSlash::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_Slash, slash);
 }
 
 void AValkyrie::BeginPlay()
@@ -601,20 +605,22 @@ void AValkyrie::Skill3Key()
 	
 	mWeapon->SetCollisionOnOff(false);
 	
-
-	if (mIsSlash)
+	bool isContainSkillActor = mSkillActorMap.Contains(EValkyrieSkill::EVS_Slash);
+	if (!isContainSkillActor)
 	{
-		if (mIsNextSlashEnable)
-			mIsNextSlashInput = true;
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Slash);
+		AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+		sk->SetOwnerActor(this);
+		Cast<AValkyrieContinuousSlash>(sk)->InputPressed();
+
+		mSkillActorMap.Add(EValkyrieSkill::EVS_Slash, sk);
 	}
 	else
 	{
-		mIsSlash = true;
-
-		mIsNextSlashEnable = true;
-		mIsNextSlashInput = false;
-
-		PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
+		AAGSkillActor* skillActor = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
+		Cast<AValkyrieContinuousSlash>(skillActor)->InputPressed();
 	}
 
 	PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
@@ -866,62 +872,13 @@ void AValkyrie::SpawnEffect()
 		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
 		Cast<AValkyrieRange>(sk)->SetIsPress(false);
 		sk->SpawnEffect();
-		//AValkyrieDemonSlash* niagara = GetWorld()->SpawnActor<AValkyrieDemonSlash>(
-		//	GetActorLocation(),
-		//	FRotator::ZeroRotator,
-		//	SpawnParam
-		//);
-		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
-		
 	}
 	break;
 
 	case ESkillState::ESS_Slash:
 	{
-		if (mSlashSkillIndex == 0)
-		{
-			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-				GetActorLocation()/* + GetActorForwardVector() * 100.f*/,
-				GetActorRotation(),
-				SpawnParam
-			);
-			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_12.NS_Col_SL_12'"));
-			slash->SetDirection(GetActorForwardVector());
-		}
-		else if (mSlashSkillIndex == 1)
-		{
-			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-				GetActorLocation(),
-				GetActorRotation(),
-				SpawnParam
-			);
-			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_13.NS_Col_SL_13'"));
-			slash->SetDirection(GetActorForwardVector());
-		}
-		else if (mSlashSkillIndex == 2)
-		{
-			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-				GetActorLocation(),
-				GetActorRotation(),
-				SpawnParam
-			);
-			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Blade_Sl_10.NS_Blade_Sl_10'"));
-			slash->SetDirection(GetActorForwardVector());
-		}
-		else if (mSlashSkillIndex == 3)
-		{
-			FVector forward = GetActorForwardVector();
-			forward.Y = 0.f;
-			forward.Z = 0.f;
-			AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-				GetActorLocation(),
-				FRotator(0.f, GetControlRotation().Yaw - 90.f, 0.f),
-				SpawnParam
-			);
-			slash->SetActorScale3D(FVector(0.5f));
-			slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Slash_HeavyAb_03.NS_Slash_HeavyAb_03'"));
-			slash->SetDirection(GetActorForwardVector());
-		}
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
+		sk->SpawnEffect();
 	}
 	break;
 
@@ -1081,11 +1038,9 @@ void AValkyrie::SetAnimDelegate()
 		}
 		else if (mSkillState == ESkillState::ESS_Slash)
 		{
-			PrintViewport(2.f, FColor::Red, FString("Slash End"));
-			mSlashSkillIndex = -1;
-			mIsNextSlashEnable = false;
-			mIsNextSlashInput = false;
-			mIsSlash = false;
+			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
+			sk->SkillEnd();
+			mSkillActorMap.Remove(EValkyrieSkill::EVS_Slash);
 		}
 		else if (mSkillState == ESkillState::ESS_HardAttack)
 		{
@@ -1145,16 +1100,18 @@ void AValkyrie::SetAnimDelegate()
 		});
 
 	mAnimInst->mOnSlashEnable.AddLambda([this]()-> void {
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
+		Cast<AValkyrieContinuousSlash>(sk)->Notify_SlashEnable();
 
-		mIsNextSlashEnable = false;
-		if (mIsNextSlashInput)
-		{
-			//NormalAttackStart();
+		//mIsNextSlashEnable = false;
+		//if (mIsNextSlashInput)
+		//{
+		//	//NormalAttackStart();
 
-			mIsNextSlashEnable = true;
-			mIsNextSlashInput = false;
-			PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
-		}
+		//	mIsNextSlashEnable = true;
+		//	mIsNextSlashInput = false;
+		//	PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
+		//}
 
 		});
 
