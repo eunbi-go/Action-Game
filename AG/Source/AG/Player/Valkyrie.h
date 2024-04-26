@@ -48,12 +48,20 @@ public:
 	
 
 	void SetMotionWarpingComponent(const FVector& TargetLocation);
+	void SetMp(float NewValue);
+
 
 	//-------------------------------
 	// Combat Interface
 	//-------------------------------
 	virtual int32 GetPlayerLevel() override;
 
+	//-------------------------------
+	// Animation Montage Functions
+	//-------------------------------
+	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
+	UFUNCTION()
+	void SetMontagePlayRate(FName MontageName, float PlayRate);
 
 private:
 	virtual void InitAbilityActorInfo() override;
@@ -82,12 +90,7 @@ protected:
 	virtual void GuardKey() override;
 
 
-	//-------------------------------
-	// Animation Montage Functions
-	//-------------------------------
-	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
-	UFUNCTION()
-	void SetMontagePlayRate();
+
 
 
 	//-------------------------------

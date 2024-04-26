@@ -26,6 +26,7 @@
 #include "../AGGameplayTags.h"
 #include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
 #include "../Skill/Valkyrie/ValkyrieSprint.h"
+#include "../Skill/Valkyrie/ValkyrieRange.h"
 
 AValkyrie::AValkyrie()
 {
@@ -247,6 +248,9 @@ AValkyrie::AValkyrie()
 
 	TSubclassOf<AAGSkillActor> sprint = AValkyrieSprint::StaticClass();
 	mSkillmap.Add(EValkyrieSkill::EVS_Sprint, sprint);
+
+	TSubclassOf<AAGSkillActor> range = AValkyrieRange::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_Range, range);
 }
 
 void AValkyrie::BeginPlay()
@@ -548,60 +552,41 @@ void AValkyrie::Skill2Key()
 {
 	//PrintViewport(10.f, FColor::Black, FString("Skill2Key"));
 
-	if (mSkillState != ESkillState::ESS_Ribbon)
-	{
-		PlayMontage(FName("Ribbon"));
-		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-	}
-	
-	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
-	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
-	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
+	mSkillState = ESkillState::ESS_Ribbon;
+
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Range);
+	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+	sk->SetOwnerActor(this);
+
+	mSkillActorMap.Add(EValkyrieSkill::EVS_Range, sk);
 
 	mWeapon->SetCollisionOnOff(false);
-
-	FVector location = GetActorLocation();
-	FRotator rotation = GetActorRotation();
 }
 
 void AValkyrie::Skill2KeyPressing()
 {
-	mSkillState = ESkillState::ESS_Ribbon;
-	mSkill2PressingTime += GetWorld()->GetDeltaSeconds();
+	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+	Cast<AValkyrieRange>(sk)->SetIsPress(true);
+
 }
 
 void AValkyrie::Skill2KeyUp()
 {
-	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-	mAnimInst->Montage_Resume(montage);
-	mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+	//PrintViewport(1.f, FColor::Blue, FString("Released"));
 
+	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+	Cast<AValkyrieRange>(sk)->SetIsKeyReleased(true);
 
-	FActorSpawnParameters	SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride =
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	if (Cast<AValkyrieRange>(sk)->GetIsPress())
+	{
+		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+		mAnimInst->Montage_Resume(montage);
+		mAnimInst->Montage_SetPlayRate(montage, 0.7f);
 
-	AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-		GetActorLocation(),
-		GetActorRotation(),
-		SpawnParam
-	);
-	float size = 0.6f + mSkill2PressingTime;
-	slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Cut_Sl_04.NS_Cut_Sl_04'"));
-	mSkill2PressingTime = 0.f;
-	slash->SetActorScale3D(FVector(size));
-
-	/*slash->SetActorScale3D(FVector(size));
-	if (mSkill2PressingTime >= 0.7f)
-		slash->SetActorScale3D(FVector(1.3f));
-	else if (mSkill2PressingTime >= 0.5f)
-		slash->SetActorScale3D(FVector(1.f));
-	else if (mSkill2PressingTime >= 0.3f)
-		slash->SetActorScale3D(FVector(0.7f));
-	else
-		slash->SetActorScale3D(FVector(0.5f));*/
-
+		Cast<AValkyrieRange>(sk)->SetIsPress(false);
+	}
 
 }
 
@@ -692,21 +677,29 @@ void AValkyrie::PlayMontage(FName _montageName, FName _sectionName)
 		mAnimInst->Montage_JumpToSection(_sectionName, montage);
 }
 
-void AValkyrie::SetMontagePlayRate()
+void AValkyrie::SetMontagePlayRate(FName MontageName, float PlayRate)
 {
-	UAnimMontage* montage;
+	UAnimMontage* montage = *mMontages.Find(MontageName);
+	mAnimInst->Montage_SetPlayRate(montage, PlayRate);
 
-	switch (mSkillState)
-	{
-	case ESkillState::ESS_Sprint:
-		montage = *mMontages.Find(FName("Sprint"));
-		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-		break;
-	case ESkillState::ESS_Ribbon:
-		montage = *mMontages.Find(FName("Ribbon"));
-		mAnimInst->Montage_SetPlayRate(montage, 0.6f);
-		break;
-	}
+	//if (mSkillState == ESkillState::ESS_Ribbon)
+	//{
+	//	montage = *mMontages.Find(FName("Ribbon"));
+	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+	//	
+	//}
+
+	//switch (mSkillState)
+	//{
+	//case ESkillState::ESS_Sprint:
+	//	montage = *mMontages.Find(FName("Sprint"));
+	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+	//	break;
+	//case ESkillState::ESS_Ribbon:
+	//	montage = *mMontages.Find(FName("Ribbon"));
+	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+	//	break;
+	//}
 }
 
 //-------------------------------
@@ -870,12 +863,16 @@ void AValkyrie::SpawnEffect()
 
 	case ESkillState::ESS_Ribbon:
 	{
-		AValkyrieDemonSlash* niagara = GetWorld()->SpawnActor<AValkyrieDemonSlash>(
-			GetActorLocation(),
-			FRotator::ZeroRotator,
-			SpawnParam
-			);
-		niagara->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+		Cast<AValkyrieRange>(sk)->SetIsPress(false);
+		sk->SpawnEffect();
+		//AValkyrieDemonSlash* niagara = GetWorld()->SpawnActor<AValkyrieDemonSlash>(
+		//	GetActorLocation(),
+		//	FRotator::ZeroRotator,
+		//	SpawnParam
+		//);
+		//niagara->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
+		
 	}
 	break;
 
@@ -1026,6 +1023,13 @@ void AValkyrie::SetMotionWarpingComponent(const FVector& TargetLocation)
 	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget"), mwt);
 }
 
+void AValkyrie::SetMp(float NewValue)
+{
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMp(attributeSet->GetmMp() + NewValue);
+}
+
 void AValkyrie::SetAnimDelegate()
 {
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
@@ -1058,17 +1062,6 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-
-		if (mSkillState == ESkillState::ESS_Sprint)
-		{
-			LaunchCharacter(FVector(0.f, 0.f, 500.f), true, true);
-			GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrie::SetMontagePlayRate, 0.7f, false);
-		}
-		else if (mSkillState == ESkillState::ESS_Ribbon)
-		{
-			LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
-			SetMontagePlayRate();
-		}
 	});
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
@@ -1082,8 +1075,9 @@ void AValkyrie::SetAnimDelegate()
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
-			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
-			ResetFresnel();
+			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+			sk->SkillEnd();
+			mSkillActorMap.Remove(EValkyrieSkill::EVS_Range);
 		}
 		else if (mSkillState == ESkillState::ESS_Slash)
 		{
@@ -1168,11 +1162,32 @@ void AValkyrie::SetAnimDelegate()
 
 		if (mSkillState == ESkillState::ESS_Ribbon)
 		{
-			if (mSkill2PressingTime <= 0.f)
+			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+			if (AValkyrieRange* rsk = Cast<AValkyrieRange>(sk))
 			{
-				UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-				mAnimInst->Montage_Resume(montage);
+				//float f = rsk->GetPressingTime();
+				//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("%f"), f));
+				bool isEnd = rsk->GetIsKeyReleased();
+				if (isEnd) return;
+
+				if (!isEnd)
+				{
+					//PrintViewport(1.f, FColor::Blue, FString("Pause"));
+					UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+					mAnimInst->Montage_Pause(montage);
+				}
+				else
+				{
+					UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+					mAnimInst->Montage_SetPlayRate(montage, 0.5f);
+				}
 			}
+			//if (mSkill2PressingTime <= 0.f)
+			//{
+			//	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+			//	//mAnimInst->Montage_Resume(montage);
+			//	mAnimInst->Montage_Pause(montage);
+			//}
 		}
 		});
 }
