@@ -22,6 +22,7 @@ void AParticleNiagara::BeginPlay()
 
 void AParticleNiagara::OnSystemFinish(UNiagaraComponent* PSystem)
 {
+	Destroy();
 }
 
 void AParticleNiagara::SetParticle(UNiagaraSystem* _particle)
@@ -42,4 +43,8 @@ void AParticleNiagara::SetNiagaraScale(const FVector& _scale)
 {
 	if (mParticle)
 		mParticle->SetWorldScale3D(_scale);
+}
+
+void AParticleNiagara::SpawnHitEffect(const FVector& Location, const FRotator& Rotator)
+{
 }

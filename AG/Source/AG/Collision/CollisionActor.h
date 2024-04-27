@@ -57,6 +57,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		USceneComponent* mRoot;
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+		AActor* mOwnerActor;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -64,6 +67,11 @@ private:
 	void GetHit(AActor* _hitActor);
 
 public:
+	void SetOwnerActor(AActor* OwnerActor)
+	{
+		mOwnerActor = OwnerActor;
+	}
+
 	void SetCollisionProfileName(const FName& _value)
 	{
 		mCollisionBox->SetCollisionProfileName(_value);
@@ -136,6 +144,62 @@ public:
 	void SetSphereRadius(float _value)
 	{
 		mCollisionSphere->SetSphereRadius(_value);
+	}
+
+	void SetParentAttach(USceneComponent* Parent)
+	{
+		mCollisionBox->SetupAttachment(Parent);
+	}
+
+	void SetRelativeLoctaion(const FVector& Location)
+	{
+		if (mCollisionShape == ECollisionType::ECS_Sphere)
+			mCollisionSphere->SetRelativeLocation(Location);
+		else if (mCollisionShape == ECollisionType::ECS_Capsule)
+			mCollisionCapsule->SetRelativeLocation(Location);
+		else if (mCollisionShape == ECollisionType::ECS_Box)
+			mCollisionBox->SetRelativeLocation(Location);
+	}
+
+	void SetRelativeScale(const FVector& Scale)
+	{
+		if (mCollisionShape == ECollisionType::ECS_Sphere)
+			mCollisionSphere->SetRelativeScale3D(Scale);
+		else if (mCollisionShape == ECollisionType::ECS_Capsule)
+			mCollisionCapsule->SetRelativeScale3D(Scale);
+		else if (mCollisionShape == ECollisionType::ECS_Box)
+			mCollisionBox->SetRelativeScale3D(Scale);
+	}
+
+	void SetRelativeRotation(const FRotator& Rotator)
+	{
+		if (mCollisionShape == ECollisionType::ECS_Sphere)
+			mCollisionSphere->SetRelativeRotation(Rotator);
+		else if (mCollisionShape == ECollisionType::ECS_Capsule)
+			mCollisionCapsule->SetRelativeRotation(Rotator);
+		else if (mCollisionShape == ECollisionType::ECS_Box)
+			mCollisionBox->SetRelativeRotation(Rotator);
+	}
+
+	void SetHiddenInGame(bool Value)
+	{
+		if (mCollisionShape == ECollisionType::ECS_Sphere)
+			mCollisionSphere->SetHiddenInGame(Value);
+		else if (mCollisionShape == ECollisionType::ECS_Capsule)
+			mCollisionCapsule->SetHiddenInGame(Value);
+		else if (mCollisionShape == ECollisionType::ECS_Box)
+			mCollisionBox->SetHiddenInGame(Value);
+	}
+
+	FVector GetRelativeLocation()
+	{
+		if (mCollisionShape == ECollisionType::ECS_Sphere)
+			return mCollisionSphere->GetRelativeLocation();
+		else if (mCollisionShape == ECollisionType::ECS_Capsule)
+			return mCollisionCapsule->GetRelativeLocation();
+		else if (mCollisionShape == ECollisionType::ECS_Box)
+			return mCollisionBox->GetRelativeLocation();
+		return FVector();
 	}
 
 private:

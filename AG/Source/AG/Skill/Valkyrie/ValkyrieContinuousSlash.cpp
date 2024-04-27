@@ -36,7 +36,8 @@ void AValkyrieContinuousSlash::SpawnEffect()
 			SpawnParam
 		);
 		slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_12.NS_Col_SL_12'"));
-		slash->SetDirection(GetActorForwardVector());
+		slash->SetDirection(mOwner->GetActorForwardVector());
+		slash->SetSlashIdx(0);
 	}
 	else if (mSlashSkillIndex == 1)
 	{
@@ -46,7 +47,8 @@ void AValkyrieContinuousSlash::SpawnEffect()
 			SpawnParam
 		);
 		slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Col_SL_13.NS_Col_SL_13'"));
-		slash->SetDirection(GetActorForwardVector());
+		slash->SetDirection(mOwner->GetActorForwardVector());
+		slash->SetSlashIdx(1);
 	}
 	else if (mSlashSkillIndex == 2)
 	{
@@ -56,7 +58,8 @@ void AValkyrieContinuousSlash::SpawnEffect()
 			SpawnParam
 		);
 		slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Blade_Sl_10.NS_Blade_Sl_10'"));
-		slash->SetDirection(GetActorForwardVector());
+		slash->SetDirection(mOwner->GetActorForwardVector());
+		slash->SetSlashIdx(2);
 	}
 	
 	else if (mSlashSkillIndex == 3)
@@ -72,6 +75,7 @@ void AValkyrieContinuousSlash::SpawnEffect()
 		slash->SetActorScale3D(FVector(0.5f));
 		slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Slash_HeavyAb_03.NS_Slash_HeavyAb_03'"));
 		slash->SetDirection(mOwner->GetActorForwardVector());
+		slash->SetSlashIdx(3);
 	}
 }
 

@@ -16,17 +16,14 @@ ACollisionActor::ACollisionActor()
 
 	mCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	mCollisionBox->SetupAttachment(mRoot);
-	//mCollisionBox->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
 	mCollisionCapsule->SetupAttachment(mRoot);
-	//mCollisionCapsule->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	mCollisionSphere->SetupAttachment(mRoot);
-	//mCollisionSphere->SetCollisionProfileName(TEXT("PlayerSword"));
 	mCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mMoveDirection = FVector(0.f);
@@ -50,31 +47,31 @@ void ACollisionActor::BeginPlay()
 
 void ACollisionActor::GetHit(AActor* _hitActor)
 {
-	//PrintViewport(1.f, FColor::Black, TEXT("GetHit"));
 }
 
 void ACollisionActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (mIsMove)
-	{
-		/*if (mCollisionShape == ECollisionType::ECS_Box)
-			mCollisionBox->SetWorldLocation(mInitLocation + mMoveDirection * DeltaTime * 1000.f);
-		if (mCollisionShape == ECollisionType::ECS_Capsule)
-			mCollisionCapsule->SetWorldLocation(mInitLocation + mMoveDirection * DeltaTime * 1000.f);*/
-	}
 }
 
 void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	PrintViewport(1.f, FColor::Black, TEXT("OnBoxOverlapBegin"));
+	PrintViewport(1.f, FColor::White, TEXT("OnBoxOverlapBegin"));
 
 	// test
 	float damage = 10.f;
 
 	if (OtherActor)
 	{
+		if (IsValid(mOwnerActor))
+		{
+			if (AParticleNiagara* niagara = Cast<AParticleNiagara>(mOwnerActor))
+			{
+				niagara->SpawnHitEffect(OtherActor->GetActorLocation(), FRotator::ZeroRotator);
+			}
+		}
+
+
 		IHitInterface* hitInterface = Cast<IHitInterface>(OtherActor);
 
 		if (mHitType == EHitType::EHT_Once)
@@ -88,8 +85,6 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 				FDamageEvent(),
 				GetWorld()->GetFirstPlayerController(),
 				this);
-			if (Cast<AValkyrieSlash>(mParent))
-				Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
 		}
 
 		else if (mHitType == EHitType::EHT_Continuous)
@@ -108,8 +103,6 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 						FDamageEvent(),
 						GetWorld()->GetFirstPlayerController(),
 						this);
-					if (Cast<AValkyrieSlash>(mParent))
-						Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
 
 					}),
 				0.9f,	// 몇 초 간격으로 피해를 줄 것인가. (test)
@@ -117,6 +110,8 @@ void ACollisionActor::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent
 				);
 		}
 	}
+
+	Destroy();
 }
 
 void ACollisionActor::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -149,10 +144,7 @@ void ACollisionActor::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedCompon
 			GetWorld()->GetFirstPlayerController(),
 			this);
 
-		if (Cast<AValkyrieSlash>(mParent))
-		{
-			Cast<AValkyrieSlash>(mParent)->SetIsHit(true);
-		}
+
 	}
 }
 

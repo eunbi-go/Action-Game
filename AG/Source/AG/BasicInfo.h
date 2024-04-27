@@ -62,7 +62,8 @@ UENUM(BlueprintType)
 enum class EValkyrieSkill : uint8
 {
 	EVS_Sprint UMETA(DisplayName = "Sprint Skill"),
-	EVS_Range UMETA(DisplayName = "Range Skill")
+	EVS_Range UMETA(DisplayName = "Range Skill"),
+	EVS_Slash UMETA(DisplayName = "Slash Skill")
 };
 
 
