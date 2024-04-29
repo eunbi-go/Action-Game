@@ -44,10 +44,7 @@ public:
 
 	bool AddItem(EITEM_ID _itemID);
 	EITEM_ID SelectItem();
-	UCharacterStatComponent* GetStat()
-	{
-		return mStat;
-	}
+	void SetSkillState(ESkillState NewState);
 
 
 	void SetActionState(EActionState2 NewActionState, bool IsStateOn);
@@ -60,7 +57,7 @@ public:
 	UCameraComponent* mCameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-		USpringArmComponent* mSpringArmComp;
+	USpringArmComponent* mSpringArmComp;
 
 protected:
 	virtual void BeginPlay() override;
@@ -78,6 +75,7 @@ protected:
 
 	virtual void EquipWeaponKey();
 	virtual void NormalAttackKey();
+	virtual void NormalAttackKeyReleased();
 	void InventoryOnOffKey();
 	void Item1Key();
 	void Item2Key();
@@ -85,6 +83,7 @@ protected:
 	void Item4Key();
 	void Item5Key();
 	void DashKey();
+	void CheatMpKey();
 
 	virtual void PlayMontage(FName _montageName, FName _sectionName = "");
 	virtual void SpawnEffect();
@@ -101,9 +100,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montages", meta = (AllowPrivateAccess = true))
 	TMap<FName, UAnimMontage*>	mMontages;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	UCharacterStatComponent* mStat;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FName			mPlayerTableRowName;
 
@@ -113,7 +109,7 @@ protected:
 	EActionState	mActionState;
 	ESkillState		mSkillState;
 	
-		UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
 	bool mIsAttacking;
 
 	UPROPERTY()

@@ -93,12 +93,6 @@ protected:
 
 
 
-	//-------------------------------
-	// Normal Attack Functions
-	//-------------------------------
-	void NormalAttackStart();
-	void NormalAttackEnd();
-
 
 	//-------------------------------
 	// Fresnel Functions
@@ -151,20 +145,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (AllowPrivateAccess = true))
 	UTargetingComponent* mTargetingComp;
 
-	
 
-
-	//-------------------------------
-	// Normal Attack
-	//-------------------------------
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-	bool mIsCanNextAttack;
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-	bool mIsAttackInputOn;
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-	int32 mCurrentAttackIndex;
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
-	int32 mAttackMaxIndex;
 
 
 

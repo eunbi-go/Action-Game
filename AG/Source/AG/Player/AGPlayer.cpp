@@ -162,6 +162,8 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::EquipWeaponKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("NormalAttack"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::NormalAttackKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("NormalAttack"), EInputEvent::IE_Released,
+		this, &AAGPlayer::NormalAttackKeyReleased);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Jump"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::JumpKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Crouch"), EInputEvent::IE_Pressed,
@@ -170,6 +172,8 @@ void AAGPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AAGPlayer::DashKey);
 	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("Guard"), EInputEvent::IE_Pressed,
 		this, &AAGPlayer::GuardKey);
+	PlayerInputComponent->BindAction<AAGPlayer>(TEXT("CheatMp"), EInputEvent::IE_Pressed,
+		this, &AAGPlayer::CheatMpKey);
 
 	/**
 	 * Item
@@ -208,10 +212,11 @@ void AAGPlayer::Tick(float DeltaTime)
 void AAGPlayer::MoveForward(float _value)
 {
 	mForwardInputValue = _value;
+	
 
-	if ((_value != 0.f) && Controller && mActionState != EActionState::EAS_Attack)
+	if ((_value != 0.f) && Controller && !CheckActionState(EActionState2::EAS_NormalAttack, false))
 	{
-		mActionState = EActionState::EAS_Move;
+		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
 		const FRotator yawRotation(0.f, controlRotation.Yaw, 0.f);
 		const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
@@ -223,9 +228,9 @@ void AAGPlayer::MoveHorizontal(float _value)
 {
 	mHorizontalInputValue = _value;
 
-	if ((_value != 0.f) && Controller && mActionState != EActionState::EAS_Attack)
+	if ((_value != 0.f) && Controller && !CheckActionState(EActionState2::EAS_NormalAttack, false))
 	{
-		mActionState = EActionState::EAS_Move;
+		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
 		const FRotator yawRotation(0.f, controlRotation.Yaw, 0.f);
 
@@ -264,6 +269,10 @@ void AAGPlayer::EquipWeaponKey()
 }
 
 void AAGPlayer::NormalAttackKey()
+{
+}
+
+void AAGPlayer::NormalAttackKeyReleased()
 {
 }
 
@@ -371,6 +380,13 @@ void AAGPlayer::DashKey()
 		Info);
 }
 
+void AAGPlayer::CheatMpKey()
+{
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMaxMp(attributeSet->GetmMaxMp() + 100.f);
+}
+
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)
 {
 	
@@ -386,7 +402,7 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
 
-	damage -= attributeSet->GetmDefense();
+	damage -= attributeSet->GetmIntelligence();
 	if (damage < 1)
 		damage = 1;
 
@@ -470,6 +486,11 @@ EITEM_ID AAGPlayer::SelectItem()
 	return EITEM_ID::END;
 }
 
+void AAGPlayer::SetSkillState(ESkillState NewState)
+{
+	mSkillState = NewState;
+}
+
 
 void AAGPlayer::SetActionState(EActionState2 NewActionState, bool IsStateOn)
 {
@@ -485,6 +506,8 @@ void AAGPlayer::SetActionState(EActionState2 NewActionState, bool IsStateOn)
 			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
 		else if (NewActionState == EActionState2::EAS_Guard2)
 			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Guard2));
+		else if (NewActionState == EActionState2::EAS_NormalAttack)
+			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_NormalAttack));
 	}
 	else
 	{
@@ -498,6 +521,8 @@ void AAGPlayer::SetActionState(EActionState2 NewActionState, bool IsStateOn)
 			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
 		else if (NewActionState == EActionState2::EAS_Guard2)
 			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Guard2));
+		else if (NewActionState == EActionState2::EAS_NormalAttack)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_NormalAttack));
 	}
 
 }
@@ -531,6 +556,11 @@ bool AAGPlayer::CheckActionState(EActionState2 ActionState, bool IsPrintViewport
 	{
 		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Guard2)));
 		str = "EAS_Guard2 ";
+	}
+	else if (ActionState == EActionState2::EAS_NormalAttack)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_NormalAttack)));
+		str = "EAS_NormalAttack ";
 	}
 
 	if (isState)

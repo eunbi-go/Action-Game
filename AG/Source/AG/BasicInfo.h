@@ -61,6 +61,7 @@ enum class EActionState : uint8
 UENUM(BlueprintType)
 enum class EValkyrieSkill : uint8
 {
+	EVS_NormalAttack UMETA(DisplayName = "NormalAttack Skill"),
 	EVS_Sprint UMETA(DisplayName = "Sprint Skill"),
 	EVS_Range UMETA(DisplayName = "Range Skill"),
 	EVS_Slash UMETA(DisplayName = "Slash Skill")
@@ -78,6 +79,7 @@ enum class EActionState2 : uint8
 	EAS_Jump2 = 2,
 	EAS_Crouch2 = 3,
 	EAS_Guard2 = 4,
+	EAS_NormalAttack = 5,
 };
 ENUM_CLASS_FLAGS(EActionState2)
 

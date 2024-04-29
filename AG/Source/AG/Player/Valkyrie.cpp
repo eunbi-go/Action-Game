@@ -24,10 +24,11 @@
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "Shield.h"
 #include "../AGGameplayTags.h"
-#include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
+//#include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
 #include "../Skill/Valkyrie/ValkyrieSprint.h"
 #include "../Skill/Valkyrie/ValkyrieRange.h"
 #include "../Skill/Valkyrie/ValkyrieContinuousSlash.h"
+#include "../Skill/Valkyrie/ValkyrieNormalAttack.h"
 
 AValkyrie::AValkyrie()
 {
@@ -147,9 +148,6 @@ AValkyrie::AValkyrie()
 	mMontages.Add(FName("HardAttack"), montage11);
 
 
-	mAttackMaxIndex = 4;
-	NormalAttackEnd();
-
 
 	mMotionWarpComp = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpComp"));
 
@@ -244,8 +242,8 @@ AValkyrie::AValkyrie()
 	mStartupAbilites.Add(ga);
 
 	
-	TSubclassOf<UGameplayAbility> gaa = UValkyrieNormalAttack::StaticClass();
-	mStartupAbilites.Add(gaa);
+	//TSubclassOf<UGameplayAbility> gaa = UValkyrieNormalAttack::StaticClass();
+	//mStartupAbilites.Add(gaa);
 
 	TSubclassOf<AAGSkillActor> sprint = AValkyrieSprint::StaticClass();
 	mSkillmap.Add(EValkyrieSkill::EVS_Sprint, sprint);
@@ -255,6 +253,9 @@ AValkyrie::AValkyrie()
 
 	TSubclassOf<AAGSkillActor> slash = AValkyrieContinuousSlash::StaticClass();
 	mSkillmap.Add(EValkyrieSkill::EVS_Slash, slash);
+
+	TSubclassOf<AAGSkillActor> normalAttack = AValkyrieNormalAttack::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_NormalAttack, normalAttack);
 }
 
 void AValkyrie::BeginPlay()
@@ -311,6 +312,7 @@ void AValkyrie::Tick(float DeltaTime)
 
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
+
 
 	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
 	//	GetActorLocation().X,
@@ -432,22 +434,29 @@ void AValkyrie::NormalAttackKey()
 		return;
 
 	mWeapon->SetCollisionOnOff(true);
-	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_NormalAttack);
+	//Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_NormalAttack);
 
-	if (mIsAttacking)
+
+	bool isContainNormalAttackActor = mSkillActorMap.Contains(EValkyrieSkill::EVS_NormalAttack);
+	if (!isContainNormalAttackActor)
 	{
-		if (mIsCanNextAttack)
-			mIsAttackInputOn = true;
+		FActorSpawnParameters	params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_NormalAttack);
+		AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+		sk->SetOwnerActor(this);
+		Cast<AValkyrieNormalAttack>(sk)->EndNormalAttack();
+		Cast<AValkyrieNormalAttack>(sk)->InputPressed();
+		
+
+		mSkillActorMap.Add(EValkyrieSkill::EVS_NormalAttack, sk);
 	}
 	else
 	{
-		mIsAttacking = true;
-		NormalAttackStart();
-		if (mActionState != EActionState::EAS_JumpAttack)
-			PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
+		AAGSkillActor* skillActor = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
+		Cast<AValkyrieNormalAttack>(skillActor)->InputPressed();
 	}
-
-
 }
 
 void AValkyrie::NormalAttackKeyReleased()
@@ -533,6 +542,7 @@ void AValkyrie::Skill1Key()
 {
 	mSkillState = ESkillState::ESS_Sprint;
 
+	
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
 	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
@@ -623,7 +633,7 @@ void AValkyrie::Skill3Key()
 		Cast<AValkyrieContinuousSlash>(skillActor)->InputPressed();
 	}
 
-	PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
+	//PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
 }
 
 void AValkyrie::Skill4Key()
@@ -639,26 +649,6 @@ void AValkyrie::Skill4Key()
 //-------------------------------
 // Combat Functions
 //-------------------------------
-
-void AValkyrie::NormalAttackStart()
-{
-	if (mCurrentAttackIndex == 4)
-		mCurrentAttackIndex = 1;	
-	mIsCanNextAttack = true;
-	mIsAttackInputOn = false;
-	mCurrentAttackIndex = FMath::Clamp<int32>(mCurrentAttackIndex + 1, 1, mAttackMaxIndex);
-	
-
-	mActionState = EActionState::EAS_Attack;
-}
-
-void AValkyrie::NormalAttackEnd()
-{
-	mIsAttackInputOn = false;
-	mIsCanNextAttack = false;
-	mCurrentAttackIndex = 0;
-	mActionState = EActionState::EAS_Idle;
-}
 
 void AValkyrie::UnequipSword()
 {
@@ -843,19 +833,12 @@ void AValkyrie::SpawnEffect()
 	FVector location = FVector();
 
 	
-
-	switch (mActionState)
+	if (CheckActionState(EActionState2::EAS_NormalAttack, false))
 	{
-	case EActionState::EAS_Attack:
-		AValkyrieBlinkFire* slash = GetWorld()->SpawnActor<AValkyrieBlinkFire>(
-			GetActorLocation(),
-			GetActorRotation(),
-			SpawnParam
-		);
-		slash->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Blink_Fire.NS_Blink_Fire'"));
-		return;
-		break;
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
+		sk->SpawnEffect();
 	}
+
 	
 
 	switch (mSkillState)
@@ -990,9 +973,10 @@ void AValkyrie::SetMp(float NewValue)
 void AValkyrie::SetAnimDelegate()
 {
 	mAnimInst->mOnAttackEnd.AddLambda([this]()->void {
-		CustomTimeDilation = 1.f;
-		mIsAttacking = false;
-		NormalAttackEnd();
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
+		Cast<AValkyrieNormalAttack>(sk)->Notify_AttackEnd();
+		mSkillActorMap.Remove(EValkyrieSkill::EVS_NormalAttack);
+
 		if (mWeapon)
 		{
 			mWeapon->ClearIgnoreActors();
@@ -1009,12 +993,8 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mOnNextAttackCheck.AddLambda([this]() -> void {
-		mIsCanNextAttack = false;
-	if (mIsAttackInputOn)
-	{
-		NormalAttackStart();
-		PlayMontage(FName("Attack"), FName(*FString::Printf(TEXT("Attack%d"), mCurrentAttackIndex)));
-	}
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
+		Cast<AValkyrieNormalAttack>(sk)->Notify_NextAttackCheck();
 		});
 
 	mAnimInst->mOnLaunch.AddLambda([this]() -> void {
@@ -1102,17 +1082,6 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnSlashEnable.AddLambda([this]()-> void {
 		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
 		Cast<AValkyrieContinuousSlash>(sk)->Notify_SlashEnable();
-
-		//mIsNextSlashEnable = false;
-		//if (mIsNextSlashInput)
-		//{
-		//	//NormalAttackStart();
-
-		//	mIsNextSlashEnable = true;
-		//	mIsNextSlashInput = false;
-		//	PlayMontage(FName("Slash"), FName(*FString::Printf(TEXT("Slash%d"), ++mSlashSkillIndex)));
-		//}
-
 		});
 
 	mAnimInst->mOnPause.AddLambda([this]()-> void {
