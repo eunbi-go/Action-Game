@@ -71,7 +71,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		AValkyrie* target = Cast<AValkyrie>(resultArray[0].GetActor());
 		if (!IsValid(target)) return;
 		// Target이 Crouch 상태이면 탐지X
-		if (target->CheckActionState(EActionState2::EAS_Crouch2, false)) return;
+		if (target->CheckActionState(EActionState::EAS_Crouch, false)) return;
 
 		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	}

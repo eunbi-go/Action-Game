@@ -21,6 +21,7 @@ UENUM(BlueprintType)
 enum class ESkillState : uint8
 {
 	ESS_None UMETA(DisplayName = "None"),
+	ESS_NormalAttack UMETA(DisplayName = "NormalAttack"),
 	ESS_Sprint UMETA(DisplayName = "Sprint"),
 	ESS_Ribbon UMETA(DisplayName = "Ribbon"),
 	ESS_Slash UMETA(DisplayName = "Slash"),
@@ -47,10 +48,10 @@ public:
 	void SetSkillState(ESkillState NewState);
 
 
-	void SetActionState(EActionState2 NewActionState, bool IsStateOn);
-	bool CheckActionState(EActionState2 ActionState, bool IsPrintViewport);
+	void SetActionState(EActionState NewActionState, bool IsStateOn);
+	bool CheckActionState(EActionState ActionState, bool IsPrintViewport);
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, meta = (Bitmask, BitmaskEnum = "EActionState2"))
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, meta = (Bitmask, BitmaskEnum = "EActionState"))
 	uint8 mStateType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))

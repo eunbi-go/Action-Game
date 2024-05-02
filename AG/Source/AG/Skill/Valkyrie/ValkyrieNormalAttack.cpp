@@ -9,6 +9,11 @@ AValkyrieNormalAttack::AValkyrieNormalAttack()
 {
 }
 
+void AValkyrieNormalAttack::Activate()
+{
+
+}
+
 void AValkyrieNormalAttack::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,7 +33,8 @@ void AValkyrieNormalAttack::StartNormalAttack()
 	mCurrentAttackIndex = FMath::Clamp<int32>(mCurrentAttackIndex + 1, 1, mAttackMaxIndex);
 	if (AValkyrie* player = Cast<AValkyrie>(mOwner))
 	{
-		player->SetActionState(EActionState2::EAS_NormalAttack, true);
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_NormalAttack);
 	}
 }
 
@@ -40,7 +46,8 @@ void AValkyrieNormalAttack::EndNormalAttack()
 	mAttackMaxIndex = 4;
 	if (AValkyrie* player = Cast<AValkyrie>(mOwner))
 	{
-		player->SetActionState(EActionState2::EAS_NormalAttack, false);
+		player->SetActionState(EActionState::EAS_Attack_Skill, false);
+		player->SetSkillState(ESkillState::ESS_None);
 	}
 }
 
@@ -119,6 +126,11 @@ void AValkyrieNormalAttack::Notify_AttackEnd()
 {
 	CustomTimeDilation = 1.f;
 	mIsAttacking = false;
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+		valkyrie->SetSkillState(ESkillState::ESS_None);
+	}
 	EndNormalAttack();
 }
 

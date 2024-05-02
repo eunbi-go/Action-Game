@@ -318,6 +318,8 @@ void AValkyrie::Tick(float DeltaTime)
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
 
+	CheckActionState(EActionState::EAS_Attack_Skill, true);
+	PrintViewport(1.f, FColor::Red, FString("---------"));
 
 	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
 	//	GetActorLocation().X,
@@ -476,10 +478,10 @@ void AValkyrie::TargetingKey()
 
 void AValkyrie::CrouchKey()
 {
-	bool isCrouch = CheckActionState(EActionState2::EAS_Crouch2, false);
+	bool isCrouch = CheckActionState(EActionState::EAS_Crouch, false);
 	if (!isCrouch)
 	{
-		SetActionState(EActionState2::EAS_Crouch2, true);
+		SetActionState(EActionState::EAS_Crouch, true);
 
 		mCrouchTimeLineComp->ReverseFromEnd();
 		GetCharacterMovement()->MaxWalkSpeed = 100.f;
@@ -489,7 +491,7 @@ void AValkyrie::CrouchKey()
 	}
 	else
 	{
-		SetActionState(EActionState2::EAS_Crouch2, false);
+		SetActionState(EActionState::EAS_Crouch, false);
 
 		mCrouchTimeLineComp->PlayFromStart();
 		GetCharacterMovement()->MaxWalkSpeed = 400.f;
@@ -501,27 +503,23 @@ void AValkyrie::CrouchKey()
 
 void AValkyrie::GuardKey()
 {
-	//mIsGuard = !mIsGuard;
-
-
-
-	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
+	bool isGuard = CheckActionState(EActionState::EAS_Guard, false);
 
 	if (isGuard)
 	{
-		SetActionState(EActionState2::EAS_Guard2, false);
+		SetActionState(EActionState::EAS_Guard, false);
 		mGuardShield->SetShieldVisibility(false);
 	}
 	else
 	{
-		SetActionState(EActionState2::EAS_Guard2, true);
+		SetActionState(EActionState::EAS_Guard, true);
 		mGuardShield->SetShieldVisibility(true);
 	}
 }
 
 void AValkyrie::JumpKey()
 {
-	bool isJump = CheckActionState(EActionState2::EAS_Jump2, false);
+	bool isJump = CheckActionState(EActionState::EAS_Jump, false);
 	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_2);
 
 	// 이미 점프중이라면 더블점프한다.
@@ -534,7 +532,7 @@ void AValkyrie::JumpKey()
 	else
 	{
 		Jump();
-		SetActionState(EActionState2::EAS_Jump2, true);
+		SetActionState(EActionState::EAS_Jump, true);
 	}
 }
 
@@ -545,13 +543,6 @@ void AValkyrie::JumpKey()
 
 void AValkyrie::Skill1Key()
 {
-	mSkillState = ESkillState::ESS_Sprint;
-
-	
-	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
-	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
-	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
-
 	mWeapon->SetCollisionOnOff(false);
 
 
@@ -561,6 +552,7 @@ void AValkyrie::Skill1Key()
 	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
 	sk->SetOwnerActor(this);
 	sk->FindTarget();
+	sk->Activate();
 
 	mSkillActorMap.Add(EValkyrieSkill::EVS_Sprint, sk);
 
@@ -569,15 +561,12 @@ void AValkyrie::Skill1Key()
 
 void AValkyrie::Skill2Key()
 {
-	//PrintViewport(10.f, FColor::Black, FString("Skill2Key"));
-
-	mSkillState = ESkillState::ESS_Ribbon;
-
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Range);
 	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
 	sk->SetOwnerActor(this);
+	sk->Activate();
 
 	mSkillActorMap.Add(EValkyrieSkill::EVS_Range, sk);
 
@@ -611,13 +600,6 @@ void AValkyrie::Skill2KeyUp()
 
 void AValkyrie::Skill3Key()
 {
-	mSkillState = ESkillState::ESS_Slash;
-	
-	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
-	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
-	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
-
-	
 	mWeapon->SetCollisionOnOff(false);
 	
 	bool isContainSkillActor = mSkillActorMap.Contains(EValkyrieSkill::EVS_Slash);
@@ -628,6 +610,7 @@ void AValkyrie::Skill3Key()
 		TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Slash);
 		AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
 		sk->SetOwnerActor(this);
+		sk->Activate();
 		Cast<AValkyrieContinuousSlash>(sk)->InputPressed();
 
 		mSkillActorMap.Add(EValkyrieSkill::EVS_Slash, sk);
@@ -636,6 +619,7 @@ void AValkyrie::Skill3Key()
 	{
 		AAGSkillActor* skillActor = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
 		Cast<AValkyrieContinuousSlash>(skillActor)->InputPressed();
+		skillActor->Activate();
 	}
 
 	//PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
@@ -643,12 +627,6 @@ void AValkyrie::Skill3Key()
 
 void AValkyrie::Skill4Key()
 {
-	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
-	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
-	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
-
-
-
 	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_FallingSword);
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -851,16 +829,15 @@ void AValkyrie::SpawnEffect()
 	FVector location = FVector();
 
 	
-	if (CheckActionState(EActionState2::EAS_NormalAttack, false))
+
+	switch (mSkillState)
+	{
+	case ESkillState::ESS_NormalAttack:
 	{
 		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
 		sk->SpawnEffect();
 	}
-
-	
-
-	switch (mSkillState)
-	{
+		break;
 	case ESkillState::ESS_Sprint:
 	{
 		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
@@ -913,8 +890,12 @@ void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
 
 void AValkyrie::GetHit(const FVector& _impactPoint)
 {
-	if (mSkillState != ESkillState::ESS_None || mActionState == EActionState::EAS_Attack)
+	bool isAttackState = CheckActionState(EActionState::EAS_Attack_Skill, false);
+	bool isHitState = CheckActionState(EActionState::EAS_Hit, false);
+
+	if (!isAttackState && !isHitState)
 		return;
+
 	FVector position = GetActorLocation();
 	FVector impactPosition = FVector(_impactPoint.X, _impactPoint.Y, position.Z);
 	FVector direction = (impactPosition - position).GetSafeNormal();
@@ -1017,11 +998,9 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
 		if (mSkillState == ESkillState::ESS_Sprint)
 		{
-			GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
 			sk->SkillEnd();
 			mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
-
 		}
 		else if (mSkillState == ESkillState::ESS_Ribbon)
 		{
@@ -1037,10 +1016,9 @@ void AValkyrie::SetAnimDelegate()
 		}
 		else if (mSkillState == ESkillState::ESS_HardAttack)
 		{
-
-			CameraSwitch(false);
-			UAnimMontage* montage = *mMontages.Find(FName("HardAttack"));
-			mAnimInst->Montage_SetPlayRate(montage, 1.f);
+			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
+			sk->SkillEnd();
+			mSkillActorMap.Remove(EValkyrieSkill::EVS_FallingSword);
 		}
 		mSkillState = ESkillState::ESS_None;
 
@@ -1060,7 +1038,7 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
 		mActionState = EActionState::EAS_Idle;
-		SetActionState(EActionState2::EAS_Jump2, false);
+		SetActionState(EActionState::EAS_Jump, false);
 	});
 
 	mAnimInst->mSpawnFresnel.AddLambda([this]() -> void {
@@ -1136,19 +1114,19 @@ void AValkyrie::PrintAllActionState()
 	TArray<bool> check;
 	TArray<FString> checkStr;
 
-	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Idle)));
 	checkStr.Add("Idle");
 
-	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Move)));
 	checkStr.Add("Move");
 
-	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Jump)));
 	checkStr.Add("Jump");
 
-	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Crouch2)));
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Crouch)));
 	checkStr.Add("Crouch");
 
-	check.Add(mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Guard2)));
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Guard)));
 	checkStr.Add("Guard");
 
 	int i = 0, cnt = check.Num();

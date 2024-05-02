@@ -10,6 +10,16 @@ AValkyrieSprint::AValkyrieSprint()
 {
 }
 
+void AValkyrieSprint::Activate()
+{
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetMp(-10.f);
+		valkyrie->SetSkillState(ESkillState::ESS_Sprint);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, true);
+	}
+}
+
 void AValkyrieSprint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -78,5 +88,11 @@ void AValkyrieSprint::FindTarget()
 
 void AValkyrieSprint::SkillEnd()
 {
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetSkillState(ESkillState::ESS_None);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+	}
+
 	Destroy();
 }

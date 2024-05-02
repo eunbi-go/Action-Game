@@ -13,6 +13,9 @@ void AValkyrieFallingSword::Activate()
 {
 	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
 	{
+		valkyrie->SetMp(-10.f);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, true);
+		valkyrie->SetSkillState(ESkillState::ESS_HardAttack);
 		valkyrie->PlayMontage(FName("HardAttack"));
 		valkyrie->SetMontagePlayRate(FName("HardAttack"), 0.1f);
 	}
@@ -51,6 +54,12 @@ void AValkyrieFallingSword::SpawnEffect()
 
 void AValkyrieFallingSword::SkillEnd()
 {
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->CameraSwitch(false);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+		valkyrie->SetSkillState(ESkillState::ESS_None);
+	}
 	Destroy();
 }
 

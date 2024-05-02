@@ -15,6 +15,7 @@ class AG_API AValkyrieContinuousSlash : public AAGSkillActor
 	GENERATED_BODY()
 public:
 	AValkyrieContinuousSlash();
+	virtual void Activate() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SpawnEffect() override;
 	virtual void SkillEnd() override;

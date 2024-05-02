@@ -44,19 +44,6 @@
 
 
 
-UENUM(BlueprintType)
-enum class EActionState : uint8
-{
-	EAS_Idle UMETA(DisplayName = "Idle"),
-	EAS_Move UMETA(DisplayName = "Move"),
-	EAS_Dash UMETA(DisplayName = "Dash"),
-	EAS_Attack UMETA(DisplayName = "Attack"),
-	EAS_Skill UMETA(DisplayName = "Skill"),
-	EAS_Jump UMETA(DisplayName = "Jump"),
-	EAS_JumpAttack UMETA(DisplayName = "JumpAttack"),
-	EAS_Guard UMETA(DisplayName = "Guard"),
-	EAS_Crouch UMETA(DisplayName = "Crouch")
-};
 
 UENUM(BlueprintType)
 enum class EValkyrieSkill : uint8
@@ -64,7 +51,8 @@ enum class EValkyrieSkill : uint8
 	EVS_NormalAttack UMETA(DisplayName = "NormalAttack Skill"),
 	EVS_Sprint UMETA(DisplayName = "Sprint Skill"),
 	EVS_Range UMETA(DisplayName = "Range Skill"),
-	EVS_Slash UMETA(DisplayName = "Slash Skill")
+	EVS_Slash UMETA(DisplayName = "Slash Skill"),
+	EVS_FallingSword UMETA(DisplayName = "FallingSword Skill")
 };
 
 
@@ -72,16 +60,17 @@ enum class EValkyrieSkill : uint8
 
 
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
-enum class EActionState2 : uint8
+enum class EActionState : uint8
 {
-	EAS_Idle2 = 0,
-	EAS_Move2 = 1,
-	EAS_Jump2 = 2,
-	EAS_Crouch2 = 3,
-	EAS_Guard2 = 4,
-	EAS_NormalAttack = 5,
+	EAS_Idle = 0,
+	EAS_Move = 1,
+	EAS_Jump = 2,
+	EAS_Crouch = 3,
+	EAS_Guard = 4,
+	EAS_Attack_Skill = 5,
+	EAS_Hit = 7,
 };
-ENUM_CLASS_FLAGS(EActionState2)
+ENUM_CLASS_FLAGS(EActionState)
 
 
 

@@ -40,8 +40,8 @@ void UValkyrieAnimInstance::NativeUpdateAnimation(float _deltaTime)
 		//mCharacterState = mCharacter->GetCharacterState();
 		mIsInAir = mMovementComp->IsFalling();
 		//mActionState = mCharacter->GetActionState();
-		mIsCrouch = mCharacter->CheckActionState(EActionState2::EAS_Crouch2, false);
-		mIsGuard = mCharacter->CheckActionState(EActionState2::EAS_Guard2, false);
+		mIsCrouch = mCharacter->CheckActionState(EActionState::EAS_Crouch, false);
+		mIsGuard = mCharacter->CheckActionState(EActionState::EAS_Guard, false);
 
 
 		// 디스턴스 매칭이 필요한 변수 세팅.

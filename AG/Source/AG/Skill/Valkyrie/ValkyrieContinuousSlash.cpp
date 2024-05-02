@@ -9,6 +9,16 @@ AValkyrieContinuousSlash::AValkyrieContinuousSlash()
 {
 }
 
+void AValkyrieContinuousSlash::Activate()
+{
+	if (AValkyrie* player = Cast<AValkyrie>(mOwner))
+	{
+		player->SetMp(-10.f);
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_Slash);
+	}
+}
+
 void AValkyrieContinuousSlash::BeginPlay()
 {
 	Super::BeginPlay();
@@ -85,6 +95,12 @@ void AValkyrieContinuousSlash::SkillEnd()
 	mIsNextSlashEnable = false;
 	mIsNextSlashInput = false;
 	mIsSlash = false;
+
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+		valkyrie->SetSkillState(ESkillState::ESS_None);
+	}
 
 	Destroy();
 }

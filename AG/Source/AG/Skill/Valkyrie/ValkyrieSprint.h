@@ -16,6 +16,7 @@ class AG_API AValkyrieSprint : public AAGSkillActor
 	
 public:
 	AValkyrieSprint();
+	virtual void Activate() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SpawnEffect() override;
 	virtual void FindTarget() override;

@@ -15,6 +15,7 @@ class AG_API AValkyrieNormalAttack : public AAGSkillActor
 	GENERATED_BODY()
 public:
 	AValkyrieNormalAttack();
+	virtual void Activate() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SpawnEffect() override;
 	virtual void SkillEnd() override;

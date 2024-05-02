@@ -16,6 +16,7 @@ class AG_API AValkyrieRange : public AAGSkillActor
 	
 public:
 	AValkyrieRange();
+	virtual void Activate() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SpawnEffect() override;
 	virtual void SkillEnd() override;

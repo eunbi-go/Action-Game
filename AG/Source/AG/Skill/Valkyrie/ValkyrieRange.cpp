@@ -9,6 +9,16 @@ AValkyrieRange::AValkyrieRange()
 {
 }
 
+void AValkyrieRange::Activate()
+{
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetMp(-10.f);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, true);
+		valkyrie->SetSkillState(ESkillState::ESS_Ribbon);
+	}
+}
+
 void AValkyrieRange::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,6 +71,11 @@ void AValkyrieRange::SpawnEffect()
 
 void AValkyrieRange::SkillEnd()
 {
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+	{
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+		valkyrie->SetSkillState(ESkillState::ESS_None);
+	}
 	Destroy();
 }
 

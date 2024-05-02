@@ -199,13 +199,13 @@ void AAGPlayer::Tick(float DeltaTime)
 
 	if (mHorizontalInputValue == 0.f && mForwardInputValue == 0.f)
 	{
-		SetActionState(EActionState2::EAS_Idle2, true);
-		SetActionState(EActionState2::EAS_Move2, false);
+		SetActionState(EActionState::EAS_Idle, true);
+		SetActionState(EActionState::EAS_Move, false);
 	}
 	else
 	{
-		SetActionState(EActionState2::EAS_Idle2, false);
-		SetActionState(EActionState2::EAS_Move2, true);
+		SetActionState(EActionState::EAS_Idle, false);
+		SetActionState(EActionState::EAS_Move, true);
 	}
 }
 
@@ -214,7 +214,7 @@ void AAGPlayer::MoveForward(float _value)
 	mForwardInputValue = _value;
 	
 
-	if ((_value != 0.f) && Controller && !CheckActionState(EActionState2::EAS_NormalAttack, false))
+	if ((_value != 0.f) && Controller && !CheckActionState(EActionState::EAS_Attack_Skill, false))
 	{
 		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
@@ -228,7 +228,7 @@ void AAGPlayer::MoveHorizontal(float _value)
 {
 	mHorizontalInputValue = _value;
 
-	if ((_value != 0.f) && Controller && !CheckActionState(EActionState2::EAS_NormalAttack, false))
+	if ((_value != 0.f) && Controller && !CheckActionState(EActionState::EAS_Attack_Skill, false))
 	{
 		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
@@ -407,7 +407,7 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 		damage = 1;
 
 	// Guard 상태일 경우, 데미지 피해량 감소
-	bool isGuard = CheckActionState(EActionState2::EAS_Guard2, false);
+	bool isGuard = CheckActionState(EActionState::EAS_Guard, false);
 	if (isGuard)
 		damage /= 2;
 
@@ -492,75 +492,84 @@ void AAGPlayer::SetSkillState(ESkillState NewState)
 }
 
 
-void AAGPlayer::SetActionState(EActionState2 NewActionState, bool IsStateOn)
+void AAGPlayer::SetActionState(EActionState NewActionState, bool IsStateOn)
 {
 	if (IsStateOn)
 	{
-		if (NewActionState == EActionState2::EAS_Idle2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Idle2));
-		else if (NewActionState == EActionState2::EAS_Move2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Move2));
-		else if (NewActionState == EActionState2::EAS_Jump2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Jump2));
-		else if (NewActionState == EActionState2::EAS_Crouch2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
-		else if (NewActionState == EActionState2::EAS_Guard2)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_Guard2));
-		else if (NewActionState == EActionState2::EAS_NormalAttack)
-			mStateType |= (1 << static_cast<uint8>(EActionState2::EAS_NormalAttack));
+		if (NewActionState == EActionState::EAS_Idle)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Idle));
+		else if (NewActionState == EActionState::EAS_Move)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Move));
+		else if (NewActionState == EActionState::EAS_Jump)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Jump));
+		else if (NewActionState == EActionState::EAS_Crouch)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Crouch));
+		else if (NewActionState == EActionState::EAS_Guard)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Guard));
+		else if (NewActionState == EActionState::EAS_Attack_Skill)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Attack_Skill));
+		else if (NewActionState == EActionState::EAS_Hit)
+			mStateType |= (1 << static_cast<uint8>(EActionState::EAS_Hit));
 	}
 	else
 	{
-		if (NewActionState == EActionState2::EAS_Idle2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Idle2));
-		else if (NewActionState == EActionState2::EAS_Move2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Move2));
-		else if (NewActionState == EActionState2::EAS_Jump2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Jump2));
-		else if (NewActionState == EActionState2::EAS_Crouch2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Crouch2));
-		else if (NewActionState == EActionState2::EAS_Guard2)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_Guard2));
-		else if (NewActionState == EActionState2::EAS_NormalAttack)
-			mStateType &= ~(1 << static_cast<uint8>(EActionState2::EAS_NormalAttack));
+		if (NewActionState == EActionState::EAS_Idle)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Idle));
+		else if (NewActionState == EActionState::EAS_Move)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Move));
+		else if (NewActionState == EActionState::EAS_Jump)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Jump));
+		else if (NewActionState == EActionState::EAS_Crouch)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Crouch));
+		else if (NewActionState == EActionState::EAS_Guard)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Guard));
+		else if (NewActionState == EActionState::EAS_Attack_Skill)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Attack_Skill));
+		else if (NewActionState == EActionState::EAS_Hit)
+			mStateType &= ~(1 << static_cast<uint8>(EActionState::EAS_Hit));
 	}
 
 }
 
-bool AAGPlayer::CheckActionState(EActionState2 ActionState, bool IsPrintViewport)
+bool AAGPlayer::CheckActionState(EActionState ActionState, bool IsPrintViewport)
 {
 	bool isState = false;
 	FString str = "";
 
-	if (ActionState == EActionState2::EAS_Idle2)
+	if (ActionState == EActionState::EAS_Idle)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Idle2)));
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Idle)));
 		str = "Idle ";
 	}
-	else if (ActionState == EActionState2::EAS_Move2)
+	else if (ActionState == EActionState::EAS_Move)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Move2)));
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Move)));
 		str = "Move ";
 	}
-	else if (ActionState == EActionState2::EAS_Jump2)
+	else if (ActionState == EActionState::EAS_Jump)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Jump2)));
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Jump)));
 		str = "EAS_Jump2 ";
 	}
-	else if (ActionState == EActionState2::EAS_Crouch2)
+	else if (ActionState == EActionState::EAS_Crouch)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Crouch2)));
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Crouch)));
 		str = "EAS_Crouch2 ";
 	}
-	else if (ActionState == EActionState2::EAS_Guard2)
+	else if (ActionState == EActionState::EAS_Guard)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_Guard2)));
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Guard)));
 		str = "EAS_Guard2 ";
 	}
-	else if (ActionState == EActionState2::EAS_NormalAttack)
+	else if (ActionState == EActionState::EAS_Attack_Skill)
 	{
-		isState = (mStateType & (1 << static_cast<uint8>(EActionState2::EAS_NormalAttack)));
-		str = "EAS_NormalAttack ";
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Attack_Skill)));
+		str = "EAS_Attack_Skill ";
+	}
+	else if (ActionState == EActionState::EAS_Hit)
+	{
+		isState = (mStateType & (1 << static_cast<uint8>(EActionState::EAS_Hit)));
+		str = "EAS_Hit ";
 	}
 
 	if (isState)
