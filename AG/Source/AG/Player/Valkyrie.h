@@ -49,7 +49,7 @@ public:
 
 	void SetMotionWarpingComponent(const FVector& TargetLocation);
 	void SetMp(float NewValue);
-
+	void CameraSwitch(bool _value);
 
 	//-------------------------------
 	// Combat Interface
@@ -111,7 +111,7 @@ protected:
 	UFUNCTION()
 	void CrouchCurveUpdate(float value);
 
-	void CameraSwitch(bool _value);
+	
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CameraSwitch", meta = (AllowPrivateAccess = true))
@@ -186,10 +186,10 @@ private:
 	float	mCrouchCapsuleHalfHeight;
 	float	mCapsuleHalfHeight;
 	
-	int32	mSlashSkillIndex = -1;
-	bool	mIsNextSlashEnable = false;
-	bool	mIsNextSlashInput = false;
-	bool	mIsSlash = false;
+	//int32	mSlashSkillIndex = -1;
+	//bool	mIsNextSlashEnable = false;
+	//bool	mIsNextSlashInput = false;
+	//bool	mIsSlash = false;
 
-	float	mSkill2PressingTime = 0.f;
+	//float	mSkill2PressingTime = 0.f;
 };

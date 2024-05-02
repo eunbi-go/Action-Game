@@ -16,6 +16,7 @@ public:
 	AAGSkillActor();
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Activate();
 	virtual void SpawnEffect();
 	virtual void FindTarget();
 	virtual void SkillEnd();

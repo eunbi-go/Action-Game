@@ -21,6 +21,10 @@ void AAGSkillActor::Tick(float DeltaTime)
 
 }
 
+void AAGSkillActor::Activate()
+{
+}
+
 void AAGSkillActor::SpawnEffect()
 {
 }

@@ -29,6 +29,7 @@
 #include "../Skill/Valkyrie/ValkyrieRange.h"
 #include "../Skill/Valkyrie/ValkyrieContinuousSlash.h"
 #include "../Skill/Valkyrie/ValkyrieNormalAttack.h"
+#include "../Skill/Valkyrie/ValkyrieFallingSword.h"
 
 AValkyrie::AValkyrie()
 {
@@ -256,6 +257,10 @@ AValkyrie::AValkyrie()
 
 	TSubclassOf<AAGSkillActor> normalAttack = AValkyrieNormalAttack::StaticClass();
 	mSkillmap.Add(EValkyrieSkill::EVS_NormalAttack, normalAttack);
+
+	TSubclassOf<AAGSkillActor> fallingSword = AValkyrieFallingSword::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_FallingSword, fallingSword);
+
 }
 
 void AValkyrie::BeginPlay()
@@ -638,11 +643,24 @@ void AValkyrie::Skill3Key()
 
 void AValkyrie::Skill4Key()
 {
-	mSkillState = ESkillState::ESS_HardAttack;
-	PlayMontage(FName("HardAttack"));
+	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
+	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
+	attributeSet->SetmMp(attributeSet->GetmMp() - 10.f);
 
-	UAnimMontage* montage = *mMontages.Find(FName("HardAttack"));
-	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
+
+
+	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_FallingSword);
+	FActorSpawnParameters	params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+	sk->SetOwnerActor(this);
+	sk->Activate();
+	mSkillActorMap.Add(EValkyrieSkill::EVS_FallingSword, sk);
+
+	////////////
+
+	mSkillState = ESkillState::ESS_HardAttack;
+	
 }
 
 
@@ -867,13 +885,8 @@ void AValkyrie::SpawnEffect()
 
 	case ESkillState::ESS_HardAttack:
 	{
-		CameraSwitch(true);
-		AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
-			GetActorLocation() + GetActorForwardVector() * 50.f,
-			GetActorRotation(),
-			SpawnParam
-		);
-		slash->SetParticle(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SwordAttack.NS_SwordAttack'"));
+		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
+		sk->SpawnEffect();
 	}
 	break;
 	}
