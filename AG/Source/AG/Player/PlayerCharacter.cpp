@@ -5,9 +5,9 @@
 
 #include "PlayerAnimInstance.h"
 #include "../Particle/ParticleCascade.h"
-#include "../Basic/WeaponActor.h"
+//#include "../Basic/WeaponActor.h"
 #include "../AGGameInstance.h"
-#include "../Basic/WeaponActor.h"
+//#include "../Basic/WeaponActor.h"
 #include "../Basic/ItemActor.h"
 #include "AGPlayerController.h"
 #include "CharacterStatComponent.h"
@@ -495,17 +495,17 @@ void APlayerCharacter::EquipWeaponToHand()
 	Particle->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Ability/Defense/P_Shield_Spawn.P_Shield_Spawn'"));
 
 
-	mWeapon->AttachToComponent(GetMesh(),
+	/*mWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::KeepRelativeTransform,
 		TEXT("middle_01_r"));
 
 	mWeapon->SetActorRelativeLocation(FVector(-1.0f, 9.0f, -1.0f));
-	mWeapon->SetActorRelativeRotation(FRotator(9.f, 151.f, 27.0f));
+	mWeapon->SetActorRelativeRotation(FRotator(9.f, 151.f, 27.0f));*/
 }
 
 void APlayerCharacter::SetWeaponTrailOnOff(bool _value)
 {
-	mWeapon->SetTrailOnOff(_value);
+	//mWeapon->SetTrailOnOff(_value);
 }
 
 void APlayerCharacter::AddItem(AItemActor* collisionObject, const FHitResult& Hit, AActor* hitActor)

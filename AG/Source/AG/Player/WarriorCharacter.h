@@ -18,17 +18,17 @@ public:
 
 
 public:
-	UFUNCTION()
-	void Skill1End(class ASkillActor* SkillActor, UParticleSystemComponent* comp);
-	
-	UFUNCTION()
-	void Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
+	//UFUNCTION()
+	//void Skill1End(class ASkillActor* SkillActor, UParticleSystemComponent* comp);
+	//
+	//UFUNCTION()
+	//void Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
-	UFUNCTION()
-	void Skill3EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
+	//UFUNCTION()
+	//void Skill3EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
-	UFUNCTION()
-		void Skill4EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
+	//UFUNCTION()
+	//	void Skill4EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp);
 
 protected:
 	virtual void BeginPlay() override;
@@ -91,8 +91,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 		TSubclassOf<UCameraShakeBase> mSlashShake;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
-	class ATemporaryfCameraActor* mTempCamera;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	//class ATemporaryfCameraActor* mTempCamera;
 
 	USkeletalMesh* mGhostMesh;
 

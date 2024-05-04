@@ -19,7 +19,7 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
+	virtual void SpawnHitEffect(const FVector& Location, const FRotator& Rotator);
 
 public:
 	void SetSound(const FString& _path, bool _isPlay = true);

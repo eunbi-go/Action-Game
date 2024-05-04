@@ -3,28 +3,28 @@
 
 #include "ParticleActor.h"
 
-// Sets default values
 AParticleActor::AParticleActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	mAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
 
 	SetRootComponent(mAudio);
 }
 
-// Called when the game starts or when spawned
 void AParticleActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void AParticleActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AParticleActor::SpawnHitEffect(const FVector& Location, const FRotator& Rotator)
+{
 }
 
 void AParticleActor::SetSound(const FString& _path, bool _isPlay)

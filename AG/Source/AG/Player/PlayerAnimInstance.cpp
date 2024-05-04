@@ -7,8 +7,8 @@
 #include "../Particle/ParticleCascade.h"
 #include "WarriorCharacter.h"
 #include "../Particle/ParticleNiagara.h"
-#include "../Skill/SprintSkil.h"
-#include "../Skill/ContinuousSkill.h"
+//#include "../Skill/SprintSkil.h"
+//#include "../Skill/ContinuousSkill.h"
 #include "AGPlayerController.h"
 
 UPlayerAnimInstance::UPlayerAnimInstance()

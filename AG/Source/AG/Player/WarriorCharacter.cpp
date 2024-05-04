@@ -4,16 +4,16 @@
 #include "WarriorCharacter.h"
 
 #include "../Particle/ParticleCascade.h"
-#include "../Basic/WeaponActor.h"
-#include "../Skill/TeleportSkill.h"
+//#include "../Basic/WeaponActor.h"
+//#include "../Skill/TeleportSkill.h"
 #include "PlayerAnimInstance.h"
 #include "AGPlayerController.h"
-#include "../Basic/TemporaryfCameraActor.h"
-#include "../Skill/SprintSkil.h"
-#include "../Skill/SlashSkill.h"
+//#include "../Basic/TemporaryfCameraActor.h"
+//#include "../Skill/SprintSkil.h"
+//#include "../Skill/SlashSkill.h"
 #include "../Particle/ParticleNiagara.h"
 #include "../Particle/DemonSlash.h"
-#include "../Skill/ContinuousSkill.h"
+//#include "../Skill/ContinuousSkill.h"
 #include "../Skill/FresnelActor.h"
 #include "CharacterStatComponent.h"
 #include "../Monster/Monster.h"
@@ -111,25 +111,25 @@ AWarriorCharacter::AWarriorCharacter()
 	mIsSprintLast = false;
 }
 
-void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, UParticleSystemComponent* comp)
-{
-	SkillActor->Destroy();
-}
-
-void AWarriorCharacter::Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp)
-{
-	SkillActor->Destroy();
-}
-
-void AWarriorCharacter::Skill3EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
-{
-	SkillActor->Destroy();
-}
-
-void AWarriorCharacter::Skill4EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
-{
-	SkillActor->Destroy();
-}
+//void AWarriorCharacter::Skill1End(ASkillActor* SkillActor, UParticleSystemComponent* comp)
+//{
+//	SkillActor->Destroy();
+//}
+//
+//void AWarriorCharacter::Skill2EndWithNiagara(class ASkillActor* SkillActor, UNiagaraComponent* comp)
+//{
+//	SkillActor->Destroy();
+//}
+//
+//void AWarriorCharacter::Skill3EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
+//{
+//	SkillActor->Destroy();
+//}
+//
+//void AWarriorCharacter::Skill4EndWithNiagara(ASkillActor* SkillActor, UNiagaraComponent* comp)
+//{
+//	SkillActor->Destroy();
+//}
 
 
 
@@ -146,18 +146,18 @@ void AWarriorCharacter::BeginPlay()
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 
-	mWeapon = GetWorld()->SpawnActor<AWeaponActor>(
-		AWeaponActor::StaticClass(), SpawnParam);
+	//mWeapon = GetWorld()->SpawnActor<AWeaponActor>(
+	//	AWeaponActor::StaticClass(), SpawnParam);
 
-	mWeapon->SetSkeletalMesh(TEXT("SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_HeroSword11/SK_Blade_HeroSword11.SK_Blade_HeroSword11'"));
+	//mWeapon->SetSkeletalMesh(TEXT("SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_HeroSword11/SK_Blade_HeroSword11.SK_Blade_HeroSword11'"));
 
 
-	mWeapon->AttachToComponent(GetMesh(),
-		FAttachmentTransformRules::KeepRelativeTransform,
-		TEXT("thigh_l"));
-	
-	mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
-	mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
+	//mWeapon->AttachToComponent(GetMesh(),
+	//	FAttachmentTransformRules::KeepRelativeTransform,
+	//	TEXT("thigh_l"));
+	//
+	//mWeapon->SetActorRelativeLocation(FVector(5.0f, 7.0f, -11.0f));
+	//mWeapon->SetActorRelativeRotation(FRotator(10.f, 151.f, 107.f));
 
 
 
@@ -173,12 +173,12 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo.minDamage = 100;
 	skillInfo.maxDamage = 200;
 
-	ATeleportSkill* skillActor = NewObject<ATeleportSkill>(this,
+	/*ATeleportSkill* skillActor = NewObject<ATeleportSkill>(this,
 		ATeleportSkill::StaticClass());
 	skillInfo.skillActor = Cast<ASkillActor>(skillActor);
 	
 	skillActor->SetParticle(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Deaths/P_Monster_Death_Large_Fire.P_Monster_Death_Large_Fire'"));
-	skillActor->mOnPaticleEnd.AddDynamic(this, &AWarriorCharacter::Skill1End);
+	skillActor->mOnPaticleEnd.AddDynamic(this, &AWarriorCharacter::Skill1End);*/
 
 	mSkillInfoArray.Add(skillInfo);
 
@@ -190,14 +190,14 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo2.minDamage = 300;
 	skillInfo2.maxDamage = 700;
 
-	ASprintSkil* skillActor2 = NewObject<ASprintSkil>(this,
-		ASprintSkil::StaticClass());
-	skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
+	//ASprintSkil* skillActor2 = NewObject<ASprintSkil>(this,
+	//	ASprintSkil::StaticClass());
+	//skillInfo2.skillActor = Cast<ASkillActor>(skillActor2);
 
-	skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
-	skillActor2->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill2EndWithNiagara);
-	skillActor2->GetNiagara()->SetActive(true);
-	skillActor2->SetTarget(this);
+	//skillActor2->SetNiagara(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Slashes/NS_Demon_Slash.NS_Demon_Slash'"));
+	//skillActor2->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill2EndWithNiagara);
+	//skillActor2->GetNiagara()->SetActive(true);
+	//skillActor2->SetTarget(this);
 
 	mSkillInfoArray.Add(skillInfo2);
 
@@ -208,13 +208,13 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo3.minDamage = 300;
 	skillInfo3.maxDamage = 700;
 
-	AContinuousSkill* skillActor3 = NewObject<AContinuousSkill>(this,
+	/*AContinuousSkill* skillActor3 = NewObject<AContinuousSkill>(this,
 		AContinuousSkill::StaticClass());
 	skillInfo3.skillActor = Cast<ASkillActor>(skillActor3);
 
 	skillActor3->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SlashStrike.NS_SlashStrike'"));
 	skillActor3->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill3EndWithNiagara);
-	mSkillInfoArray.Add(skillInfo3);
+	mSkillInfoArray.Add(skillInfo3);*/
 
 	// 4. SLASH
 	FSkillInfo skillInfo4{};
@@ -223,13 +223,13 @@ void AWarriorCharacter::BeginPlay()
 	skillInfo4.minDamage = 300;
 	skillInfo4.maxDamage = 700;
 
-	ASlashSkill* skillActor4 = NewObject<ASlashSkill>(this,
+	/*ASlashSkill* skillActor4 = NewObject<ASlashSkill>(this,
 		ASlashSkill::StaticClass());
 	skillInfo4.skillActor = Cast<ASkillActor>(skillActor4);
 
 	skillActor4->SetNiagara(TEXT("NiagaraSystem'/Game/StylizedVFX-Atacks/Particles/NS_SwordsAttack.NS_SwordsAttack'"));
 	skillActor4->mOnNiagaraEnd.AddDynamic(this, &AWarriorCharacter::Skill4EndWithNiagara);
-	skillActor4->GetNiagara()->SetActive(true);
+	skillActor4->GetNiagara()->SetActive(true);*/
 	
 
 	mSkillInfoArray.Add(skillInfo4);
@@ -590,7 +590,7 @@ void AWarriorCharacter::UseSkill(SKILL_TYPE _skillType)
 void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayIndex)
 {
 	FActorSpawnParameters	SpawnParam;
-	SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
+	//SpawnParam.Template = mSkillInfoArray[_skillInfoArrayIndex].skillActor;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	float rand = (float)FMath::FRandRange((float)30.f, (float)50.f);
 	
@@ -600,11 +600,11 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 	{
 	case SKILL_TYPE::SPRINT:
 	{
-		ASprintSkil* skill =
+		/*ASprintSkil* skill =
 			GetWorld()->SpawnActor<ASprintSkil>(
 				pos,
 				GetActorRotation(),
-				SpawnParam);
+				SpawnParam);*/
 
 		StartSlashCameraShake();
 		SetIsSprintLast(true);
@@ -617,11 +617,11 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 		FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(pos,
 			pos + GetActorForwardVector() * 100.f);
 
-		AContinuousSkill* Skill =
+		/*AContinuousSkill* Skill =
 			GetWorld()->SpawnActor<AContinuousSkill>(
 				pos,
 				GetActorRotation(),
-				SpawnParam);
+				SpawnParam);*/
 
 		NormalAttackCheck();
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mNormalAttackShake);
@@ -633,11 +633,11 @@ void AWarriorCharacter::SpawnSkill(SKILL_TYPE _skillType, int32 _skillInfoArrayI
 		pos += (GetActorForwardVector() * 100.f);
 		pos.Z -= (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() / 2.f);
 
-		ASlashSkill* Skill =
+		/*ASlashSkill* Skill =
 			GetWorld()->SpawnActor<ASlashSkill>(
 				pos,
 				GetActorRotation(),
-				SpawnParam);
+				SpawnParam);*/
 	}
 	break;
 	}
@@ -712,7 +712,7 @@ void AWarriorCharacter::Gauge(float _scale)
 	case SKILL_TYPE::TELEPORT:
 		mTeleportGauge += GetWorld()->GetDeltaSeconds();
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mGaugeShake);
-		mWeapon->IsGaugeOn(true);
+		//mWeapon->IsGaugeOn(true);
 		break;
 	}
 }
@@ -741,16 +741,16 @@ void AWarriorCharacter::GaugeEnd()
 		SpawnParam.SpawnCollisionHandlingOverride =	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 
-		mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
-			ATemporaryfCameraActor::StaticClass(), SpawnParam);
+		//mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
+		//	ATemporaryfCameraActor::StaticClass(), SpawnParam);
 
-		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 0.8f);
-		//mTempCamera->SetCamera(mCamera);
-		mTempCamera->SetSpringArm(mSpringArm);
+		//GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 0.8f);
+		////mTempCamera->SetCamera(mCamera);
+		//mTempCamera->SetSpringArm(mSpringArm);
 
-		mTempCamera->SetRatio(mCamera->AspectRatio);
-		mTempCamera->GetCamera()->bConstrainAspectRatio = true;
-		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
+		//mTempCamera->SetRatio(mCamera->AspectRatio);
+		//mTempCamera->GetCamera()->bConstrainAspectRatio = true;
+		//mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
 
 		FVector target = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
 		// 목표 지점으로 회전.
@@ -770,8 +770,8 @@ void AWarriorCharacter::GaugeEnd()
 		targetRot = UKismetMathLibrary::FindLookAtRotation(target,
 			pos);
 
-		mTempCamera->SetActorLocation(target);
-		mTempCamera->SetActorRotation(targetRot);
+		/*mTempCamera->SetActorLocation(target);
+		mTempCamera->SetActorRotation(targetRot);*/
 	}
 	break;
 	}
@@ -790,7 +790,7 @@ void AWarriorCharacter::StopLaunchCharacter()
 
 		
 		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(this, 0.7f);
-		mTempCamera->Destroy();
+		//mTempCamera->Destroy();
 		mSpringArm->SetActive(true);
 
 		//CustomTimeDilation = 1.f;
@@ -818,7 +818,7 @@ void AWarriorCharacter::RestartSkill()
 		//---------------------
 
 		mAnimInst->RestartSkill();
-		mWeapon->IsGaugeOn(false);
+		//mWeapon->IsGaugeOn(false);
 		//mWeapon->SetTrailOnOff(true);
 
 		//mCamera->SetActive(true);
@@ -860,39 +860,39 @@ void AWarriorCharacter::NextSprint()
 void AWarriorCharacter::TempCameraOnOff(bool _value)
 {
 	// on.
-	if (_value)
-	{
+	//if (_value)
+	//{
 
-		FActorSpawnParameters	SpawnParam;
-		SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-
-		mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
-			ATemporaryfCameraActor::StaticClass(), SpawnParam);
-
-		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 2.f);
-		//mTempCamera->SetCamera(mCamera);
-		mTempCamera->SetSpringArm(mSpringArm);
-
-		mTempCamera->SetRatio(mCamera->AspectRatio);
-		mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
+	//	FActorSpawnParameters	SpawnParam;
+	//	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 
-		mSpringArm->SetActive(false);
-		FVector pos = GetActorLocation();
-		pos.X -= GetActorForwardVector().X * 400.f;
-		pos.Z += 300.f;
+	//	mTempCamera = GetWorld()->SpawnActor<ATemporaryfCameraActor>(
+	//		ATemporaryfCameraActor::StaticClass(), SpawnParam);
 
-		mTempCamera->SetActorLocation(pos);
-		mTempCamera->SetActorRotation(FRotator(-20.f, 0.f, 0.f));
-	}
+	//	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(mTempCamera, 2.f);
+	//	//mTempCamera->SetCamera(mCamera);
+	//	mTempCamera->SetSpringArm(mSpringArm);
 
-	// off.
-	else
-	{
-		mTempCamera->Destroy();
-		mSpringArm->SetActive(true);
-	}
+	//	mTempCamera->SetRatio(mCamera->AspectRatio);
+	//	mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
+
+
+	//	mSpringArm->SetActive(false);
+	//	FVector pos = GetActorLocation();
+	//	pos.X -= GetActorForwardVector().X * 400.f;
+	//	pos.Z += 300.f;
+
+	//	mTempCamera->SetActorLocation(pos);
+	//	mTempCamera->SetActorRotation(FRotator(-20.f, 0.f, 0.f));
+	//}
+
+	//// off.
+	//else
+	//{
+	//	mTempCamera->Destroy();
+	//	mSpringArm->SetActive(true);
+	//}
 }
 
 void AWarriorCharacter::SprintJumpStart()
