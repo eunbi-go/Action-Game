@@ -25,6 +25,21 @@ void AParticleNiagara::OnSystemFinish(UNiagaraComponent* PSystem)
 	Destroy();
 }
 
+void AParticleNiagara::SpawnHitEffect(const FVector& Location, const FRotator& Rotator)
+{
+	FActorSpawnParameters	SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AParticleNiagara* Particle =
+		GetWorld()->SpawnActor<AParticleNiagara>(
+			Location,
+			Rotator,
+			SpawnParam);
+
+	Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit'"));
+}
+
 void AParticleNiagara::SetParticle(UNiagaraSystem* _particle)
 {
 	if (IsValid(_particle))
@@ -43,8 +58,4 @@ void AParticleNiagara::SetNiagaraScale(const FVector& _scale)
 {
 	if (mParticle)
 		mParticle->SetWorldScale3D(_scale);
-}
-
-void AParticleNiagara::SpawnHitEffect(const FVector& Location, const FRotator& Rotator)
-{
 }

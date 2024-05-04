@@ -19,6 +19,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnSystemFinish(class UNiagaraComponent* PSystem);
+	virtual void SpawnHitEffect(const FVector& Location, const FRotator& Rotator) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -28,7 +29,7 @@ public:
 	virtual void SetParticle(UNiagaraSystem* _particle);
 	virtual void SetParticle(const FString& _path);
 	void SetNiagaraScale(const FVector& _scale);
-	virtual void SpawnHitEffect(const FVector& Location, const FRotator& Rotator);
+	
 
 public:
 	UNiagaraComponent* GetNiagara() 
