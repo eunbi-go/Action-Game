@@ -3,7 +3,8 @@
 
 #include "ValkyrieRange.h"
 #include "../../Player/Valkyrie.h"
-#include "../../Particle/ValkyrieSlash.h"
+#include "../../Collision/CollisionActor.h"
+#include "../../Particle/ValkyrieRangeEffect.h"
 
 AValkyrieRange::AValkyrieRange()
 {
@@ -53,20 +54,30 @@ void AValkyrieRange::Tick(float DeltaTime)
 
 void AValkyrieRange::SpawnEffect()
 {
-	FActorSpawnParameters	SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride =
+	FActorSpawnParameters	spawnParam;
+	spawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AValkyrieSlash* slash = GetWorld()->SpawnActor<AValkyrieSlash>(
+	AValkyrieRangeEffect* niagara = GetWorld()->SpawnActor<AValkyrieRangeEffect>(
 		mOwner->GetActorLocation(),
 		GetActorRotation(),
-		SpawnParam
+		spawnParam
 	);
 	float size = 0.6f + mPressingTime;
 	if (mPressingTime == 0.f)
 		size = 0.3f;
-	slash->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Cut_Sl_04.NS_Cut_Sl_04'"));
-	slash->SetActorScale3D(FVector(size));
+	niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_Cut_Sl_04.NS_Cut_Sl_04'"));
+	niagara->SetActorScale3D(FVector(size));
+
+	FVector collisionSize = FVector(2.f, 2.f, 1.f);
+	size *= 2.f;
+	collisionSize.X += size;
+	collisionSize.Y += size;
+	collisionSize.Z += size;
+
+	niagara->SetCollisionSize(collisionSize);
+	niagara->SetCollisionRotate(mOwner->GetActorForwardVector().Rotation());
+
 }
 
 void AValkyrieRange::SkillEnd()

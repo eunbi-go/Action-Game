@@ -121,6 +121,7 @@ void AValkyrieSprint::SkillEnd()
 		valkyrie->SetSkillState(ESkillState::ESS_None);
 		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
 	}
-	mCollisionActor->Destroy();
+	if (IsValid(mCollisionActor))
+		mCollisionActor->Destroy();
 	Destroy();
 }
