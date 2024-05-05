@@ -2,9 +2,11 @@
 
 
 #include "ValkyrieSprint.h"
-#include "../../Particle/ValkyrieLightning.h"
+//#include "../../Particle/ValkyrieLightning.h"
 #include "../../Player/Valkyrie.h"
 #include "../../Monster/Monster.h"
+#include "../../Particle/ParticleNiagara.h"
+#include "../../Collision/CollisionActor.h"
 
 AValkyrieSprint::AValkyrieSprint()
 {
@@ -33,19 +35,32 @@ void AValkyrieSprint::BeginPlay()
 
 void AValkyrieSprint::SpawnEffect()
 {
-	FActorSpawnParameters	SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride =
+	FActorSpawnParameters	spawnParam;
+	spawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	FVector location = FVector();
 
 	location = mOwner->GetActorLocation();
 	location.Z -= Cast<AValkyrie>(mOwner)->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	AValkyrieLightning* niagara = GetWorld()->SpawnActor<AValkyrieLightning>(
+	AParticleNiagara* niagara = GetWorld()->SpawnActor<AParticleNiagara>(
 		location,
 		FRotator::ZeroRotator,
-		SpawnParam
+		spawnParam
 	);
 	niagara->SetParticle(TEXT("NiagaraSystem'/Game/NiagaraMagicalSlashes/Fx/Slashes/NS_SlashRing_05.NS_SlashRing_05'"));
+
+	mCollisionActor = GetWorld()->SpawnActor<ACollisionActor>(
+		location,
+		FRotator::ZeroRotator,
+		spawnParam
+	);
+	mCollisionActor->SetOwnerActor(niagara);
+	mCollisionActor->SetCollisionProfileName(FName("PlayerSword"));
+	mCollisionActor->SetParent(this);
+	mCollisionActor->SetCollisionShape(ECollisionType::ECS_Sphere);
+	mCollisionActor->SetSphereRadius(60.f);
+	mCollisionActor->SetRelativeScale(FVector(4.f));
+	//mCollisionActor->SetHiddenInGame(false);
 }
 
 void AValkyrieSprint::FindTarget()
@@ -72,17 +87,30 @@ void AValkyrieSprint::FindTarget()
 		outActors
 	);
 
+	const FVector& owner_location = mOwner->GetActorLocation();
+
 	if (isOverlapped)
 	{
-		if (IsValid(Cast<AMonster>(outActors[0])))
+		float distance = 5000.f;
+		int32 actors_cnt = outActors.Num(), i = 0;
+		AActor* target = nullptr;
+		for (i = 0; i < actors_cnt; ++i)
 		{
-			mTargetLocation = outActors[0]->GetActorLocation();
+			if (IsValid(Cast<AMonster>(outActors[i])))
+			{
+				float dis = GetDistanceTo(outActors[i]);
+				if (dis <= distance)
+				{
+					distance = dis;
+					target = outActors[i];
+				}
+			}
 		}
-	}
 
-	if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
-	{
-		valkyrie->SetMotionWarpingComponent(mTargetLocation);
+		if (AValkyrie* valkyrie = Cast<AValkyrie>(mOwner))
+		{
+			valkyrie->SetMotionWarpingComponent(target->GetActorLocation());
+		}
 	}
 }
 
@@ -93,6 +121,6 @@ void AValkyrieSprint::SkillEnd()
 		valkyrie->SetSkillState(ESkillState::ESS_None);
 		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
 	}
-
+	mCollisionActor->Destroy();
 	Destroy();
 }

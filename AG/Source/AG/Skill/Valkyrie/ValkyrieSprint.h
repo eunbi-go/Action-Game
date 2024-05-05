@@ -21,8 +21,14 @@ public:
 	virtual void SpawnEffect() override;
 	virtual void FindTarget() override;
 	virtual void SkillEnd() override;
+
+
+
 protected:
 	virtual void BeginPlay() override;
 
 	FVector mTargetLocation = FVector();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class ACollisionActor* mCollisionActor;
 };
