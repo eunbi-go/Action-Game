@@ -10,7 +10,6 @@
 
 AValkyrieSlash::AValkyrieSlash()
 {
-	mCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 }
 
 void AValkyrieSlash::BeginPlay()
@@ -70,29 +69,6 @@ void AValkyrieSlash::SpawnHitEffect(const FVector& Location, const FRotator& Rot
 	Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit'"));
 }
 
-void AValkyrieSlash::OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//PrintViewport(1.f, FColor::White, TEXT("ValkyrieSlash OverlapBegin"));
-
-	FActorSpawnParameters	SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride =
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	AParticleNiagara* Particle =
-		GetWorld()->SpawnActor<AParticleNiagara>(
-			OtherActor->GetActorLocation(),
-			FRotator::ZeroRotator,
-			SpawnParam);
-
-	Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit'"));
-
-
-	if (IHitInterface* hitInterface = Cast<IHitInterface>(OtherActor))
-	{
-		hitInterface->GetHit(SweepResult.ImpactPoint);
-	}
-}
-
 void AValkyrieSlash::OnSystemFinish(UNiagaraComponent* PSystem)
 {
 	mCollisionActor->Destroy();
@@ -105,17 +81,6 @@ void AValkyrieSlash::SetDirection(const FVector& _value)
 	mDirection.Normalize();
 }
 
-void AValkyrieSlash::Stop()
-{
-	mParticle->SetPaused(true);
-	//GetWorld()->GetTimerManager().SetTimer(mTimer, this, &AValkyrieSlash::Start, 0.2f, false);
-}
-
-void AValkyrieSlash::Start()
-{
-	mParticle->ResetSystem();
-}
-
 void AValkyrieSlash::Initialize()
 {
 	if (mSlashIdx == 0)
@@ -125,7 +90,7 @@ void AValkyrieSlash::Initialize()
 		mCollisionActor->SetRelativeLoctaion(FVector(100.f, 0.f, 450.f));
 		mCollisionActor->SetRelativeScale(FVector(2.f, 2.f, 10.f));
 		mCollisionActor->SetRelativeRotation(mDirection.Rotation());
-		mCollisionActor->SetHiddenInGame(false);
+		//mCollisionActor->SetHiddenInGame(false);
 	}
 	else if (mSlashIdx == 1)
 	{
@@ -133,7 +98,7 @@ void AValkyrieSlash::Initialize()
 		mCollisionActor->SetBoxExtent(FVector(50.f, 50.f, 50.f));
 		mCollisionActor->SetRelativeScale(FVector(1.f, 4.f, 1.f));
 		mCollisionActor->SetRelativeRotation(mDirection.Rotation());
-		mCollisionActor->SetHiddenInGame(false);
+		//mCollisionActor->SetHiddenInGame(false);
 		
 	}
 	else if (mSlashIdx == 2)
@@ -143,7 +108,7 @@ void AValkyrieSlash::Initialize()
 		mCollisionActor->SetCapsuleRadius(10.f);
 		mCollisionActor->SetRelativeScale(FVector(5.f, 5.f, 5.f));
 		mCollisionActor->SetRelativeRotation(mDirection.Rotation());
-		mCollisionActor->SetHiddenInGame(false);
+		//mCollisionActor->SetHiddenInGame(false);
 	}
 	else if (mSlashIdx == 3)
 	{
@@ -151,6 +116,6 @@ void AValkyrieSlash::Initialize()
 		mCollisionActor->SetSphereRadius(60.f);
 		mCollisionActor->SetRelativeScale(FVector(2.f, 2.f, 2.f));
 		mCollisionActor->SetRelativeRotation(mDirection.Rotation());
-		mCollisionActor->SetHiddenInGame(false);
+		//mCollisionActor->SetHiddenInGame(false);
 	}
 }

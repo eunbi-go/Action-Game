@@ -24,17 +24,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SpawnHitEffect(const FVector& Location, const FRotator& Rotator) override;
 	
-
-	UFUNCTION()
-	void OnParticleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	virtual void OnSystemFinish(class UNiagaraComponent* PSystem) override;
 
 	void SetDirection(const FVector& _value);
-	
 
-	void Stop();
-	void Start();
 
 	void SetSlashIdx(int32 Idx)
 	{
@@ -45,12 +38,6 @@ private:
 	void Initialize();
 
 	FVector mDirection;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UBoxComponent* mCollisionBox;
-
-	UPROPERTY()
-	FTimerHandle	mTimer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class ACollisionActor* mCollisionActor;

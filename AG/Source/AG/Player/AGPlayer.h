@@ -107,7 +107,6 @@ protected:
 	float mDirection = 0.f;
 
 	ECharacterState mCharacterState;
-	EActionState	mActionState;
 	ESkillState		mSkillState;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")

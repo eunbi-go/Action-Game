@@ -63,7 +63,6 @@ AAGPlayer::AAGPlayer()
 	mIsAttacking = false;
 
 	mCharacterState = ECharacterState::ECS_Unequipped;
-	mActionState = EActionState::EAS_Idle;
 	mSkillState = ESkillState::ESS_None;
 
 	mPlayerTableRowName = TEXT("Player");
@@ -216,7 +215,6 @@ void AAGPlayer::MoveForward(float _value)
 
 	if ((_value != 0.f) && Controller && !CheckActionState(EActionState::EAS_Attack_Skill, false))
 	{
-		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
 		const FRotator yawRotation(0.f, controlRotation.Yaw, 0.f);
 		const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
@@ -230,7 +228,6 @@ void AAGPlayer::MoveHorizontal(float _value)
 
 	if ((_value != 0.f) && Controller && !CheckActionState(EActionState::EAS_Attack_Skill, false))
 	{
-		//mActionState = EActionState::EAS_Move;
 		const FRotator controlRotation = GetControlRotation();
 		const FRotator yawRotation(0.f, controlRotation.Yaw, 0.f);
 
@@ -252,7 +249,6 @@ void AAGPlayer::LookUp(float _value)
 void AAGPlayer::JumpKey()
 {
 	Jump();
-	//mActionState = EActionState::EAS_Jump;
 }
 
 void AAGPlayer::CrouchKey()

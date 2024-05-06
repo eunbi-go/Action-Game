@@ -34,10 +34,11 @@ void AParticleNiagara::SpawnHitEffect(const FVector& Location, const FRotator& R
 	AParticleNiagara* Particle =
 		GetWorld()->SpawnActor<AParticleNiagara>(
 			Location,
-			Rotator,
+			FRotator::ZeroRotator,
 			SpawnParam);
 
 	Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit'"));
+	Particle->SetActorScale3D(FVector(4.f));
 }
 
 void AParticleNiagara::SetParticle(UNiagaraSystem* _particle)
