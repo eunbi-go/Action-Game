@@ -29,19 +29,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	void OnCapsuleOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnCapsuleOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	void OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void ClearTimer();
 
@@ -63,8 +54,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	void GetHit(AActor* _hitActor);
 
 public:
 	void SetOwnerActor(AActor* OwnerActor)
@@ -113,27 +102,6 @@ public:
 	void SetHitSeconds(float _value)
 	{
 		mHitSeconds = _value;
-	}
-
-	void SetOnColl(bool _value)
-	{
-		onColl = _value;
-	}
-
-	void SetMoveDirection(const FVector& _value)
-	{
-		mMoveDirection = _value;
-		mIsMove = true;
-	}
-
-	void SetInitLocation(const FVector& _value)
-	{
-		mInitLocation = _value;
-	}
-
-	FVector GetInitLocation()
-	{
-		return mInitLocation;
 	}
 
 	void SetParent(AActor* _value)
@@ -203,29 +171,14 @@ public:
 	}
 
 private:
-
-
-
 	ECollisionType	mCollisionShape;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	EHitType	mHitType;
 
-	float	mHitSeconds;
-
-	
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TArray<AActor*> mActorsToIgnoreArray;
+	float	mHitSeconds = 0.2f;
 
 	FTimerHandle mTimer;
-
-	bool onColl = false;
-
-	FVector mMoveDirection;
-	FVector mInitLocation;
-
-	bool mIsMove = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	AActor* mParent;
