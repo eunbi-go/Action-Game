@@ -92,11 +92,20 @@ void AItemActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(*item->effect, 1.f, ecHandle);
 			const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
 
+
+
+
+
 			Destroy();
 
 		}
 		else if (Cast<AAGPlayer>(OtherActor)->AddItem(mItemId))
+		{
+
+
 			Destroy();
+
+		}
 	}
 }
 

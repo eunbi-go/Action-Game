@@ -43,15 +43,17 @@ void AValkyrieSlash::Tick(float DeltaTime)
 		Initialize();
 	}
 
+	if (IsValid(mCollisionActor))
+	{
+		FVector location = mCollisionActor->GetRelativeLocation();
+		if (mSlashIdx < 3)
+			location += mDirection * 3000.f * DeltaTime;
+		else
+			location += mDirection * 500.f * DeltaTime;
+		location.Z = GetActorLocation().Z;
 
-	FVector location = mCollisionActor->GetRelativeLocation();
-	if (mSlashIdx < 3)
-		location += mDirection * 3000.f * DeltaTime;
-	else
-		location += mDirection * 500.f * DeltaTime;
-	location.Z = GetActorLocation().Z;
-
-	mCollisionActor->SetRelativeLoctaion(location);
+		mCollisionActor->SetRelativeLoctaion(location);
+	}
 }
 
 void AValkyrieSlash::SpawnHitEffect(const FVector& Location, const FRotator& Rotator)
@@ -71,7 +73,8 @@ void AValkyrieSlash::SpawnHitEffect(const FVector& Location, const FRotator& Rot
 
 void AValkyrieSlash::OnSystemFinish(UNiagaraComponent* PSystem)
 {
-	mCollisionActor->Destroy();
+	if (IsValid(mCollisionActor))
+		mCollisionActor->Destroy();
 	Destroy();
 }
 

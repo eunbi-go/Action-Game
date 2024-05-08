@@ -4,6 +4,7 @@
 #include "ValkyrieNormalAttack.h"
 #include "../../Player/Valkyrie.h"
 #include "../../Particle/ParticleNiagara.h"
+#include "../../Collision/CollisionActor.h"
 
 AValkyrieNormalAttack::AValkyrieNormalAttack()
 {
@@ -65,7 +66,7 @@ void AValkyrieNormalAttack::SpawnEffect()
 	{
 		AParticleNiagara* effect = GetWorld()->SpawnActor<AParticleNiagara>(
 			location,
-			FRotator::ZeroRotator,
+			mOwner->GetActorForwardVector().Rotation(),
 			SpawnParam
 		);
 
@@ -82,10 +83,30 @@ void AValkyrieNormalAttack::SpawnEffect()
 	{
 		AParticleNiagara* effect = GetWorld()->SpawnActor<AParticleNiagara>(
 			location,
-			FRotator::ZeroRotator,
+			mOwner->GetActorForwardVector().Rotation(),
 			SpawnParam
 		);
 		effect->SetParticle(TEXT("NiagaraSystem'/Game/BlinkAndDashVFX/VFX_Niagara/NS_Blink_Fire.NS_Blink_Fire'"));
+
+
+
+		FActorSpawnParameters	spawnParam;
+		spawnParam.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+
+		mCollisionActor = GetWorld()->SpawnActor<ACollisionActor>(
+			location,
+			FRotator::ZeroRotator,
+			spawnParam
+		);
+		mCollisionActor->SetOwnerActor(effect);
+		mCollisionActor->SetCollisionProfileName(FName("PlayerSword"));
+		mCollisionActor->SetParent(this);
+		mCollisionActor->SetCollisionShape(ECollisionType::ECS_Sphere);
+		mCollisionActor->SetSphereRadius(60.f);
+		mCollisionActor->SetRelativeScale(FVector(2.f));
+		//mCollisionActor->SetHiddenInGame(false);
 	}
 
 }
@@ -131,6 +152,8 @@ void AValkyrieNormalAttack::Notify_AttackEnd()
 		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
 		valkyrie->SetSkillState(ESkillState::ESS_None);
 	}
+	if (IsValid(mCollisionActor))
+		mCollisionActor->Destroy();
 	EndNormalAttack();
 }
 

@@ -380,7 +380,8 @@ void AAGPlayer::CheatMpKey()
 {
 	AValkyriePlayerState* state = GetPlayerState<AValkyriePlayerState>();
 	UAGAttributeSet* attributeSet = Cast<UAGAttributeSet>(state->GetAttributeSet());
-	attributeSet->SetmMaxMp(attributeSet->GetmMaxMp() + 100.f);
+	attributeSet->SetmMp(attributeSet->GetmMaxMp());
+	attributeSet->SetmHp(attributeSet->GetmMaxHp());
 }
 
 void AAGPlayer::PlayMontage(FName _montageName, FName _sectionName)
@@ -405,10 +406,11 @@ float AAGPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	// Guard 상태일 경우, 데미지 피해량 감소
 	bool isGuard = CheckActionState(EActionState::EAS_Guard, false);
 	if (isGuard)
-		damage /= 2;
-
+		damage = 0;
+	else
+		damage /= 5;
 	int hp = attributeSet->GetmHp();
-
+	
 	// death
 	if (hp - damage <= 0)
 	{

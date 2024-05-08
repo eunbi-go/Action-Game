@@ -23,7 +23,7 @@ enum class ESkillState : uint8
 	ESS_None UMETA(DisplayName = "None"),
 	ESS_NormalAttack UMETA(DisplayName = "NormalAttack"),
 	ESS_Sprint UMETA(DisplayName = "Sprint"),
-	ESS_Ribbon UMETA(DisplayName = "Ribbon"),
+	ESS_Range UMETA(DisplayName = "Range"),
 	ESS_Slash UMETA(DisplayName = "Slash"),
 	ESS_HardAttack UMETA(DisplayName = "HardAttack"),
 };

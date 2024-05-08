@@ -39,7 +39,7 @@ void AValkyrieRangeEffect::Tick(float DeltaTime)
 		mIsInitCollisionActor = true;
 		mCollisionActor->SetCollisionShape(ECollisionType::ECS_Box);
 		mCollisionActor->SetBoxExtent(FVector(50.f));
-		mCollisionActor->SetHiddenInGame(false);
+		//mCollisionActor->SetHiddenInGame(false);
 		mCollisionActor->SetRelativeScale(mCollisionSize);
 		mCollisionActor->SetRelativeRotation(mCollisionRotator);
 	}

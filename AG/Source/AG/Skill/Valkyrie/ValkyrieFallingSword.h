@@ -20,7 +20,12 @@ public:
 	virtual void SpawnEffect() override;
 	virtual void SkillEnd() override;
 
+	UFUNCTION()
+	void ParticleFinish(class UNiagaraComponent* PSystem);
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class ACollisionActor* mCollisionActor;
 };

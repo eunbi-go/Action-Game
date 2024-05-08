@@ -185,11 +185,4 @@ private:
 
 	float	mCrouchCapsuleHalfHeight;
 	float	mCapsuleHalfHeight;
-	
-	//int32	mSlashSkillIndex = -1;
-	//bool	mIsNextSlashEnable = false;
-	//bool	mIsNextSlashInput = false;
-	//bool	mIsSlash = false;
-
-	//float	mSkill2PressingTime = 0.f;
 };

@@ -16,7 +16,7 @@ void AValkyrieRange::Activate()
 	{
 		valkyrie->SetMp(-10.f);
 		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, true);
-		valkyrie->SetSkillState(ESkillState::ESS_Ribbon);
+		valkyrie->SetSkillState(ESkillState::ESS_Range);
 	}
 }
 
@@ -37,7 +37,7 @@ void AValkyrieRange::Tick(float DeltaTime)
 		Cast<AValkyrie>(mOwner)->SetMp(-10.f);
 
 		// owner 스킬 상태 변경
-		Cast<AValkyrie>(mOwner)->SetSkillState(ESkillState::ESS_Ribbon);
+		Cast<AValkyrie>(mOwner)->SetSkillState(ESkillState::ESS_Range);
 
 		// owner 몽타주 느리게 재생
 		Cast<AValkyrie>(mOwner)->PlayMontage(FName("Ribbon"));

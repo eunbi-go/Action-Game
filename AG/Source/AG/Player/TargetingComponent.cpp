@@ -66,7 +66,7 @@ void UTargetingComponent::CheckTarget()
 	bool isOverlapped = UKismetSystemLibrary::SphereOverlapActors(
 							GetWorld(),
 							location,
-							mSphereRadius,	
+							4000.f,//mSphereRadius,	
 							objectTypes,
 							nullptr,
 							ignoreActors,
@@ -102,27 +102,27 @@ AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors)
 	ignoreActors.Add(mOwner);
 	for (int i = 0; i < num; ++i)
 	{
-		FHitResult res;
-		UKismetSystemLibrary::LineTraceSingle(
-			GetWorld(),
-			actors[i]->GetActorLocation(),
-			mOwner->GetActorLocation(),
-			ETraceTypeQuery::TraceTypeQuery1,	// Visibility
-			false,
-			ignoreActors,
-			EDrawDebugTrace::ForDuration,
-			res,
-			true
-		);
+		//FHitResult res;
+		//UKismetSystemLibrary::LineTraceSingle(
+		//	GetWorld(),
+		//	actors[i]->GetActorLocation(),
+		//	mOwner->GetActorLocation(),
+		//	ETraceTypeQuery::TraceTypeQuery1,	// Visibility
+		//	false,
+		//	ignoreActors,
+		//	EDrawDebugTrace::ForDuration,
+		//	res,
+		//	true
+		//);
 
-		if (res.GetActor())
+		if (IsValid(Cast<AMonster>(actors[i])))
 		{
-			float dis = res.GetActor()->GetDistanceTo(mOwner);
+			float dis = actors[i]->GetDistanceTo(mOwner);
 			if (dis < distance)
 			{
 				PrintViewport(1.f, FColor::Black, FString("Find"));
 				distance = dis;
-				closetActor = res.GetActor();
+				closetActor = actors[i];
 			}
 		}
 	}

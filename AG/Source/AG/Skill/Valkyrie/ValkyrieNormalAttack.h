@@ -43,6 +43,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack")
 	int32 mAttackMaxIndex = 4;
 
-private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Collision")
+	class ACollisionActor* mCollisionActor;
+
+
 	
 };

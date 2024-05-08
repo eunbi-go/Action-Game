@@ -36,9 +36,3 @@ void AAGSkillActor::FindTarget()
 void AAGSkillActor::SkillEnd()
 {
 }
-
-void AAGSkillActor::SetOwnerActor(AActor* OwnerActor)
-{
-	mOwner = OwnerActor;
-}
-

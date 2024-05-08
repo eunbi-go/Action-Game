@@ -20,7 +20,10 @@ public:
 	virtual void SpawnEffect();
 	virtual void FindTarget();
 	virtual void SkillEnd();
-	void SetOwnerActor(AActor* Owner);
+	void SetOwnerActor(AActor* OwnerActor)
+	{
+		mOwner = OwnerActor;
+	}
 	
 protected:
 	virtual void BeginPlay() override;

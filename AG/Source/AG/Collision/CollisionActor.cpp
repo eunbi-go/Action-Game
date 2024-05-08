@@ -89,17 +89,19 @@ void ACollisionActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 			GetWorld()->GetTimerManager().SetTimer(
 				mTimer,
 				FTimerDelegate::CreateLambda([this, SweepResult, damage, hitInterface, OtherActor]() {
-					PrintViewport(1.f, FColor::Green, FString("hit"));
-					if (hitInterface)
+					if (mIsContinuousHit)
 					{
-						hitInterface->GetHit(SweepResult.ImpactPoint);
+						PrintViewport(1.f, FColor::Green, FString("hit"));
+						if (hitInterface)
+						{
+							hitInterface->GetHit(SweepResult.ImpactPoint);
+						}
+						OtherActor->TakeDamage(
+							damage,
+							FDamageEvent(),
+							GetWorld()->GetFirstPlayerController(),
+							this);
 					}
-					OtherActor->TakeDamage(
-						damage,
-						FDamageEvent(),
-						GetWorld()->GetFirstPlayerController(),
-						this);
-
 				}),
 				mHitSeconds,	
 				true

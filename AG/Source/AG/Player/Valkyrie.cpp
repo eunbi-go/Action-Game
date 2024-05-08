@@ -9,9 +9,6 @@
 #include "../Particle/ParticleCascade.h"
 #include "../Particle/ParticleNiagara.h"
 #include "../Particle/ValkyrieSlash.h"
-#include "../Particle/ValkyrieLightning.h"
-#include "../Particle/ValkyrieDemonSlash.h"
-#include "../Particle/ValkyrieBlinkFire.h"
 #include "../Skill/FresnelActor.h"
 #include "CharacterStatComponent.h"
 #include "TargetingComponent.h"
@@ -24,7 +21,6 @@
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "Shield.h"
 #include "../AGGameplayTags.h"
-//#include "../AbilitySystem/Ability/ValkyrieNormalAttack.h"
 #include "../Skill/Valkyrie/ValkyrieSprint.h"
 #include "../Skill/Valkyrie/ValkyrieRange.h"
 #include "../Skill/Valkyrie/ValkyrieContinuousSlash.h"
@@ -157,10 +153,10 @@ AValkyrie::AValkyrie()
 	mTempCameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TempCamera"));
 	mTempCameraComp->SetActive(false);
 	mTempCameraComp->SetupAttachment(GetMesh());
-	/*mTempCameraComp->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
-	mTempCameraComp->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));*/
-	mTempCameraComp->SetRelativeLocation(FVector(-130.f, -145.f, 225.f));
-	mTempCameraComp->SetRelativeRotation(FRotator(-35.f, 45.f, 10.f));
+	mTempCameraComp->SetRelativeLocation(FVector(20.f, -100.f, 180.f));
+	mTempCameraComp->SetRelativeRotation(FRotator(-20.f, 90.f, 0.f));
+	/*mTempCameraComp->SetRelativeLocation(FVector(-130.f, -145.f, 225.f));
+	mTempCameraComp->SetRelativeRotation(FRotator(-35.f, 45.f, 10.f));*/
 	mTempCameraComp->bAutoActivate = false;
 
 
@@ -189,7 +185,7 @@ AValkyrie::AValkyrie()
 
 
 	mTargetingComp = CreateDefaultSubobject<UTargetingComponent>(TEXT("TargetingComp"));
-	mTargetingComp->SetOwner(this);
+	mTargetingComp->SetOwnerActor(this);
 
 
 
@@ -318,8 +314,10 @@ void AValkyrie::Tick(float DeltaTime)
 	if (mFresnelInfo.mFresnelEnable)
 		SpawnFresnel();
 
-	CheckActionState(EActionState::EAS_Attack_Skill, true);
-	PrintViewport(1.f, FColor::Red, FString("---------"));
+	//PrintAllActionState();
+
+	/*CheckActionState(EActionState::EAS_Attack_Skill, true);
+	PrintViewport(1.f, FColor::Red, FString("---------"));*/
 
 	//PrintViewport(0.5f, FColor::Red, FString::Printf(TEXT("x: %f, y: %f, z: %f"),
 	//	GetActorLocation().X,
@@ -628,17 +626,22 @@ void AValkyrie::Skill3Key()
 void AValkyrie::Skill4Key()
 {
 	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_FallingSword);
+
 	FActorSpawnParameters	params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+
+	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(
+		skillActor, 
+		GetActorLocation(), 
+		GetActorRotation(), 
+		params
+	);
+
 	sk->SetOwnerActor(this);
 	sk->Activate();
+
 	mSkillActorMap.Add(EValkyrieSkill::EVS_FallingSword, sk);
 
-	////////////
-
-	mSkillState = ESkillState::ESS_HardAttack;
-	
 }
 
 
@@ -673,25 +676,6 @@ void AValkyrie::SetMontagePlayRate(FName MontageName, float PlayRate)
 {
 	UAnimMontage* montage = *mMontages.Find(MontageName);
 	mAnimInst->Montage_SetPlayRate(montage, PlayRate);
-
-	//if (mSkillState == ESkillState::ESS_Ribbon)
-	//{
-	//	montage = *mMontages.Find(FName("Ribbon"));
-	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-	//	
-	//}
-
-	//switch (mSkillState)
-	//{
-	//case ESkillState::ESS_Sprint:
-	//	montage = *mMontages.Find(FName("Sprint"));
-	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-	//	break;
-	//case ESkillState::ESS_Ribbon:
-	//	montage = *mMontages.Find(FName("Ribbon"));
-	//	mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-	//	break;
-	//}
 }
 
 //-------------------------------
@@ -826,8 +810,6 @@ void AValkyrie::SpawnEffect()
 	FActorSpawnParameters	SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	FVector location = FVector();
-
 	
 
 	switch (mSkillState)
@@ -845,7 +827,7 @@ void AValkyrie::SpawnEffect()
 	}
 		break;
 
-	case ESkillState::ESS_Ribbon:
+	case ESkillState::ESS_Range:
 	{
 		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
 		Cast<AValkyrieRange>(sk)->SetIsPress(false);
@@ -867,8 +849,6 @@ void AValkyrie::SpawnEffect()
 	}
 	break;
 	}
-
-
 }
 
 void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
@@ -893,7 +873,7 @@ void AValkyrie::GetHit(const FVector& _impactPoint)
 	bool isAttackState = CheckActionState(EActionState::EAS_Attack_Skill, false);
 	bool isHitState = CheckActionState(EActionState::EAS_Hit, false);
 
-	if (!isAttackState && !isHitState)
+	if (isAttackState || isHitState)
 		return;
 
 	FVector position = GetActorLocation();
@@ -973,6 +953,7 @@ void AValkyrie::SetAnimDelegate()
 
 		if (mWeapon)
 		{
+			mWeapon->SetCollisionOnOff(false);
 			mWeapon->ClearIgnoreActors();
 			mWeapon->SetTrailOnOff(false);
 		}
@@ -983,6 +964,8 @@ void AValkyrie::SetAnimDelegate()
 		{
 			mWeapon->SetTrailOnOff(true);
 			mWeapon->SetCollisionOnOff(true);
+			// 이거 추가함
+			mWeapon->ClearIgnoreActors();
 		}
 	});
 
@@ -996,13 +979,14 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
+		mWeapon->SetTrailOnOff(false);
 		if (mSkillState == ESkillState::ESS_Sprint)
 		{
 			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
 			sk->SkillEnd();
 			mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
 		}
-		else if (mSkillState == ESkillState::ESS_Ribbon)
+		else if (mSkillState == ESkillState::ESS_Range)
 		{
 			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
 			sk->SkillEnd();
@@ -1037,12 +1021,11 @@ void AValkyrie::SetAnimDelegate()
 	});
 
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
-		mActionState = EActionState::EAS_Idle;
 		SetActionState(EActionState::EAS_Jump, false);
 	});
 
 	mAnimInst->mSpawnFresnel.AddLambda([this]() -> void {
-		if (mSkillState == ESkillState::ESS_Ribbon)
+		if (mSkillState == ESkillState::ESS_Range)
 		{
 			mFresnelInfo.mFresnelEnable = true;
 			mFresnelInfo.mFresnelCreateTimeEnd = 0.1f;
@@ -1051,7 +1034,7 @@ void AValkyrie::SetAnimDelegate()
 		});
 
 	mAnimInst->mResetFresnel.AddLambda([this]() -> void {
-		if (mSkillState == ESkillState::ESS_Ribbon)
+		if (mSkillState == ESkillState::ESS_Range)
 		{
 			mFresnelInfo.mFresnelEnable = false;
 			ResetFresnel();
@@ -1077,7 +1060,7 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnPause.AddLambda([this]()-> void {
 
-		if (mSkillState == ESkillState::ESS_Ribbon)
+		if (mSkillState == ESkillState::ESS_Range)
 		{
 			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
 			if (AValkyrieRange* rsk = Cast<AValkyrieRange>(sk))
@@ -1129,6 +1112,12 @@ void AValkyrie::PrintAllActionState()
 	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Guard)));
 	checkStr.Add("Guard");
 
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Attack_Skill)));
+	checkStr.Add("Attack_Skill");
+
+	check.Add(mStateType & (1 << static_cast<uint8>(EActionState::EAS_Hit)));
+	checkStr.Add("Hit");
+
 	int i = 0, cnt = check.Num();
 	FString str = "";
 	for (i = 0; i < cnt; ++i)
@@ -1139,6 +1128,5 @@ void AValkyrie::PrintAllActionState()
 		else
 			str += " X\n";
 	}
-	PrintViewport(1.f, FColor::Blue, str);
-
+	PrintViewport(1.f, FColor::Green, str);
 }

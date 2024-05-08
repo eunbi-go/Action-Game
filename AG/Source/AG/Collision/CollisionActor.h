@@ -170,6 +170,11 @@ public:
 		return FVector();
 	}
 
+	void SetIsContinuousHit(bool NewValue)
+	{
+		mIsContinuousHit = NewValue;
+	}
+
 private:
 	ECollisionType	mCollisionShape;
 
@@ -182,4 +187,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	AActor* mParent;
+
+	bool mIsContinuousHit = true;
 };

@@ -21,7 +21,7 @@ public:
 	void CheckTarget();
 	void SetTargetLock();
 
-	void SetOwner(ACharacter* _value)
+	void SetOwnerActor(ACharacter* _value)
 	{
 		if (_value)
 			mOwner = _value;
