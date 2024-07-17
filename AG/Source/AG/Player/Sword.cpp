@@ -21,8 +21,8 @@ ASword::ASword()
 
 	mBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	mBoxComp->SetupAttachment(mMesh);
-	mBoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	mBoxComp->SetCollisionProfileName(TEXT("PlayerSword"));
+	mBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	mBoxComp->SetBoxExtent(FVector(3.f, 5.f, 45.f));
 	mBoxComp->SetRelativeLocation(FVector(0.f, 0.f, 70.f));
 
