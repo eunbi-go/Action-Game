@@ -39,6 +39,11 @@ public:
 	FGameplayTag InputTag_2;
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
+	FGameplayTag InputTag_W;
+	FGameplayTag InputTag_A;
+	FGameplayTag InputTag_S;
+	FGameplayTag InputTag_D;
+	FGameplayTag InputTag_NormalAttack;
 
 protected:
 private:

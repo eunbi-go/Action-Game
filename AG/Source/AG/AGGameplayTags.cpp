@@ -64,7 +64,7 @@ void FAGGameplayTags::InitializeNativeGameplayTags()
 
 
 
-
+	// Input
 	mGameplayTags.InputTag_FWD = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.FWD"),
 		FString("Input Tag for Forward")
@@ -96,5 +96,26 @@ void FAGGameplayTags::InitializeNativeGameplayTags()
 	mGameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.4"),
 		FString("Input Tag for 4 key")
+	);
+	mGameplayTags.InputTag_NormalAttack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.NormalAttack"),
+		FString("Input Tag for NormalAttack key")
+	);
+
+	mGameplayTags.InputTag_W = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.W"),
+		FString("Input Tag for W key")
+	);
+	mGameplayTags.InputTag_A = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.A"),
+		FString("Input Tag for A key")
+	);
+	mGameplayTags.InputTag_S = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.S"),
+		FString("Input Tag for S key")
+	);
+	mGameplayTags.InputTag_D = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.D"),
+		FString("Input Tag for D key")
 	);
 }
