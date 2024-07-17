@@ -8,6 +8,7 @@
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "ValkyriePlayerState.h"
 #include "../Particle/ParticleNiagara.h"
+#include "DrawDebugHelpers.h"
 
 ASword::ASword()
 {
@@ -51,6 +52,7 @@ void ASword::BeginPlay()
 	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 
 	mBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnBoxOverlap);
+	mBoxComp->bHiddenInGame = false;
 }
 
 void ASword::Equip(USceneComponent* _parent, FName _socketName, AActor* _newOwner, APawn* _newInstigator)
@@ -61,6 +63,12 @@ void ASword::Equip(USceneComponent* _parent, FName _socketName, AActor* _newOwne
 	SetInstigator(_newInstigator);
 }
 
+void ASword::AttachMeshToSocket(USceneComponent* _parent, const FName& _socketName)
+{
+	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, true);
+	mMesh->AttachToComponent(_parent, transformRules, _socketName);
+}
+
 void ASword::SetSkeletalMesh(const FString& _path)
 {
 	USkeletalMesh* mesh = LoadObject<USkeletalMesh>(nullptr, *_path);
@@ -69,43 +77,55 @@ void ASword::SetSkeletalMesh(const FString& _path)
 		mMesh->SetSkeletalMesh(mesh);
 }
 
-void ASword::AttachMeshToSocket(USceneComponent* _parent, const FName& _socketName)
-{
-	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, true);
-	mMesh->AttachToComponent(_parent, transformRules, _socketName);
-}
-
 void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const FVector start = mBoxTraceStart->GetComponentLocation();
-	const FVector end = mBoxTraceEnd->GetComponentLocation();
-
 	AValkyrie* owner = Cast<AValkyrie>(mOwner);
-	AValkyriePlayerState* playerState = owner->GetPlayerState<AValkyriePlayerState>();
-	float damage = Cast<UAGAttributeSet>(playerState->GetAttributeSet())->GetmAttack();
-	
+
+	//---------------------------------
+	// 타격하면 안되는 액터들을 저장한다.
+	//---------------------------------
 	TArray<AActor*> actorsToIgnoreArray;
 	actorsToIgnoreArray.Add(this);
+	actorsToIgnoreArray.Add(owner);
 	for (AActor* actor : mIgnoreActors)
 		actorsToIgnoreArray.AddUnique(actor);
 
+
 	FHitResult boxHit;
-	// 라인을 따라 상자를 설치하고 첫 번째 충돌지점 리턴
+	const FVector start = mBoxTraceStart->GetComponentLocation();
+	const FVector end = mBoxTraceEnd->GetComponentLocation();
+
+	//---------------------------------
+	// 검의 시작과 끝 위치를 기준으로 Sword의 물리적 충돌 여부를 확인한다.
+	//---------------------------------
 	UKismetSystemLibrary::BoxTraceSingle(
-		this, start, end, FVector(5.f),
+		this, 
+		start, // mBoxTraceStart->GetComponentLocation();
+		end,   // mBoxTraceEnd->GetComponentLocation();
+		FVector(3.f),
 		mBoxTraceStart->GetComponentRotation(),
-		// 여기에 무엇을 넣는지는 별로 중요하지 않다
-		// 박스 트레이스 싱글은 기본적으로 Visility 채널을 기준으로 추적하기 때문
-		ETraceTypeQuery::TraceTypeQuery1,
+		UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel4),
 		false,
 		actorsToIgnoreArray,	
 		EDrawDebugTrace::None,	
-		boxHit,
-		true	
+		boxHit,  // FHitResult boxHit;
+		true,
+		FLinearColor::Blue,
+		FLinearColor::Red,
+		1.f
 	);
 
+
+
+	
 	if (boxHit.GetActor())
 	{
+		//---------------------------------
+		// 데미지 부여, 피격 애니메이션 재생, 이펙트 스폰
+		//---------------------------------
+		AValkyriePlayerState* playerState = owner->GetPlayerState<AValkyriePlayerState>();
+		float damage = Cast<UAGAttributeSet>(playerState->GetAttributeSet())->GetmStrength();
+
 		UGameplayStatics::ApplyDamage(
 			boxHit.GetActor(),
 			damage,
@@ -119,8 +139,10 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		{
 			hitInterface->GetHit(boxHit.ImpactPoint);
 		}
-
+		
+		
 		mIgnoreActors.AddUnique(boxHit.GetActor());
+
 
 		FActorSpawnParameters	SpawnParam;
 		SpawnParam.SpawnCollisionHandlingOverride =
@@ -128,18 +150,17 @@ void ASword::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 
 		AParticleNiagara* Particle =
 			GetWorld()->SpawnActor<AParticleNiagara>(
-				boxHit.ImpactPoint,
-				boxHit.ImpactNormal.Rotation(),
+				boxHit.GetActor()->GetActorLocation(),
+				FRotator::ZeroRotator,
 				SpawnParam);
 
-		Particle->SetParticle(TEXT("NiagaraSystem'/Game/Hack_And_Slash_FX/VFX_Niagara/Impacts/NS_Holy_Slash_Impact.NS_Holy_Slash_Impact'"));
-
+		Particle->SetParticle(TEXT("NiagaraSystem'/Game/sA_StylizedAttacksPack/FX/NiagaraSystems/NS_BasicHit.NS_BasicHit'"));
+		Particle->SetActorScale3D(FVector(4.f));
 	}
 }
 
 void ASword::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
