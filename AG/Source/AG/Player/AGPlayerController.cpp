@@ -3,6 +3,14 @@
 
 #include "AGPlayerController.h"
 #include "../Particle/Decal.h"
+#include "../AbilitySystem/AGAbilitySystemLibrary.h"
+#include "../Input/AGInputComponent.h"
+#include "InputActionValue.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
+
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -10,20 +18,66 @@ AAGPlayerController::AAGPlayerController()
 
 	bShowMouseCursor = true;
 
-	mPickingPosition = FVector(0.f, 0.f, 0.f);
+	static ConstructorHelpers::FObjectFinder<UAGInputConfig> input_config(TEXT("AGInputConfig'/Game/Blueprints/Valkyrie_BP/Input/DA_AGInputConfig.DA_AGInputConfig'"));
+	if (input_config.Succeeded())
+	{
+		mInputConfig = input_config.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> input_mapping_context(TEXT("InputMappingContext'/Game/Blueprints/Valkyrie_BP/Input/IMC_AGContext.IMC_AGContext'"));
+	if (input_mapping_context.Succeeded())
+	{
+		mInputMappingContext = input_mapping_context.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_W(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_W.IA_W'"));
+	if (input_action_W.Succeeded())
+	{
+		mInputAction_W = input_action_W.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_A(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_A.IA_A'"));
+	if (input_action_A.Succeeded())
+	{
+		mInputAction_A = input_action_A.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_S(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_S.IA_S'"));
+	if (input_action_S.Succeeded())
+	{
+		mInputAction_S = input_action_S.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_D(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_D.IA_D'"));
+	if (input_action_D.Succeeded())
+	{
+		mInputAction_D = input_action_D.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_Q(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_Q.IA_Q'"));
+	if (input_action_Q.Succeeded())
+	{
+		mInputAction_Q = input_action_Q.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_E(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_E.IA_E'"));
+	if (input_action_E.Succeeded())
+	{
+		mInputAction_E = input_action_E.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_R(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_R.IA_R'"));
+	if (input_action_R.Succeeded())
+	{
+		mInputAction_R = input_action_R.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> input_action_T(TEXT("InputAction'/Game/Blueprints/Valkyrie_BP/Input/InputActions/IA_T.IA_T'"));
+	if (input_action_T.Succeeded())
+	{
+		mInputAction_T = input_action_T.Object;
+	}
 }
 
 void AAGPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-	TraceCursor();
 }
 
 void AAGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-
 
 	//FInputModeGameOnly	Mode;
 	FInputModeGameAndUI	Mode;
@@ -31,11 +85,11 @@ void AAGPlayerController::BeginPlay()
 	Mode.SetHideCursorDuringCapture(false);
 	SetInputMode(Mode);
 
-	mMousePick = GetWorld()->SpawnActor<ADecal>(FVector::ZeroVector,
-		FRotator::ZeroRotator);
-
-	mMousePick->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle.MTMagicCircle'"));
-	mMousePick->SetDecalVisibility(false);
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(mInputMappingContext, 0);
+	}
 }
 
 void AAGPlayerController::PostInitializeComponents()
@@ -53,40 +107,20 @@ void AAGPlayerController::OnUnPossess()
 	Super::OnUnPossess();
 }
 
+void AAGPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	UAGInputComponent* inputComp = CastChecked<UAGInputComponent>(InputComponent);
+	inputComp->BindAbilityAction(mInputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+}
+
 void AAGPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AAGPlayerController::SpawnDecalOnMousePick()
-{
-	//FHitResult	result;
-	//bool Hit = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1,
-	//	false, result);
 
-	//if (Hit)
-	//{
-	//		mPickActor = result.GetActor();
-	//		mMousePick->SetActorLocation(result.ImpactPoint);
-
-	//		FActorSpawnParameters	SpawnParam;
-	//		SpawnParam.SpawnCollisionHandlingOverride =
-	//			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	//		mPickingPosition = mMousePick->GetActorLocation();
-
-	//		ADecal* Decal =
-	//			GetWorld()->SpawnActor<ADecal>(
-	//				mPickingPosition,
-	//				FRotator(0.f, 0.f, 0.f),
-	//				SpawnParam);
-
-	//		Decal->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
-	//		Decal->SetDecalMaterial(TEXT("Material'/Game/MTMagicCircle_2.MTMagicCircle_2'"));
-	//		Decal->SetLifeSpan(5.f);
-	//		Decal->SetDecalVisibility(true);
-	//}
-}
 
 void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
 {
@@ -108,43 +142,33 @@ void AAGPlayerController::SetInputModeType(INPUT_MODE_TYPE _type)
 	}*/
 }
 
-void AAGPlayerController::TraceCursor()
+UAGAbilitySystemComponent* AAGPlayerController::GetASC()
 {
-	FHitResult hitResult;
-	GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
-	if (!hitResult.bBlockingHit) return;
+	if (mAGasc == nullptr)
+	{
+		mAGasc = Cast<UAGAbilitySystemComponent>(UAGAbilitySystemLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
 
-	//mPreActor = mCurActor;
-	//mCurActor = Cast<IEnemyInterface>(hitResult.GetActor());
+	return mAGasc;
+}
 
-	//if (!mPreActor)
-	//{
-	//	if (mCurActor)
-	//	{
-	//		mCurActor->HighlightActor();
-	//	}
-	//	else
-	//	{
+void AAGPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	PrintViewport(3.f, FColor::Red, *InputTag.ToString());
+}
 
-	//	}
-	//}
-	//else
-	//{
-	//	if (!mCurActor)
-	//	{
-	//		mPreActor->UnHighlightActor();
-	//	}
-	//	else
-	//	{
-	//		if (mPreActor != mCurActor)
-	//		{
-	//			mPreActor->UnHighlightActor();
-	//			mCurActor->HighlightActor();
-	//		}
-	//		else
-	//		{
-	//			// 동일한 액터
-	//		}
-	//	}
-	//}
+void AAGPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr)
+		return;
+
+	GetASC()->AbilityInputTagReleased(InputTag);
+}
+
+void AAGPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr)
+		return;
+
+	GetASC()->AbilityInputTagHeld(InputTag);
 }

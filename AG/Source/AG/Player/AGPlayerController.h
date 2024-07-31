@@ -4,9 +4,14 @@
 
 #include "../BasicInfo.h"
 #include "GameFramework/PlayerController.h"
+#include "GameplayTagContainer.h"
 #include "AGPlayerController.generated.h"
 
 class IEnemyInterface;
+class UAGAbilitySystemComponent;
+class UAGInputConfig;
+class UInputMappingContext;
+class UInputAction;
 
 /**
  * 
@@ -18,52 +23,65 @@ class AG_API AAGPlayerController : public APlayerController
 	
 public:
 	AAGPlayerController();
-
 	virtual void PlayerTick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
-
 	// 컴포넌트들이 모두 초기화된 다음 호출되는 함수
 	virtual void PostInitializeComponents() override;
-
-protected:
 	// 플레이어 컨트롤러가 Pawn에 빙의될 때 호출
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
+	virtual void SetupInputComponent() override;
 
 public:
 	virtual void Tick(float DeltaTime) override;
 
 
-public:
-	void SpawnDecalOnMousePick();
-
-
-public:
-	FVector GetPickingPosition()
-	{
-		return mPickingPosition; 
-	}
-
-
-public:
 	void SetInputModeType(INPUT_MODE_TYPE _type);
-
+	UAGAbilitySystemComponent* GetASC();
 
 private:
-	void TraceCursor();
-	IEnemyInterface* mPreActor;
-	IEnemyInterface* mCurActor;
+	UPROPERTY()
+	UAGAbilitySystemComponent* mAGasc;
 
 
-protected:
-	// TWeakPtr은 참조카운팅을 안한다.
-	// 대상이 소멸하면 자동으로 nullptr이 된다.
-	// TWeakPtr은 UObject를 못다룬다.
-	// TWeakObjectPtr은 UObject를 다룬다.
-	TWeakObjectPtr<AActor> mPickActor;
-	class ADecal* mMousePick;
 
-	FVector	mPickingPosition;
+	//------------------------
+	// Inputs
+	//------------------------
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UAGInputConfig* mInputConfig;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* mInputMappingContext;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_W;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_A;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_S;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_D;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_Q;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_E;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_R;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
+	UInputAction* mInputAction_T;
+	
 };
