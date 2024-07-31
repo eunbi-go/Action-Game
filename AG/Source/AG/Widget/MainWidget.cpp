@@ -25,14 +25,17 @@ void UMainWidget::NativeConstruct()
 
 	mBossInfo->SetVisibility(ESlateVisibility::Hidden);
 	mInventory->SetVisibility(ESlateVisibility::Hidden);
+	mMessage->SetVisibility(ESlateVisibility::Hidden);
+
+	mPlayerInfo->SetWidgetController(mWidgetController);
 
 	Cast<UMainWidgetController>(mWidgetController)->mOnMaxHpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMaxHp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnHpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewHp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnMaxMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMaxMp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnMpChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewMp);
 	Cast<UMainWidgetController>(mWidgetController)->mOnCoinChange.AddDynamic(mPlayerInfo, &UPlayerInfoWidget::SetNewCoin);
-
 	Cast<UMainWidgetController>(mWidgetController)->mOnMessageWidgetRowChange.AddDynamic(mMessage, &UMessageWidget::SetMessage);
+	Cast<UMainWidgetController>(mWidgetController)->BroadcastInitValues();
 }
 
 void UMainWidget::NativeTick(const FGeometry& _geo, float _deltaTime)

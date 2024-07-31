@@ -145,6 +145,8 @@ void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
 
 void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)
 {
+	mWidgetController = widgetController;
+
 }
 
 void UPlayerInfoWidget::NativeConstruct()

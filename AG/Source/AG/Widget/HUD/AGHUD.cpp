@@ -11,17 +11,19 @@
 
 AAGHUD::AAGHUD()
 {
+	//mMainWidgetClass = UMainWidget::StaticClass();
+	mMainWidgetControllerClass = UMainWidgetController::StaticClass();
 	static ConstructorHelpers::FClassFinder<UUserWidget> ribbonMontage(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
 	if (ribbonMontage.Succeeded())
 	{
 		mMainWidgetClass = ribbonMontage.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<UMainWidgetController> mwdc(TEXT("Class'/Script/AG.MainWidgetController'"));
-	if (mwdc.Succeeded())
-	{
-		mMainWidgetControllerClass = mwdc.Class;
-	}
+	//static ConstructorHelpers::FClassFinder<UMainWidgetController> mwdc(TEXT("Class'/Script/AG.MainWidgetController'"));
+	//if (mwdc.Succeeded())
+	//{
+	//	mMainWidgetControllerClass = mwdc.Class;
+	//}
 
 	mAttributeWidgetControllerClass = UAttributeWidgetController::StaticClass();
 	mStatWidgetClass = UStatWidget::StaticClass();
@@ -59,14 +61,15 @@ void AAGHUD::InitMainWidget(APlayerController* pc, APlayerState* ps, UAbilitySys
 	checkf(mMainWidgetClass, TEXT("MainWidgetClass uninitialized"));
 	checkf(mMainWidgetControllerClass, TEXT("MainWidgetControllerClass uninitialized"));
 
-	UUserWidget* widget = CreateWidget<UUserWidget>(GetWorld(), mMainWidgetClass);
+	UMainWidget* widget = CreateWidget<UMainWidget>(GetWorld(), mMainWidgetClass);
 	mMainWidget = Cast<UMainWidget>(widget);
 	
 	const FWidgetControllerParams params(pc, ps, asc, as);
 	mMainWidgetController = GetMainWidgetController(params);
 
 	mMainWidget->SetWidgetController(Cast<UMainWidgetController>(mMainWidgetController));
-	
+	mMainWidgetController->BroadcastInitValues();
+
 	widget->AddToViewport();
 }
 
@@ -74,5 +77,5 @@ void AAGHUD::BeginPlay()
 {
 	Super::BeginPlay();
 	//PrintViewport(3.f, FColor::Red, TEXT("BeginPlay"));
-	mMainWidgetController->BroadcastInitValues();
+	//mMainWidgetController->BroadcastInitValues();
 }

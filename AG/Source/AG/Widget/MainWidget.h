@@ -46,6 +46,11 @@ public:
 	{
 		return mItemQuickSlot; 
 	}
+	
+	class UMessageWidget* GetMessageWidget()
+	{
+		return mMessage;
+	}
 
 private:
 	UPlayerInfoWidget*	mPlayerInfo;

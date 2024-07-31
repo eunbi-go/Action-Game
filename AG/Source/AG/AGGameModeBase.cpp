@@ -19,14 +19,14 @@ AAGGameModeBase::AAGGameModeBase()
 	PlayerControllerClass = AAGPlayerController::StaticClass();
 	PlayerStateClass = AValkyriePlayerState::StaticClass();
 	HUDClass = AAGHUD::StaticClass();
-
-	ConstructorHelpers::FClassFinder<UUserWidget>
+	mMainWidgetClass = UMainWidget::StaticClass();
+	/*ConstructorHelpers::FClassFinder<UUserWidget>
 		mainWidget(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/UI_Main.UI_Main_C'"));
 
 	if (mainWidget.Succeeded())
 	{
 		mMainWidgetClass = mainWidget.Class;
-	}
+	}*/
 }
 
 void AAGGameModeBase::BeginPlay()
