@@ -8,22 +8,17 @@
 void UAGAbilitySystemComponent::AbilityActorInfoSet()
 {
 	/*
-	* OnGameplayEffectAppliedDelegateToSelf
-	* Called on server whenever a GE is applied to self.
-	* This includes instant and duration based GEs.
 	* 본인에게 적용되는 델리게이트
 	* ASC에 적용되는 모든 효과에 대한 응답으로 호출되는 콜백(EffectApplied)을 적용함.
 	*/ 
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAGAbilitySystemComponent::EffectApplied);
-
-
 	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
 }
 
 
 void UAGAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
 {
-	for (TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
+	for (const TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
 	{
 		FGameplayAbilitySpec abilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		if (const UAGGameplayAbility* ability = Cast<UAGGameplayAbility>(abilitySpec.Ability))
@@ -31,8 +26,6 @@ void UAGAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<U
 			abilitySpec.DynamicAbilityTags.AddTag(ability->mStartupInputTag);
 			// GiveAbility() : Ability 추가, 활성화X
 			GiveAbility(abilitySpec);
-			//// GiveAbilityAndActivateOnce() : Ability 추가, 활성화 O
-			//GiveAbilityAndActivateOnce(abilitySpec);
 		}
 		
 	}
@@ -50,6 +43,7 @@ void UAGAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag
 			AbilitySpecInputPressed(abilitySpec);
 			if (!abilitySpec.IsActive())
 			{
+				// Ability를 활성화시킨다.
 				TryActivateAbility(abilitySpec.Handle);
 			}
 		}
@@ -66,6 +60,7 @@ void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 		if (abilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(abilitySpec);
+			CancelAbility(abilitySpec.Ability);
 		}
 	}
 }

@@ -65,22 +65,6 @@ void FAGGameplayTags::InitializeNativeGameplayTags()
 
 
 	// Input
-	mGameplayTags.InputTag_FWD = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.FWD"),
-		FString("Input Tag for Forward")
-	);
-	mGameplayTags.InputTag_BWD = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.BWD"),
-		FString("Input Tag for Backward")
-	);
-	mGameplayTags.InputTag_RT = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.RT"),
-		FString("Input Tag for Right")
-	);
-	mGameplayTags.InputTag_LT = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.LT"),
-		FString("Input Tag for Left")
-	);
 	mGameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.1"),
 		FString("Input Tag for 1 key")
@@ -117,5 +101,22 @@ void FAGGameplayTags::InitializeNativeGameplayTags()
 	mGameplayTags.InputTag_D = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.D"),
 		FString("Input Tag for D key")
+	);
+
+	mGameplayTags.InputTag_Q = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Q"),
+		FString("Input Tag for Q key")
+	);
+	mGameplayTags.InputTag_E = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.E"),
+		FString("Input Tag for E key")
+	);
+	mGameplayTags.InputTag_R = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.R"),
+		FString("Input Tag for R key")
+	);
+	mGameplayTags.InputTag_T = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.T"),
+		FString("Input Tag for T key")
 	);
 }

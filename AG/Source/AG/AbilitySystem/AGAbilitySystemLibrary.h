@@ -19,6 +19,9 @@ class AG_API UAGAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintPure, Category = "AGAbilitySystemLibrary|WidgetController")
+	static UAbilitySystemComponent* GetAbilitySystemComponent(AActor* Actor);
+
+	UFUNCTION(BlueprintPure, Category = "AGAbilitySystemLibrary|WidgetController")
 	static UMainWidgetController* GetMainWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "AGAbilitySystemLibrary|WidgetController")

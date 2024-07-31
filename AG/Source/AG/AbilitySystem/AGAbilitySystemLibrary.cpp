@@ -6,6 +6,21 @@
 #include "../Player/ValkyriePlayerState.h"
 #include "../Widget/AGWidgetController.h"
 
+UAbilitySystemComponent* UAGAbilitySystemLibrary::GetAbilitySystemComponent(AActor* Actor)
+{
+	APlayerController* pc = UGameplayStatics::GetPlayerController(Actor, 0);
+	check(pc);
+
+	AAGHUD* hud = Cast<AAGHUD>(pc->GetHUD());
+	check(hud);
+
+	AValkyriePlayerState* ps = pc->GetPlayerState<AValkyriePlayerState>();
+	check(ps);
+
+	UAbilitySystemComponent* asc = ps->GetAbilitySystemComponent();
+	return asc;
+}
+
 UMainWidgetController* UAGAbilitySystemLibrary::GetMainWidgetController(const UObject* WorldContextObject)
 {
 	/**

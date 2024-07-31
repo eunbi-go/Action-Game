@@ -31,10 +31,7 @@ public:
 	FGameplayTag Attributes_Second_CriticalResistance;
 
 
-	FGameplayTag InputTag_FWD;
-	FGameplayTag InputTag_BWD;
-	FGameplayTag InputTag_RT;
-	FGameplayTag InputTag_LT;
+
 	FGameplayTag InputTag_1;
 	FGameplayTag InputTag_2;
 	FGameplayTag InputTag_3;
@@ -43,6 +40,10 @@ public:
 	FGameplayTag InputTag_A;
 	FGameplayTag InputTag_S;
 	FGameplayTag InputTag_D;
+	FGameplayTag InputTag_Q;
+	FGameplayTag InputTag_E;
+	FGameplayTag InputTag_R;
+	FGameplayTag InputTag_T;
 	FGameplayTag InputTag_NormalAttack;
 
 protected:
