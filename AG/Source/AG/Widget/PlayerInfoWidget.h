@@ -56,7 +56,28 @@ public:
 
 private:
 	UPROPERTY()
-	FTimerHandle mTimerHandle;
+	FTimerHandle mTimerHandle1;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandle2;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleHp1;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleHp2;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleMaxHp11;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleMaxHp2;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleMaxMp11;
+
+	UPROPERTY()
+	FTimerHandle mTimerHandleMaxMp2;
 
 	UProgressBar*	mHpBar;
 	UProgressBar*	mMpBar;

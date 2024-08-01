@@ -5,6 +5,7 @@
 #include "../../AbilitySystem/AGAttributeSet.h"
 #include "../../AbilitySystem/AGAbilitySystemComponent.h"
 #include "../../AGGameInstance.h"
+#include "../../Player/ValkyriePlayerState.h"
 
 void UMainWidgetController::BroadcastInitValues()
 {

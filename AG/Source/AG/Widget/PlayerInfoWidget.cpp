@@ -7,7 +7,7 @@
 
 void UPlayerInfoWidget::SetNewHp(float newHp)
 {
-	if (!mIsInitHp)
+	if (!mIsInitHp && newHp)
 	{
 		mIsInitHp = true;
 		mNewHp = newHp;
@@ -18,13 +18,15 @@ void UPlayerInfoWidget::SetNewHp(float newHp)
 	if (newHp >= mNewHp)
 	{
 		// ghost bar ¸ÕÀú ´Ã¾î³²
+		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
+
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleHp1,
 			FTimerDelegate::CreateLambda([this, newHp]() {
 				mNewHp = newHp;
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleHp1);
 				}), 0.2f, false);
 
-		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
 	}
 	else
 	{
@@ -32,16 +34,17 @@ void UPlayerInfoWidget::SetNewHp(float newHp)
 		mNewHp = newHp;
 
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleHp2,
 			FTimerDelegate::CreateLambda([this, newHp]() {
 				mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(newHp, mNewMaxHp));
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleHp2);
 				}), 0.3f, false);
 	}
 }
 
 void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 {
-	if (!mIsInitMaxHp)
+	if (!mIsInitMaxHp && newMaxHp)
 	{
 		mIsInitMaxHp = true;
 		mNewMaxHp = newMaxHp;
@@ -55,18 +58,20 @@ void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 		mNewMaxHp = newMaxHp;
 
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleMaxHp11,
 			FTimerDelegate::CreateLambda([this, newMaxHp]() {
 				mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleMaxHp11);
 				}), 0.3f, false);
 	}
 	else
 	{
 		// ghost bar ¸ÕÀú ´Ã¾î³²
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleMaxHp2,
 			FTimerDelegate::CreateLambda([this, newMaxHp]() {
 				mNewMaxHp = newMaxHp;
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleMaxHp2);
 				}), 0.2f, false);
 
 		mGhostHpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp));
@@ -75,7 +80,7 @@ void UPlayerInfoWidget::SetNewMaxHp(float newMaxHp)
 
 void UPlayerInfoWidget::SetNewMp(float newMp)
 {
-	if (!mIsInitMp)
+	if (!mIsInitMp && newMp)
 	{
 		mIsInitMp = true;
 		mNewMp = newMp;
@@ -89,9 +94,10 @@ void UPlayerInfoWidget::SetNewMp(float newMp)
 		mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(newMp, mNewMaxMp));
 
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandle1,
 			FTimerDelegate::CreateLambda([this, newMp]() {
 				mNewMp = newMp;
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandle1);
 				}), 0.2f, false);
 
 	}
@@ -101,16 +107,17 @@ void UPlayerInfoWidget::SetNewMp(float newMp)
 		mNewMp = newMp;
 
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandle2,
 			FTimerDelegate::CreateLambda([this, newMp]() {
 				mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(newMp, mNewMaxMp));
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandle2);
 				}), 0.3f, false);
 	}
 }
 
 void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
 {
-	if (!mIsInitMaxMp)
+	if (!mIsInitMaxMp && newMaxMp)
 	{
 		mIsInitMaxMp = true;
 		mNewMaxMp = newMaxMp;
@@ -124,18 +131,20 @@ void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
 		mNewMaxMp = newMaxMp;
 
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleMaxMp11,
 			FTimerDelegate::CreateLambda([this, newMaxMp]() {
 				mGhostMpBar->SetPercent(UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp));
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleMaxMp11);
 				}), 0.3f, false);
 
 	}
 	else
 	{
 		GetWorld()->GetTimerManager().SetTimer(
-			mTimerHandle,
+			mTimerHandleMaxMp2,
 			FTimerDelegate::CreateLambda([this, newMaxMp]() {
 				mNewMaxMp = newMaxMp;
+				GetWorld()->GetTimerManager().ClearTimer(mTimerHandleMaxMp2);
 				}), 0.2f, false);
 
 		// ghost bar ¸ÕÀú ´Ã¾î³²
@@ -146,7 +155,11 @@ void UPlayerInfoWidget::SetNewMaxMp(float newMaxMp)
 void UPlayerInfoWidget::SetWidgetController(UObject* widgetController)
 {
 	mWidgetController = widgetController;
-
+	Cast<UMainWidgetController>(mWidgetController)->mOnMaxHpChange.AddDynamic(this, &UPlayerInfoWidget::SetNewMaxHp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnHpChange.AddDynamic(this, &UPlayerInfoWidget::SetNewHp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnMaxMpChange.AddDynamic(this, &UPlayerInfoWidget::SetNewMaxMp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnMpChange.AddDynamic(this, &UPlayerInfoWidget::SetNewMp);
+	Cast<UMainWidgetController>(mWidgetController)->mOnCoinChange.AddDynamic(this, &UPlayerInfoWidget::SetNewCoin);
 }
 
 void UPlayerInfoWidget::NativeConstruct()
@@ -163,10 +176,9 @@ void UPlayerInfoWidget::NativeConstruct()
 void UPlayerInfoWidget::NativeTick(const FGeometry& _geo, float _deltaTime)
 {
 	Super::NativeTick(_geo , _deltaTime);
-	float fq = UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp);
-
+	//float fq = UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp);
 	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("x: %f, hp %f, : maxhp : %f"), fq, mNewHp, mNewMaxHp));
-
+	
 	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, UKismetMathLibrary::SafeDivide(mNewHp, mNewMaxHp), _deltaTime, 5.f));
 	mMpBar->SetPercent(FMath::FInterpTo(mMpBar->Percent, UKismetMathLibrary::SafeDivide(mNewMp, mNewMaxMp), _deltaTime, 5.f));
 	mCoinTxt->SetText(FText::FromString(FString::Printf(TEXT("%d"), mNewCoin)));
