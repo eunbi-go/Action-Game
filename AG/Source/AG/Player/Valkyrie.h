@@ -126,16 +126,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mCameraShake;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|Ability", meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<UGameplayAbility>> mAbilites;
 
+	// TSubclassOf<AAGSkillActor> : 스킬의 원본 클래스 저장
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = true))
 	TMap<EValkyrieSkill, TSubclassOf<AAGSkillActor>> mSkillmap;
 
+	// AAGSkillActor* : 현재 스폰되어 있는 스킬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = true))
 	TMap<EValkyrieSkill, AAGSkillActor*> mSkillActorMap;
 
 
+	
+	
+	
 	//-------------------------------
 	// Components
 	//-------------------------------

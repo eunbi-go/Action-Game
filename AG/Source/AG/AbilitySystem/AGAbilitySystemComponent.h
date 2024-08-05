@@ -33,8 +33,10 @@ public:
 
 
 protected:
+	// Reliable : 패킷이 손실된 경우에도 클라이언트에 도달한다는 것이 보장되며 수신을 확인받을 때까지 전송된다. 
+	UFUNCTION(Client, Reliable)
 	// ASC에 적용되는 모든 효과에 호출된다.
-	void EffectApplied(
+	void ClientEffectApplied(
 		UAbilitySystemComponent* AbilitySystemComponent, 
 		const FGameplayEffectSpec& EffectSpec, 
 		FActiveGameplayEffectHandle ActiveEffectHandle

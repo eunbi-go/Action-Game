@@ -26,6 +26,7 @@
 #include "../Skill/Valkyrie/ValkyrieContinuousSlash.h"
 #include "../Skill/Valkyrie/ValkyrieNormalAttack.h"
 #include "../Skill/Valkyrie/ValkyrieFallingSword.h"
+#include "../AbilitySystem/Ability/AGGameplayAbility.h"
 
 AValkyrie::AValkyrie()
 {
@@ -230,7 +231,8 @@ AValkyrie::AValkyrie()
 
 
 
-	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_ValkyrieNA.GA_ValkyrieNA_C'"));
+	//static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_ValkyrieNA.GA_ValkyrieNA_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/ValkyrieProjectile/GA_ValkyrieProjectile.GA_ValkyrieProjectile_C'"));
 	TSubclassOf<UGameplayAbility> ga;
 	if (testGameplayAbility.Succeeded())
 	{
@@ -402,6 +404,8 @@ void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		this, &AValkyrie::GuardKey);
 
 
+	
+
 }
 
 //-------------------------------
@@ -439,7 +443,7 @@ void AValkyrie::NormalAttackKey()
 		return;
 
 	mWeapon->SetCollisionOnOff(true);
-	//Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_NormalAttack);
+	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityInputTagHeld(FAGGameplayTags::Get().InputTag_NormalAttack);
 
 
 	bool isContainNormalAttackActor = mSkillActorMap.Contains(EValkyrieSkill::EVS_NormalAttack);
@@ -462,6 +466,15 @@ void AValkyrie::NormalAttackKey()
 		AAGSkillActor* skillActor = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
 		Cast<AValkyrieNormalAttack>(skillActor)->InputPressed();
 	}
+
+
+	FGameplayAbilitySpec abilitySpec = FGameplayAbilitySpec(mStartupAbilites[0], 1);
+	if (const UAGGameplayAbility* ability = Cast<UAGGameplayAbility>(abilitySpec.Ability))
+	{
+		//// GiveAbilityAndActivateOnce() : Ability 추가, 활성화 O
+		GetAbilitySystemComponent()->GiveAbilityAndActivateOnce(abilitySpec);
+	}
+	
 }
 
 void AValkyrie::NormalAttackKeyReleased()
@@ -523,7 +536,6 @@ void AValkyrie::JumpKey()
 	// 이미 점프중이라면 더블점프한다.
 	if (isJump)
 	{
-		//mIsJump = false;
 		LaunchCharacter(FVector(0.f, 0.f, 700.f), true, true);
 		PlayMontage(FName("DoubleJump"));
 	}
@@ -544,17 +556,17 @@ void AValkyrie::Skill1Key()
 	mWeapon->SetCollisionOnOff(false);
 
 
-	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Sprint);
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
-	sk->SetOwnerActor(this);
-	sk->FindTarget();
-	sk->Activate();
+	//TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Sprint);
+	//FActorSpawnParameters	params;
+	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	//AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+	//sk->SetOwnerActor(this);
+	//sk->FindTarget();
+	//sk->Activate();
 
-	mSkillActorMap.Add(EValkyrieSkill::EVS_Sprint, sk);
+	//mSkillActorMap.Add(EValkyrieSkill::EVS_Sprint, sk);
 
-	PlayMontage(FName("Sprint"));
+	//PlayMontage(FName("Sprint"));
 }
 
 void AValkyrie::Skill2Key()
@@ -812,7 +824,7 @@ void AValkyrie::SpawnEffect()
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 
-	switch (mSkillState)
+	/*switch (mSkillState)
 	{
 	case ESkillState::ESS_NormalAttack:
 	{
@@ -848,7 +860,7 @@ void AValkyrie::SpawnEffect()
 		sk->SpawnEffect();
 	}
 	break;
-	}
+	}*/
 }
 
 void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
@@ -924,6 +936,7 @@ void AValkyrie::GetHit(const FVector& _impactPoint)
 			angleString = TEXT("hit_back");
 	}
 
+	SetActionState(EActionState::EAS_Hit, true);
 	PlayMontage(angleString);
 
 	//mAnimInst->SetHitDirection(angleString);
@@ -1051,6 +1064,7 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mOnHitEnd.AddLambda([this]()-> void {
 		mWeapon->SetTrailOnOff(false);
+		SetActionState(EActionState::EAS_Hit, false);
 		});
 
 	mAnimInst->mOnSlashEnable.AddLambda([this]()-> void {

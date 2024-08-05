@@ -11,7 +11,7 @@ void UAGAbilitySystemComponent::AbilityActorInfoSet()
 	* 본인에게 적용되는 델리게이트
 	* ASC에 적용되는 모든 효과에 대한 응답으로 호출되는 콜백(EffectApplied)을 적용함.
 	*/ 
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAGAbilitySystemComponent::EffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAGAbilitySystemComponent::ClientEffectApplied);
 	const FAGGameplayTags& gameplayTags = FAGGameplayTags::Get();
 }
 
@@ -65,7 +65,7 @@ void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 	}
 }
 
-void UAGAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
+void UAGAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
 	/*
 	 
