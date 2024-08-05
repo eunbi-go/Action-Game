@@ -73,6 +73,12 @@ AAGPlayerController::AAGPlayerController()
 void AAGPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	if (APawn* controlledPawn = GetPawn())
+	{
+
+
+	}
 }
 
 void AAGPlayerController::BeginPlay()
@@ -80,10 +86,16 @@ void AAGPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	//FInputModeGameOnly	Mode;
+	//FInputModeGameAndUI	Mode;
+	//Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	//Mode.SetHideCursorDuringCapture(false);
+	//SetInputMode(Mode);
+
 	FInputModeGameAndUI	Mode;
-	Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	Mode.SetHideCursorDuringCapture(false);
 	SetInputMode(Mode);
+
+
+	bShowMouseCursor = true;
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem)
