@@ -53,8 +53,12 @@ protected:
 
 
 
-	void AddCharacterAbilities();
 
-	UPROPERTY(EditAnywhere, Category = "Ability")
+	UPROPERTY(EditAnywhere, Category = "GAS|Ability")
 	TArray<TSubclassOf<UGameplayAbility>> mStartupAbilites;
+
+
+	void AddCharacterAbilities();
+	UFUNCTION(BlueprintCallable)
+	void TryActivateAbility(int32 Id);
 };

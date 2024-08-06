@@ -4,6 +4,7 @@
 
 #include "../../BasicInfo.h"
 #include "../ParticleNiagara.h"
+#include "GameplayEffectTypes.h"
 #include "ValkyrieProjectile.generated.h"
 
 /**
@@ -16,9 +17,14 @@ class AG_API AValkyrieProjectile : public AParticleNiagara
 public:
 	AValkyrieProjectile();
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
 
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* mProjectileMovement;
+
+	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn=true))
+	FGameplayEffectSpecHandle mDamageEffectSpecHandle;
+
 
 
 protected:
@@ -29,4 +35,20 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* mSphere;
+
+	UPROPERTY(VisibleAnywhere)
+	USoundBase* mImpactSound;
+
+	UPROPERTY(VisibleAnywhere)
+	USoundBase* mLoopingSound;
+
+	UPROPERTY()
+	UAudioComponent* mLoopingSoundComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraSystem* mImpactEffect;
+
+	bool	mIsOverlap = false;
+	UPROPERTY(EditDefaultsOnly)
+	float	mLifeSpan = 10.f;
 };

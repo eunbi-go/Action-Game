@@ -29,7 +29,7 @@ AMonster::AMonster()
 	// 충돌 세팅.
 	//-------------------
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	GetMesh()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
@@ -88,6 +88,23 @@ AMonster::AMonster()
 	mAbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	mAttributeSet = CreateDefaultSubobject<UAGAttributeSet>("AttributeSet");
+
+
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
+	if (defaultFirstAttributes.Succeeded())
+	{
+		mDefaultFirstAttributes = defaultFirstAttributes.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecond.GE_ValkyrieSecond_C'"));
+	if (defaultSecondAttributes.Succeeded())
+	{
+		mDefaultSecondAttributes = defaultSecondAttributes.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieVitalAttributes.GE_ValkyrieVitalAttributes_C'"));
+	if (defaultVitalAttributes.Succeeded())
+	{
+		mDefaultVitalAttributes = defaultVitalAttributes.Class;
+	}
 }
 
 void AMonster::BeginPlay()
@@ -130,6 +147,9 @@ void AMonster::BeginPlay()
 
 	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
 
+
+	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(mInfo.hp);
+	//Cast<UAGAttributeSet>(mAttributeSet)->SetmMaxHp(mInfo.maxHp);
 
 
 	//------------------
@@ -180,6 +200,8 @@ void AMonster::InitAbilityActorInfo()
 	// 캐릭터가 ASC에 따라 달라진다. 
 	// ASC가 델리게이트를 바인딩하는 것과 같은 작업을 할 수 있게 됨.
 	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityActorInfoSet();
+
+	InitializeDefaultAttributes();
 }
 
 void AMonster::PostInitializeComponents()
@@ -284,20 +306,24 @@ void AMonster::GetHit(const FVector& _impactPoint)
 float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmIntelligence();
+	//damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmIntelligence();
 	if (damage < 1)
 		damage = 1;
-	
-	int32 randomValue = FMath::RandRange(10, 20);
+
+
+	int32 randomValue = FMath::RandRange(0, 5);
 	damage -= randomValue;
 	damage = fabsf(damage);
 
-	Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
+	damage *= 2.4f;
+
+	mInfo.hp -= damage;
+	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
 
 
 	
 
-	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
+	if (mInfo.hp <= 0)
 	{
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
@@ -317,7 +343,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
 		if (IsValid(HPWidget))
 		{
-			HPWidget->SetTargetRatio((float)Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() / Cast<UAGAttributeSet>(mAttributeSet)->GetmMaxHp());
+			HPWidget->SetTargetRatio(UKismetMathLibrary::SafeDivide(mInfo.hp, mInfo.maxHp));
 		}
 
 		/*if (Cast<AFengMao>(this))

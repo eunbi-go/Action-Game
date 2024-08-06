@@ -16,11 +16,12 @@ UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGamepl
 
 void UTargetDataUnderMouse::Activate()
 {
-	// 현재 클라이언트에 있고 로컬로 제어되는 경우 델리게이트 브로드캐스트 + 서버로 데이터 전송
+	Super::Activate();
 
 	const bool bIsLocallyControlled = Ability->GetCurrentActorInfo()->IsLocallyControlled();
 	if (bIsLocallyControlled)
 	{
+		// 현재 클라이언트에 있고 로컬로 제어되는 경우 델리게이트 브로드캐스트 + 서버로 데이터 전송
 		SendMouseCursorData();
 	}
 	else
@@ -37,7 +38,7 @@ void UTargetDataUnderMouse::Activate()
 		// 너무 늦어서 Target Data가 이미 전송되었고 델리게이트가 이미 브로드캐스트된 경우
 		// -> 해당 Target Data의 델리게이트를 확인하거나 호출한다.
 
-		// if : 델리게이트가 이미 설정되었는가?
+		// 델리게이트가 이미 설정되었는가?
 		const bool isCalledDelegate = AbilitySystemComponent->CallReplicatedTargetDataDelegatesIfSet(specHandle, activationPredictionKey);
 		if (!isCalledDelegate)
 		{
@@ -51,6 +52,7 @@ void UTargetDataUnderMouse::Activate()
 void UTargetDataUnderMouse::SendMouseCursorData()
 {
 	FScopedPredictionWindow scopedPrediction(AbilitySystemComponent);
+	//FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 
 	APlayerController* pc = Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult cursorHit;
@@ -68,7 +70,6 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 		FGameplayTag(),
 		AbilitySystemComponent->ScopedPredictionKey
 	);
-
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		mValidData.Broadcast(dataHandle);

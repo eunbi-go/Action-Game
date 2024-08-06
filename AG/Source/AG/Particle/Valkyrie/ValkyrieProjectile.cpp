@@ -2,6 +2,9 @@
 
 
 #include "ValkyrieProjectile.h"
+#include "../../AbilitySystem/AGAbilitySystemLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 AValkyrieProjectile::AValkyrieProjectile()
 {
@@ -13,7 +16,6 @@ AValkyrieProjectile::AValkyrieProjectile()
 	*   클라이언트는 발사체의 복제된 버전을 보게 된다.
 	*
 	*/
-	bReplicates = true;
 
 
 	mSphere = CreateDefaultSubobject<USphereComponent>("SphereComp");
@@ -23,6 +25,8 @@ AValkyrieProjectile::AValkyrieProjectile()
 	mSphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	mSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	mSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	mSphere->SetCollisionProfileName(FName("PlayerSword"));
+
 
 	mProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
 	mProjectileMovement->InitialSpeed = 550.f;
@@ -34,8 +38,12 @@ AValkyrieProjectile::AValkyrieProjectile()
 void AValkyrieProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	SetReplicateMovement(true);
+	
+	SetLifeSpan(mLifeSpan);
 	mSphere->OnComponentBeginOverlap.AddDynamic(this, &AValkyrieProjectile::OnSphereOverlap);
 	
+	//mLoopingSoundComp = UGameplayStatics::SpawnSoundAttached(mLoopingSound, GetRootComponent());
 }
 
 void AValkyrieProjectile::Tick(float DeltaTime)
@@ -43,6 +51,38 @@ void AValkyrieProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AValkyrieProjectile::Destroyed()
+{
+	if (!mIsOverlap && !HasAuthority())
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, mImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, mImpactEffect, GetActorLocation());
+		//mLoopingSoundComp->Stop();
+	}
+	Super::Destroyed();
+
+}
+
 void AValkyrieProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UGameplayStatics::PlaySoundAtLocation(this, mImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, mImpactEffect, GetActorLocation());
+	//mLoopingSoundComp->Stop();
+
+	if (HasAuthority())
+	{
+		// UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
+		
+		if (UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			targetASC->ApplyGameplayEffectSpecToSelf(*mDamageEffectSpecHandle.Data.Get());
+		}
+
+		// 서버에서 객체 삭제
+		Destroy();
+	}
+	else
+	{
+		mIsOverlap = true;
+	}
 }
