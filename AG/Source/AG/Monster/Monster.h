@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
 #include "../CharacterBase/AGBaseCharacter.h"
+#include "../Widget/WidgetController/MainWidgetController.h"
 #include "Monster.generated.h"
 
 UENUM()
@@ -216,6 +217,14 @@ public:
 	{
 		return mIsDead;
 	}
+
+	void Death();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChange mOnHpChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChange mOnMaxHpChange;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Clas")

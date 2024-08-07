@@ -3,36 +3,39 @@
 
 #include "MonsterHpWidget.h"
 #include "../Player/CharacterStatComponent.h"
+#include "WidgetController/MainWidgetController.h"
+#include "../Monster/Monster.h"
 
 void UMonsterHpWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	mHpTargetRatio = 1.f;
-
 	mHpBar = Cast<UProgressBar>(GetWidgetFromName(FName(TEXT("HpBar"))));
-	mHpBar->SetPercent(mHpTargetRatio);
+	mHpBar->SetPercent(1.f);
 }
 
 void UMonsterHpWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)
 {
 	Super::NativeTick(_geo, _DeltaTime);
 
-	if (mHpBar->Percent >= mHpTargetRatio)
-		mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, mHpTargetRatio, _DeltaTime, 5.f));
+	mHpBar->SetPercent(FMath::FInterpTo(mHpBar->Percent, UKismetMathLibrary::SafeDivide(mHp, mMaxHp), _DeltaTime, 5.f));
+
+	if (mHp <= 0)
+	{
+		mMonster->Death();
+	}
 }
 
-void UMonsterHpWidget::SetCharacterStat(UCharacterStatComponent* _characterStat)
+void UMonsterHpWidget::SetNewHp(float newHp)
 {
-	if (_characterStat == nullptr)
-		return;
+	//PrintViewport(3.f, FColor::White, FString("UMonsterHpWidget::SetNewHp"));
+	if (IsValid(this))
+		mHp = newHp;
 
-	mCurrentStat = _characterStat;
-	mCurrentStat->mHpChange.AddUObject(this, &UMonsterHpWidget::UpdateHp);
-	UpdateHp();
 }
 
-void UMonsterHpWidget::UpdateHp()
+void UMonsterHpWidget::SetNewMaxHp(float newMaxHp)
 {
-	SetTargetRatio(mCurrentStat->GetHpRatio());
+	if (IsValid(this))
+		mMaxHp = newMaxHp;
 }

@@ -148,18 +148,37 @@ void AMonster::BeginPlay()
 	mAnimInst = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
 
 
-	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(mInfo.hp);
-	//Cast<UAGAttributeSet>(mAttributeSet)->SetmMaxHp(mInfo.maxHp);
-
 
 	//------------------
 	// Widget.
 	//------------------
 
-	UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
-	if (IsValid(HPWidget))
+	UMonsterHpWidget* hpWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+	if (IsValid(hpWidget))
 	{
-		HPWidget->SetTargetRatio(1.f);
+		hpWidget->SetMonster(this);
+
+		UAGAttributeSet* as = Cast<UAGAttributeSet>(mAttributeSet);
+		if (as)
+		{
+			mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(as->GetmHpAttribute()).AddLambda(
+				[this, hpWidget](const FOnAttributeChangeData& Data)
+				{
+					hpWidget->SetNewHp(Data.NewValue);
+				}
+			);
+
+			mAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(as->GetmMaxHpAttribute()).AddLambda(
+				[this, hpWidget](const FOnAttributeChangeData& Data)
+				{
+					hpWidget->SetNewMaxHp(Data.NewValue);
+				}
+			);
+
+
+			as->SetmHp(as->GetmHp());
+			as->SetmMaxHp(as->GetmHp());
+		}
 	}
 
 
@@ -323,7 +342,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	
 
-	if (mInfo.hp <= 0)
+	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
 	{
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
@@ -340,11 +359,11 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 
 	if (IsValid(mWidgetComopnent))
 	{
-		UMonsterHpWidget* HPWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
-		if (IsValid(HPWidget))
-		{
-			HPWidget->SetTargetRatio(UKismetMathLibrary::SafeDivide(mInfo.hp, mInfo.maxHp));
-		}
+		//UMonsterHpWidget* hpWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
+		//if (IsValid(hpWidget))
+		//{
+		//	hpWidget->SetTargetRatio(UKismetMathLibrary::SafeDivide(mInfo.hp, mInfo.maxHp));
+		//}
 
 		/*if (Cast<AFengMao>(this))
 		{
@@ -589,6 +608,21 @@ const FMonsterSkillInfo* AMonster::GetSkillInfo()
 		return nullptr;
 
 	return &mSkillInfoArray[mUsingSkillIndex];
+}
+
+void AMonster::Death()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
+
+
+	// 동작되고 있던 로직을 멈춘다.
+	AAIController* ai = Cast<AAIController>(GetController());
+	if (IsValid(ai))
+		ai->BrainComponent->StopLogic(TEXT("Death"));
+
+
+	mSpawnPoint->RemoveMonster(this);
 }
 
 

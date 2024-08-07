@@ -73,7 +73,6 @@ public:
 
 
 
-	//TMap<FGameplayTag, TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr> mTagsToAttributes;
 	TMap<FGameplayTag, FAttributeSignature> mTagsToAttributes;
 
 	//TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr mFunctionPointer;

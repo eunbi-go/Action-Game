@@ -5,6 +5,7 @@
 
 #include "../BasicInfo.h"
 #include "Blueprint/UserWidget.h"
+#include "GameplayEffectTypes.h"
 #include "MonsterHpWidget.generated.h"
 
 /**
@@ -20,21 +21,22 @@ public:
 	virtual void NativeTick(const FGeometry& _geo, float _DeltaTime) override;
 
 
-public:
-	void UpdateHp();
+	UFUNCTION()
+	void SetNewHp(float newHp);
+	UFUNCTION()
+	void SetNewMaxHp(float newMaxHp);
 
-
-public:
-	void SetCharacterStat(class UCharacterStatComponent* _characterStat);
-	
-	void SetTargetRatio(float _ratio) 
+	void SetMonster(class AMonster* Monster)
 	{
-		mHpTargetRatio = _ratio; 
+		mMonster = Monster;
 	}
+
 
 
 private:
 	UProgressBar*	mHpBar;
-	float			mHpTargetRatio;
-	TWeakObjectPtr<class UCharacterStatComponent> mCurrentStat;
+	float			mHp;
+	float			mMaxHp;
+
+	class AMonster* mMonster;
 };
