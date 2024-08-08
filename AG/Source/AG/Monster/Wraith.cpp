@@ -3,6 +3,7 @@
 
 #include "Wraith.h"
 #include "../Particle/ParticleCascade.h"
+#include "../AbilitySystem/AGAbilitySystemLibrary.h"
 
 AWraith::AWraith()
 {
@@ -26,11 +27,20 @@ AWraith::AWraith()
 
 	AParticleCascade* particle = Cast<AParticleCascade>(mHitActor);
 	particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonWraith/FX/Particles/Abilities/ScopedShot/FX/P_Wraith_Sniper_HitCharacter.P_Wraith_Sniper_HitCharacter'"));
+
+	mCharacterClass = ECharacterClass::Enemy_Gun;
+	mLevel = 1;
 }
 
 void AWraith::BeginPlay()
 {
 	Super::BeginPlay();
+	InitializeDefaultAttributes();
+}
+
+void AWraith::InitializeDefaultAttributes() const
+{
+	UAGAbilitySystemLibrary::InitializeDefaultAttributes(this, mCharacterClass, mLevel, mAbilitySystemComp);
 }
 
 void AWraith::PossessedBy(AController* NewController)

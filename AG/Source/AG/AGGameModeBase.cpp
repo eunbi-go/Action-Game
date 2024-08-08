@@ -12,6 +12,7 @@
 #include "AGSaveGame.h"
 #include "Player/ValkyriePlayerState.h"
 #include "Widget/HUD/AGHUD.h"
+#include "AbilitySystem/Data/CharacterInfo.h"
 
 AAGGameModeBase::AAGGameModeBase()
 {
@@ -27,6 +28,14 @@ AAGGameModeBase::AAGGameModeBase()
 	{
 		mMainWidgetClass = mainWidget.Class;
 	}*/
+
+	static ConstructorHelpers::FObjectFinder<UCharacterInfo> ci(
+		TEXT("CharacterInfo'/Game/Blueprints/AbilitySystem/Data/DA_CharacterInfo.DA_CharacterInfo'")
+	);
+	if (ci.Succeeded())
+	{
+		mCharacterInfo = ci.Object;
+	}
 }
 
 void AAGGameModeBase::BeginPlay()

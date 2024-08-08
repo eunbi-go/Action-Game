@@ -30,6 +30,10 @@ void AAGBaseCharacter::InitAbilityActorInfo()
 {
 }
 
+void AAGBaseCharacter::Death()
+{
+}
+
 void AAGBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));

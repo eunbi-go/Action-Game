@@ -136,7 +136,7 @@ void UAGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		// 실제 hp를 변경한다. 
 		SetmHp(FMath::Clamp(GetmHp(), 0.f, GetmMaxHp()));
 		//FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
-		PrintViewport(5.f, FColor::White, FString::Printf(TEXT("%s hp %f consume"), *props.targetAvatarActor->GetName(), GetmHp()));
+		//PrintViewport(5.f, FColor::White, FString::Printf(TEXT("%s hp %f consume"), *props.targetAvatarActor->GetName(), GetmHp()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetmMpAttribute())
 	{

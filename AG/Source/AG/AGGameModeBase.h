@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "AGGameModeBase.generated.h"
 
+class UCharacterInfo;
+
 /**
  * 
  */
@@ -25,6 +27,9 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer);
 	virtual void Tick(float DeltaTime)	override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character Class Default")
+	UCharacterInfo* mCharacterInfo;
 
 public:
 	class UMainWidget* GetMainWidget()

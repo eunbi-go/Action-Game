@@ -211,17 +211,17 @@ AValkyrie::AValkyrie()
 	mCapsuleHalfHeight = 88.f;
 
 	// init AGAttributes by GameplayEffect
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/Valkyrie/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
 	if (defaultFirstAttributes.Succeeded())
 	{
 		mDefaultFirstAttributes = defaultFirstAttributes.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecond.GE_ValkyrieSecond_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_SecondaryAttribute_Share.GE_SecondaryAttribute_Share_C'"));
 	if (defaultSecondAttributes.Succeeded())
 	{
 		mDefaultSecondAttributes = defaultSecondAttributes.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieVitalAttributes.GE_ValkyrieVitalAttributes_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_VitalAttribute_Share.GE_VitalAttribute_Share_C'"));
 	if (defaultVitalAttributes.Succeeded())
 	{
 		mDefaultVitalAttributes = defaultVitalAttributes.Class;

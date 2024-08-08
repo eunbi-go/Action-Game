@@ -22,6 +22,7 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return mAttributeSet; }
+	virtual void Death();
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,7 +50,7 @@ protected:
 
 	// init AGAttributes by GameplayEffect
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 
 
 

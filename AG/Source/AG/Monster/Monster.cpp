@@ -21,6 +21,7 @@
 #include "../AbilitySystem/AGAttributeSet.h"
 #include "../Widget/HUD/AGHUD.h"
 
+
 AMonster::AMonster()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -90,21 +91,21 @@ AMonster::AMonster()
 	mAttributeSet = CreateDefaultSubobject<UAGAttributeSet>("AttributeSet");
 
 
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
-	if (defaultFirstAttributes.Succeeded())
-	{
-		mDefaultFirstAttributes = defaultFirstAttributes.Class;
-	}
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecond.GE_ValkyrieSecond_C'"));
-	if (defaultSecondAttributes.Succeeded())
-	{
-		mDefaultSecondAttributes = defaultSecondAttributes.Class;
-	}
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieVitalAttributes.GE_ValkyrieVitalAttributes_C'"));
-	if (defaultVitalAttributes.Succeeded())
-	{
-		mDefaultVitalAttributes = defaultVitalAttributes.Class;
-	}
+	//static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultFirstAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieFirstAttributes.GE_ValkyrieFirstAttributes_C'"));
+	//if (defaultFirstAttributes.Succeeded())
+	//{
+	//	mDefaultFirstAttributes = defaultFirstAttributes.Class;
+	//}
+	//static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultSecondAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieSecond.GE_ValkyrieSecond_C'"));
+	//if (defaultSecondAttributes.Succeeded())
+	//{
+	//	mDefaultSecondAttributes = defaultSecondAttributes.Class;
+	//}
+	//static ConstructorHelpers::FClassFinder<UGameplayEffect> defaultVitalAttributes(TEXT("Blueprint'/Game/Blueprints/GameplayEffects/ActorInitAttributes/GE_ValkyrieVitalAttributes.GE_ValkyrieVitalAttributes_C'"));
+	//if (defaultVitalAttributes.Succeeded())
+	//{
+	//	mDefaultVitalAttributes = defaultVitalAttributes.Class;
+	//}
 }
 
 void AMonster::BeginPlay()
@@ -220,7 +221,7 @@ void AMonster::InitAbilityActorInfo()
 	// ASC가 델리게이트를 바인딩하는 것과 같은 작업을 할 수 있게 됨.
 	Cast<UAGAbilitySystemComponent>(mAbilitySystemComp)->AbilityActorInfoSet();
 
-	InitializeDefaultAttributes();
+	//InitializeDefaultAttributes();
 }
 
 void AMonster::PostInitializeComponents()

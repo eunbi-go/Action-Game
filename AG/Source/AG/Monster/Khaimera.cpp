@@ -3,6 +3,8 @@
 
 #include "Khaimera.h"
 #include "../Particle/ParticleCascade.h"
+#include "../AbilitySystem/AGAbilitySystemLibrary.h"
+#include "../AbilitySystem/AGAttributeSet.h"
 
 AKhaimera::AKhaimera()
 {
@@ -27,11 +29,23 @@ AKhaimera::AKhaimera()
 	AParticleCascade* particle = Cast<AParticleCascade>(mHitActor);
 	particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonKhaimera/FX/ParticleSystems/Abilities/Ultimate/FX/P_Ult_Impact_DMG.P_Ult_Impact_DMG'"));
 	//particle->SetActorScale3D(FVector(3.f, 3.f, 3.f));
+
+	mCharacterClass = ECharacterClass::Enemy_Sword;
+	mLevel = 1;
 }
 
 void AKhaimera::BeginPlay()
 {
 	Super::BeginPlay();
+	InitializeDefaultAttributes();
+
+	UAGAttributeSet* as = Cast<UAGAttributeSet>(mAttributeSet);
+	PrintViewport(10.f, FColor::Blue, FString::Printf(TEXT("hp : %f / maxhp : %f / attack : %f"), as->GetmHp(), as->GetmMaxHp(), as->GetmStrength())); 
+}
+
+void AKhaimera::InitializeDefaultAttributes() const
+{
+	UAGAbilitySystemLibrary::InitializeDefaultAttributes(this, mCharacterClass, mLevel, mAbilitySystemComp);
 }
 
 void AKhaimera::PossessedBy(AController* NewController)
@@ -97,7 +111,6 @@ void AKhaimera::NormalAttackCheck()
 					collisionResult[i].ImpactPoint,
 					collisionResult[i].ImpactNormal.Rotation(),
 					SpawnParam);
-
 			Particle->SetParticle(TEXT("ParticleSystem'/Game/ParagonKhaimera/FX/ParticleSystems/Abilities/Ultimate/FX/P_Ult_Impact_DMG.P_Ult_Impact_DMG'"));
 
 			IHitInterface* hitInterface = Cast<IHitInterface>(collisionResult[i].GetActor());

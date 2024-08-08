@@ -7,6 +7,7 @@
 #include "../Interface/HitInterface.h"
 #include "../CharacterBase/AGBaseCharacter.h"
 #include "../Widget/WidgetController/MainWidgetController.h"
+#include "../AbilitySystem/Data/CharacterInfo.h"
 #include "Monster.generated.h"
 
 UENUM()
@@ -47,6 +48,7 @@ public:
 
 	virtual void GetHit(const FVector& _impactPoint) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+	virtual void Death() override;
 
 	FOnAttackEndDelegate	mOnAttackEnd;
 
@@ -92,7 +94,6 @@ public:
 	virtual void NormalAttackCheck();
 
 
-public:
 	void GoNextPatrolPoint();
 	void DestroyMonster();
 
@@ -218,7 +219,7 @@ public:
 		return mIsDead;
 	}
 
-	void Death();
+	
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChange mOnHpChange;
@@ -265,6 +266,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TArray<FVector>	mPatrolPointPositionArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECharacterClass mCharacterClass;
 
 	PATROL_END_DIRECTION	mPatrolDirection;
 	PATROL_TYPE	mPatrolType;

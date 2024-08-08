@@ -86,6 +86,8 @@ AFengMao::AFengMao()
 		montage3 = equipMontage3.Object;
 	}
 	mMontages.Add(FName("Stone"), montage3);
+
+	
 }
 
 void AFengMao::BeginPlay()
@@ -165,7 +167,7 @@ float AFengMao::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 {
 	int32 damage = DamageAmount;
 	//int32 damage = (int32)Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmDefense();
+	damage -= Cast<UAGAttributeSet>(mAttributeSet)->GetmIntelligence();
 	if (damage < 1)
 		damage = 1;
 
@@ -275,8 +277,6 @@ void AFengMao::NormalAttackCheck()
 }
 
 // 슬래시 날림.
-
-
 void AFengMao::Skill1()
 {
 	//------------------------
@@ -433,8 +433,6 @@ void AFengMao::Skill2()
 }
 
 // 메테오 낙하.
-
-
 void AFengMao::Skill3()
 {
 	//------------------------
