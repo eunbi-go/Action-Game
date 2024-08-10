@@ -232,7 +232,8 @@ AValkyrie::AValkyrie()
 
 
 	//static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_ValkyrieNA.GA_ValkyrieNA_C'"));
-	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/ValkyrieProjectile/GA_ValkyrieProjectile.GA_ValkyrieProjectile_C'"));
+	//static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/ValkyrieProjectile/GA_ValkyrieProjectile.GA_ValkyrieProjectile_C'"));
+	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/Valkyrie/SprintSkill/GA_Sprint.GA_Sprint_C'"));
 	TSubclassOf<UGameplayAbility> ga;
 	if (testGameplayAbility.Succeeded())
 	{
@@ -993,30 +994,30 @@ void AValkyrie::SetAnimDelegate()
 
 	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
 		mWeapon->SetTrailOnOff(false);
-		if (mSkillState == ESkillState::ESS_Sprint)
-		{
-			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
-			sk->SkillEnd();
-			mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
-		}
-		else if (mSkillState == ESkillState::ESS_Range)
-		{
-			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-			sk->SkillEnd();
-			mSkillActorMap.Remove(EValkyrieSkill::EVS_Range);
-		}
-		else if (mSkillState == ESkillState::ESS_Slash)
-		{
-			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
-			sk->SkillEnd();
-			mSkillActorMap.Remove(EValkyrieSkill::EVS_Slash);
-		}
-		else if (mSkillState == ESkillState::ESS_HardAttack)
-		{
-			AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
-			sk->SkillEnd();
-			mSkillActorMap.Remove(EValkyrieSkill::EVS_FallingSword);
-		}
+		//if (mSkillState == ESkillState::ESS_Sprint)
+		//{
+		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
+		//	sk->SkillEnd();
+		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
+		//}
+		//else if (mSkillState == ESkillState::ESS_Range)
+		//{
+		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+		//	sk->SkillEnd();
+		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Range);
+		//}
+		//else if (mSkillState == ESkillState::ESS_Slash)
+		//{
+		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
+		//	sk->SkillEnd();
+		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Slash);
+		//}
+		//else if (mSkillState == ESkillState::ESS_HardAttack)
+		//{
+		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
+		//	sk->SkillEnd();
+		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_FallingSword);
+		//}
 		mSkillState = ESkillState::ESS_None;
 
 	});
