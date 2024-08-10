@@ -241,6 +241,14 @@ AValkyrie::AValkyrie()
 	}
 	mStartupAbilites.Add(ga);
 
+	static ConstructorHelpers::FClassFinder<UGameplayAbility> ability2(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/Valkyrie/FallingSword/GA_FallingSword.GA_FallingSword_C'"));
+	TSubclassOf<UGameplayAbility> ga2;
+	if (ability2.Succeeded())
+	{
+		ga2 = ability2.Class;
+	}
+	mStartupAbilites.Add(ga2);
+
 	
 	//TSubclassOf<UGameplayAbility> gaa = UValkyrieNormalAttack::StaticClass();
 	//mStartupAbilites.Add(gaa);
@@ -572,22 +580,22 @@ void AValkyrie::Skill1Key()
 
 void AValkyrie::Skill2Key()
 {
-	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Range);
-	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
-	sk->SetOwnerActor(this);
-	sk->Activate();
+	//FActorSpawnParameters	params;
+	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	//TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Range);
+	//AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
+	//sk->SetOwnerActor(this);
+	//sk->Activate();
 
-	mSkillActorMap.Add(EValkyrieSkill::EVS_Range, sk);
+	//mSkillActorMap.Add(EValkyrieSkill::EVS_Range, sk);
 
-	mWeapon->SetCollisionOnOff(false);
+	//mWeapon->SetCollisionOnOff(false);
 }
 
 void AValkyrie::Skill2KeyPressing()
 {
-	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-	Cast<AValkyrieRange>(sk)->SetIsPress(true);
+	//AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+	//Cast<AValkyrieRange>(sk)->SetIsPress(true);
 
 }
 
@@ -595,17 +603,17 @@ void AValkyrie::Skill2KeyUp()
 {
 	//PrintViewport(1.f, FColor::Blue, FString("Released"));
 
-	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-	Cast<AValkyrieRange>(sk)->SetIsKeyReleased(true);
+	//AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
+	//Cast<AValkyrieRange>(sk)->SetIsKeyReleased(true);
 
-	if (Cast<AValkyrieRange>(sk)->GetIsPress())
-	{
-		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-		mAnimInst->Montage_Resume(montage);
-		mAnimInst->Montage_SetPlayRate(montage, 0.7f);
+	//if (Cast<AValkyrieRange>(sk)->GetIsPress())
+	//{
+	//	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
+	//	mAnimInst->Montage_Resume(montage);
+	//	mAnimInst->Montage_SetPlayRate(montage, 0.7f);
 
-		Cast<AValkyrieRange>(sk)->SetIsPress(false);
-	}
+	//	Cast<AValkyrieRange>(sk)->SetIsPress(false);
+	//}
 
 }
 
