@@ -13,6 +13,8 @@ class UAGInputConfig;
 class UInputMappingContext;
 class UInputAction;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRangeReleaseDelegate, const float&, Time);
+
 /**
  * 
  */
@@ -24,6 +26,7 @@ class AG_API AAGPlayerController : public APlayerController
 public:
 	AAGPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+	FOnRangeReleaseDelegate	mOnRangeRelease;
 
 protected:
 	virtual void BeginPlay() override;
@@ -84,4 +87,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
 	UInputAction* mInputAction_T;
 	
+public:
+	bool mIsRangeReleased = false;
+	float mPressingTime = 0.f;
+	bool mIsCheckPressingTime = false;
 };

@@ -4,6 +4,8 @@
 #include "AGAbilitySystemComponent.h"
 #include "../AGGameplayTags.h"
 #include "Ability/AGGameplayAbility.h"
+#include "Ability/RangeAbility.h"
+
 
 void UAGAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -59,8 +61,16 @@ void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 	{
 		if (abilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
-			AbilitySpecInputReleased(abilitySpec);
-			CancelAbility(abilitySpec.Ability);
+			if (URangeAbility* ability = Cast<URangeAbility>(abilitySpec.Ability))
+			{
+				break;
+			}
+			else
+			{
+				AbilitySpecInputReleased(abilitySpec);
+				CancelAbility(abilitySpec.Ability);
+			}
+			
 		}
 	}
 }

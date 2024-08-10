@@ -124,4 +124,5 @@ public:
 	float GetDirection() { return mDirection; }
 	ECharacterState GetCharacterState() { return mCharacterState; }
 	bool GetIsGuard() { return mIsGuard; }
+	class UValkyrieAnimInstance* GetAnimInst() { return mAnimInst; }
 };

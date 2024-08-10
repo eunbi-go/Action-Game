@@ -20,7 +20,7 @@ AValkyrieSprintEffect::AValkyrieSprintEffect()
 	mSphere = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	mSphere->SetupAttachment(GetRootComponent());
 	mSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	mSphere->SetCollisionProfileName(FName("PlayerSword"));
+	mSphere->SetCollisionProfileName(FName("PlayerAttack"));
 
 	mParticle->bAutoActivate = true;
 }
