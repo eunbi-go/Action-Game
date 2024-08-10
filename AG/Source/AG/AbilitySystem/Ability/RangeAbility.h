@@ -17,13 +17,11 @@ class AG_API URangeAbility : public UAGGameplayAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
 	UFUNCTION(BlueprintCallable, Category = "Range")
 	void SpawnEffect(const float& PressingTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Range")
 	void Pause();
-
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

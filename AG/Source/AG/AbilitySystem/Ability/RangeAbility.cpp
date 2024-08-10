@@ -20,7 +20,7 @@ void URangeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		apc->mOnRangeRelease.AddDynamic(this, &URangeAbility::SpawnEffect);
 
 		apc->mPressingTime = 0.f;
-		apc->mIsCheckPressingTime = true;
+		apc->mIsCheckPressingTime = false;
 	}
 }
 
@@ -76,13 +76,6 @@ void URangeAbility::Pause()
 		//SpawnEffect(0.f);
 		return;
 	}
-	UAnimMontage* montage = GetCurrentMontage();
-
-	AValkyrie* valkyrie = Cast<AValkyrie>(GetAvatarActorFromActorInfo());
-	if (IsValid(valkyrie))
-	{
-		valkyrie->GetAnimInst()->Montage_Pause(montage);
-	}
 
 	APlayerController* pc = GetCurrentActorInfo()->PlayerController.Get();
 	AAGPlayerController* apc = Cast<AAGPlayerController>(pc);
@@ -90,5 +83,13 @@ void URangeAbility::Pause()
 	{
 		apc->mPressingTime = 0.f;
 		apc->mIsCheckPressingTime = true;
+	}
+
+
+	UAnimMontage* montage = GetCurrentMontage();
+	AValkyrie* valkyrie = Cast<AValkyrie>(GetAvatarActorFromActorInfo());
+	if (IsValid(valkyrie))
+	{
+		valkyrie->GetAnimInst()->Montage_Pause(montage);
 	}
 }
