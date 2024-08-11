@@ -14,9 +14,10 @@ void URangeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	AActor* owner = GetAvatarActorFromActorInfo();
-	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	AValkyrie* player = Cast<AValkyrie>(owner);
 	if (IsValid(player))
 	{
+		player->SetMp(-10);
 		player->SetActionState(EActionState::EAS_Attack_Skill, true);
 		player->SetSkillState(ESkillState::ESS_Range);
 	}
@@ -78,7 +79,7 @@ void URangeAbility::Pause()
 	bool isServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!isServer) return;
 	PrintViewport(10.f, FColor::Orange, FString("Pau3se"));
-	// 바로 해제함 -> 델리게이트 변수의 브로드캐스트로 이미 이펙트가 스폰됨
+	// 키가 바로 해제됨 -> 델리게이트 변수의 브로드캐스트로 이미 이펙트가 스폰됨, 애니메이션 멈출 필요X
 	if (mIsSpawnEffect)
 	{
 		//SpawnEffect(0.f);

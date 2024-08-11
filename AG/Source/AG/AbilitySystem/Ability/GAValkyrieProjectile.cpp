@@ -29,9 +29,10 @@ void UGAValkyrieProjectile::ActivateAbility(
 	}
 
 	AActor* actor = GetAvatarActorFromActorInfo();
-	AAGPlayer* player = Cast<AAGPlayer>(actor);
+	AValkyrie* player = Cast<AValkyrie>(actor);
 	if (IsValid(player))
 	{
+		player->SetMp(-10);
 		player->SetActionState(EActionState::EAS_Attack_Skill, true);
 		player->SetSkillState(ESkillState::ESS_Projectile);
 	}

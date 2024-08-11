@@ -4,6 +4,7 @@
 #include "ValkyrieFallingSwordEffect.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "../../Interface/HitInterface.h"
 
 AValkyrieFallingSwordEffect::AValkyrieFallingSwordEffect()
 {
@@ -50,6 +51,12 @@ void AValkyrieFallingSwordEffect::OnBoxOverlap(UPrimitiveComponent* OverlappedCo
 		if (UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			targetASC->ApplyGameplayEffectSpecToSelf(*mDamageEffectSpecHandle.Data.Get());
+		}
+
+		IHitInterface* hitInterface = Cast<IHitInterface>(OtherActor);
+		if (hitInterface)
+		{
+			hitInterface->GetHit(SweepResult.ImpactPoint);
 		}
 
 		// 서버에서 객체 삭제

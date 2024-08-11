@@ -17,7 +17,6 @@ class AG_API URangeAbility : public UAGGameplayAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	UFUNCTION(BlueprintCallable, Category = "Range")
 	void SpawnEffect(const float& PressingTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Range")
@@ -33,11 +32,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> mDamageEffectClass;
 
-	float mPressingTime = 0.f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<class UValkyrieAnimInstance> mAnimInst;
 
 	bool mIsSpawnEffect = false;
-
 };

@@ -29,3 +29,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> mDamageEffectClass;
 };
+
+
+

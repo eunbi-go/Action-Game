@@ -12,9 +12,10 @@ void USprintAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	AActor* owner = GetAvatarActorFromActorInfo();
-	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	AValkyrie* player = Cast<AValkyrie>(owner);
 	if (IsValid(player))
 	{
+		player->SetMp(-10);
 		player->SetActionState(EActionState::EAS_Attack_Skill, true);
 		player->SetSkillState(ESkillState::ESS_Sprint);
 	}

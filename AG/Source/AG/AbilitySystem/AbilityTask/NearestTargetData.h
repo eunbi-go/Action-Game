@@ -32,3 +32,10 @@ private:
 	UFUNCTION()
 	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag);
 };
+
+
+
+
+
+
+
