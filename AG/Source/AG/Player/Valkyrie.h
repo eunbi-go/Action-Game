@@ -39,8 +39,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	virtual void SpawnEffect() override;
-
 	void Delay(float _customTimeDilation, float _timeRate, bool _isLoop);
 	void UnequipSword();
 
@@ -79,12 +77,6 @@ protected:
 	virtual void NormalAttackKey() override;
 	virtual void NormalAttackKeyReleased() override;
 	virtual void JumpKey() override;
-	void Skill1Key();
-	void Skill2Key();
-	void Skill2KeyUp();
-	void Skill2KeyPressing();
-	void Skill3Key();
-	void Skill4Key();
 	void TargetingKey();
 	virtual void CrouchKey() override;
 	virtual void GuardKey() override;

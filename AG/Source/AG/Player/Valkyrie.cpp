@@ -228,11 +228,10 @@ AValkyrie::AValkyrie()
 	}
 
 
+	TSubclassOf<AAGSkillActor> normalAttack = AValkyrieNormalAttack::StaticClass();
+	mSkillmap.Add(EValkyrieSkill::EVS_NormalAttack, normalAttack);
 
 
-
-	//static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/GA_ValkyrieNA.GA_ValkyrieNA_C'"));
-	//static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/ValkyrieProjectile/GA_ValkyrieProjectile.GA_ValkyrieProjectile_C'"));
 	static ConstructorHelpers::FClassFinder<UGameplayAbility> testGameplayAbility(TEXT("Blueprint'/Game/Blueprints/AbilitySystem/GameplayAbility/Valkyrie/SprintSkill/GA_Sprint.GA_Sprint_C'"));
 	TSubclassOf<UGameplayAbility> ga;
 	if (testGameplayAbility.Succeeded())
@@ -266,23 +265,6 @@ AValkyrie::AValkyrie()
 		ga4 = ability4.Class;
 	}
 	mStartupAbilites.Add(ga4);
-		//TSubclassOf<UGameplayAbility> gaa = UValkyrieNormalAttack::StaticClass();
-	//mStartupAbilites.Add(gaa);
-
-	TSubclassOf<AAGSkillActor> sprint = AValkyrieSprint::StaticClass();
-	mSkillmap.Add(EValkyrieSkill::EVS_Sprint, sprint);
-
-	TSubclassOf<AAGSkillActor> range = AValkyrieRange::StaticClass();
-	mSkillmap.Add(EValkyrieSkill::EVS_Range, range);
-
-	TSubclassOf<AAGSkillActor> slash = AValkyrieContinuousSlash::StaticClass();
-	mSkillmap.Add(EValkyrieSkill::EVS_Slash, slash);
-
-	TSubclassOf<AAGSkillActor> normalAttack = AValkyrieNormalAttack::StaticClass();
-	mSkillmap.Add(EValkyrieSkill::EVS_NormalAttack, normalAttack);
-
-	TSubclassOf<AAGSkillActor> fallingSword = AValkyrieFallingSword::StaticClass();
-	mSkillmap.Add(EValkyrieSkill::EVS_FallingSword, fallingSword);
 
 }
 
@@ -409,28 +391,10 @@ void AValkyrie::InitAbilityActorInfo()
 void AValkyrie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill1"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill1Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill2Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Released,
-		this, &AValkyrie::Skill2KeyUp);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill2"), EInputEvent::IE_Repeat,
-		this, &AValkyrie::Skill2KeyPressing);
-
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill3"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill3Key);
-	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Skill4"), EInputEvent::IE_Pressed,
-		this, &AValkyrie::Skill4Key);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Targeting"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::TargetingKey);
 	PlayerInputComponent->BindAction<AValkyrie>(TEXT("Shield"), EInputEvent::IE_Pressed,
 		this, &AValkyrie::GuardKey);
-
-
-	
-
 }
 
 //-------------------------------
@@ -560,116 +524,6 @@ void AValkyrie::JumpKey()
 		Jump();
 		SetActionState(EActionState::EAS_Jump, true);
 	}
-}
-
-
-//-------------------------------
-// Skill Functions
-//-------------------------------
-
-void AValkyrie::Skill1Key()
-{
-	mWeapon->SetCollisionOnOff(false);
-
-
-	//TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Sprint);
-	//FActorSpawnParameters	params;
-	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	//AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
-	//sk->SetOwnerActor(this);
-	//sk->FindTarget();
-	//sk->Activate();
-
-	//mSkillActorMap.Add(EValkyrieSkill::EVS_Sprint, sk);
-
-	//PlayMontage(FName("Sprint"));
-}
-
-void AValkyrie::Skill2Key()
-{
-	//FActorSpawnParameters	params;
-	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	//TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Range);
-	//AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
-	//sk->SetOwnerActor(this);
-	//sk->Activate();
-
-	//mSkillActorMap.Add(EValkyrieSkill::EVS_Range, sk);
-
-	//mWeapon->SetCollisionOnOff(false);
-}
-
-void AValkyrie::Skill2KeyPressing()
-{
-	//AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-	//Cast<AValkyrieRange>(sk)->SetIsPress(true);
-
-}
-
-void AValkyrie::Skill2KeyUp()
-{
-	//PrintViewport(1.f, FColor::Blue, FString("Released"));
-
-	//AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-	//Cast<AValkyrieRange>(sk)->SetIsKeyReleased(true);
-
-	//if (Cast<AValkyrieRange>(sk)->GetIsPress())
-	//{
-	//	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-	//	mAnimInst->Montage_Resume(montage);
-	//	mAnimInst->Montage_SetPlayRate(montage, 0.7f);
-
-	//	Cast<AValkyrieRange>(sk)->SetIsPress(false);
-	//}
-
-}
-
-void AValkyrie::Skill3Key()
-{
-	mWeapon->SetCollisionOnOff(false);
-	
-	//bool isContainSkillActor = mSkillActorMap.Contains(EValkyrieSkill::EVS_Slash);
-	//if (!isContainSkillActor)
-	//{
-	//	FActorSpawnParameters	params;
-	//	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	//	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_Slash);
-	//	AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(skillActor, GetActorLocation(), GetActorRotation(), params);
-	//	sk->SetOwnerActor(this);
-	//	sk->Activate();
-	//	Cast<AValkyrieContinuousSlash>(sk)->InputPressed();
-
-	//	mSkillActorMap.Add(EValkyrieSkill::EVS_Slash, sk);
-	//}
-	//else
-	//{
-	//	AAGSkillActor* skillActor = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
-	//	Cast<AValkyrieContinuousSlash>(skillActor)->InputPressed();
-	//	skillActor->Activate();
-	//}
-
-	//PrintViewport(1.f, FColor::Yellow, FString::Printf(TEXT("index : %d"), mSlashSkillIndex));
-}
-
-void AValkyrie::Skill4Key()
-{
-	TSubclassOf<AAGSkillActor> skillActor = *mSkillmap.Find(EValkyrieSkill::EVS_FallingSword);
-
-	//FActorSpawnParameters	params;
-	//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	//AAGSkillActor* sk = GetWorld()->SpawnActor<AAGSkillActor>(
-	//	skillActor, 
-	//	GetActorLocation(), 
-	//	GetActorRotation(), 
-	//	params
-	//);
-
-	//sk->SetOwnerActor(this);
-	//sk->Activate();
-
-	//mSkillActorMap.Add(EValkyrieSkill::EVS_FallingSword, sk);
-
 }
 
 
@@ -833,52 +687,6 @@ void AValkyrie::CameraSwitch(bool _value)
 // Combat Effect Functions
 //-------------------------------
 
-void AValkyrie::SpawnEffect()
-{
-	FActorSpawnParameters	SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride =
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-
-	/*switch (mSkillState)
-	{
-	case ESkillState::ESS_NormalAttack:
-	{
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_NormalAttack);
-		sk->SpawnEffect();
-	}
-		break;
-	case ESkillState::ESS_Sprint:
-	{
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
-		sk->SpawnEffect();
-	}
-		break;
-
-	case ESkillState::ESS_Range:
-	{
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-		Cast<AValkyrieRange>(sk)->SetIsPress(false);
-		sk->SpawnEffect();
-	}
-	break;
-
-	case ESkillState::ESS_Slash:
-	{
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
-		sk->SpawnEffect();
-	}
-	break;
-
-	case ESkillState::ESS_HardAttack:
-	{
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
-		sk->SpawnEffect();
-	}
-	break;
-	}*/
-}
-
 void AValkyrie::Delay(float _customTimeDilation, float _timeRate, bool _isLoop)
 {
 	CustomTimeDilation = _customTimeDilation;
@@ -1007,48 +815,6 @@ void AValkyrie::SetAnimDelegate()
 		GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 	});
 
-	mAnimInst->mSkillEnd.AddLambda([this]() -> void {
-		mWeapon->SetTrailOnOff(false);
-		//if (mSkillState == ESkillState::ESS_Sprint)
-		//{
-		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Sprint);
-		//	sk->SkillEnd();
-		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Sprint);
-		//}
-		//else if (mSkillState == ESkillState::ESS_Range)
-		//{
-		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-		//	sk->SkillEnd();
-		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Range);
-		//}
-		//else if (mSkillState == ESkillState::ESS_Slash)
-		//{
-		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
-		//	sk->SkillEnd();
-		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_Slash);
-		//}
-		//else if (mSkillState == ESkillState::ESS_HardAttack)
-		//{
-		//	AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_FallingSword);
-		//	sk->SkillEnd();
-		//	mSkillActorMap.Remove(EValkyrieSkill::EVS_FallingSword);
-		//}
-		mSkillState = ESkillState::ESS_None;
-
-	});
-
-	mAnimInst->mChangeCamera.AddLambda([this]() -> void {
-		UAnimMontage* montage;
-
-	if (mSkillState == ESkillState::ESS_Sprint)
-	{
-		montage = *mMontages.Find(FName("Sprint"));
-		mAnimInst->Montage_SetPlayRate(montage, 0.1f);
-		CameraSwitch(true);
-
-	}
-	});
-
 	mAnimInst->mOnJumpEnd.AddLambda([this]() -> void {
 		SetActionState(EActionState::EAS_Jump, false);
 	});
@@ -1081,46 +847,6 @@ void AValkyrie::SetAnimDelegate()
 	mAnimInst->mOnHitEnd.AddLambda([this]()-> void {
 		mWeapon->SetTrailOnOff(false);
 		SetActionState(EActionState::EAS_Hit, false);
-		});
-
-	mAnimInst->mOnSlashEnable.AddLambda([this]()-> void {
-		AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Slash);
-		Cast<AValkyrieContinuousSlash>(sk)->Notify_SlashEnable();
-		});
-
-	mAnimInst->mOnPause.AddLambda([this]()-> void {
-
-		if (mSkillState == ESkillState::ESS_Range)
-		{
-			//AAGSkillActor* sk = *mSkillActorMap.Find(EValkyrieSkill::EVS_Range);
-			//if (AValkyrieRange* rsk = Cast<AValkyrieRange>(sk))
-			//{
-			//	//float f = rsk->GetPressingTime();
-			//	//PrintViewport(1.f, FColor::Red, FString::Printf(TEXT("%f"), f));
-			//	bool isEnd = rsk->GetIsKeyReleased();
-			//	if (isEnd) return;
-
-			//	if (!isEnd)
-			//	{
-			//		//PrintViewport(1.f, FColor::Blue, FString("Pause"));
-			//		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-			//		mAnimInst->Montage_Pause(montage);
-			//	}
-			//	else
-			//	{
-			//		UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-			//		mAnimInst->Montage_SetPlayRate(montage, 0.5f);
-			//	}
-			//}
-
-
-			//if (mSkill2PressingTime <= 0.f)
-			//{
-			//	UAnimMontage* montage = *mMontages.Find(FName("Ribbon"));
-			//	//mAnimInst->Montage_Resume(montage);
-			//	mAnimInst->Montage_Pause(montage);
-			//}
-		}
 		});
 }
 
