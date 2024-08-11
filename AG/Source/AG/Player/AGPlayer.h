@@ -24,8 +24,8 @@ enum class ESkillState : uint8
 	ESS_NormalAttack UMETA(DisplayName = "NormalAttack"),
 	ESS_Sprint UMETA(DisplayName = "Sprint"),
 	ESS_Range UMETA(DisplayName = "Range"),
-	ESS_Slash UMETA(DisplayName = "Slash"),
-	ESS_HardAttack UMETA(DisplayName = "HardAttack"),
+	ESS_Projectile UMETA(DisplayName = "Projectile"),
+	ESS_FallingSword UMETA(DisplayName = "FallingSword"),
 };
 
 UCLASS()

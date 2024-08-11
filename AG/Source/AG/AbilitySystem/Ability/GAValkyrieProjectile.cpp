@@ -29,6 +29,14 @@ void UGAValkyrieProjectile::ActivateAbility(
 	}
 
 	AActor* actor = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(actor);
+	if (IsValid(player))
+	{
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_Projectile);
+	}
+
+
 	const FVector& location = actor->GetActorLocation();
 	const FVector& forward = actor->GetActorForwardVector();
 	const FVector& right = actor->GetActorRightVector();
@@ -182,4 +190,16 @@ void UGAValkyrieProjectile::SpawnEffect()
 	projectile->FinishSpawning(spawnTransform);
 	mOnProjectileStart.AddUObject(projectile, &AValkyrieProjectile::ProjectileStart);
 	mSpawnCount++;
+}
+
+void UGAValkyrieProjectile::AbilityEnd()
+{
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		//PrintViewport(4.f, FColor::Orange, FString("UGAValkyrieProjectile::AbilityEnd()"));
+		player->SetActionState(EActionState::EAS_Attack_Skill, false);
+		player->SetSkillState(ESkillState::ESS_None);
+	}
 }

@@ -33,6 +33,9 @@ protected:
 	UFUNCTION()
 	void SpawnEffect();
 
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void AbilityEnd();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AParticleNiagara> mProjectileClass;
 

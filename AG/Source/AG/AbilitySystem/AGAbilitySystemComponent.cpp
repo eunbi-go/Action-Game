@@ -5,6 +5,7 @@
 #include "../AGGameplayTags.h"
 #include "Ability/AGGameplayAbility.h"
 #include "Ability/RangeAbility.h"
+#include "Ability/GAValkyrieProjectile.h"
 
 
 void UAGAbilitySystemComponent::AbilityActorInfoSet()
@@ -62,6 +63,10 @@ void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 		if (abilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			if (URangeAbility* ability = Cast<URangeAbility>(abilitySpec.Ability))
+			{
+				break;
+			}
+			else if (UGAValkyrieProjectile* ability2 = Cast<UGAValkyrieProjectile>(abilitySpec.Ability))
 			{
 				break;
 			}

@@ -15,7 +15,7 @@ void AValkyrieContinuousSlash::Activate()
 	{
 		player->SetMp(-10.f);
 		player->SetActionState(EActionState::EAS_Attack_Skill, true);
-		player->SetSkillState(ESkillState::ESS_Slash);
+		//player->SetSkillState(ESkillState::ESS_Slash);
 	}
 }
 

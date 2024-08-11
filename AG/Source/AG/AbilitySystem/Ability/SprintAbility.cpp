@@ -10,14 +10,33 @@
 void USprintAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_Sprint);
+	}
 }
 
 void USprintAbility::SpawnEffect(const FVector& TargetLocation)
 {
-	PrintViewport(10.f, FColor::Yellow, FString("USprintAbility::SpawnEffect"));
+	//PrintViewport(10.f, FColor::Yellow, FString("USprintAbility::SpawnEffect"));
 
 	bool isServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!isServer) return;
+
+
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		player->SetActionState(EActionState::EAS_Attack_Skill, false);
+		player->SetSkillState(ESkillState::ESS_None);
+	}
+
+
 	// 서버에서 이펙트를 생성한다.
 	FTransform spawnTransform = FTransform();
 	const FVector& location = GetAvatarActorFromActorInfo()->GetActorLocation();

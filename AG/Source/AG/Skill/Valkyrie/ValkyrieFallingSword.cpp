@@ -16,7 +16,7 @@ void AValkyrieFallingSword::Activate()
 	{
 		valkyrie->SetMp(-10.f);
 		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, true);
-		valkyrie->SetSkillState(ESkillState::ESS_HardAttack);
+		//valkyrie->SetSkillState(ESkillState::ESS_HardAttack);
 		valkyrie->PlayMontage(FName("HardAttack"));
 		valkyrie->SetMontagePlayRate(FName("HardAttack"), 0.1f);
 	}

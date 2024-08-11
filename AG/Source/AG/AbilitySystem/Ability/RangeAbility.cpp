@@ -13,6 +13,14 @@ void URangeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_Range);
+	}
+
 	APlayerController* pc = GetCurrentActorInfo()->PlayerController.Get();
 	AAGPlayerController* apc = Cast<AAGPlayerController>(pc);
 	if (IsValid(apc))
@@ -91,5 +99,17 @@ void URangeAbility::Pause()
 	if (IsValid(valkyrie))
 	{
 		valkyrie->GetAnimInst()->Montage_Pause(montage);
+	}
+}
+
+void URangeAbility::AbilityEnd()
+{
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		//PrintViewport(5.f, FColor::Orange, FString("URangeAbility::AbilityEnd()"));
+		player->SetActionState(EActionState::EAS_Attack_Skill, false);
+		player->SetSkillState(ESkillState::ESS_None);
 	}
 }

@@ -22,6 +22,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Range")
 	void Pause();
+
+	UFUNCTION(BlueprintCallable, Category = "Range")
+	void AbilityEnd();
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

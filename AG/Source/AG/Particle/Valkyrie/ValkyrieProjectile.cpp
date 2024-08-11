@@ -37,7 +37,7 @@ AValkyrieProjectile::AValkyrieProjectile()
 
 void AValkyrieProjectile::ProjectileStart()
 {
-	PrintViewport(4.f, FColor::Yellow, FString("AValkyrieProjectile::ProjectileStart()"));
+	//PrintViewport(4.f, FColor::Yellow, FString("AValkyrieProjectile::ProjectileStart()"));
 	mProjectileMovement->Activate(true);
 }
 

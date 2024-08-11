@@ -10,6 +10,14 @@
 void UFallingSwordAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	AActor* owner = GetAvatarActorFromActorInfo();
+	AAGPlayer* player = Cast<AAGPlayer>(owner);
+	if (IsValid(player))
+	{
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_FallingSword);
+	}
 }
 
 void UFallingSwordAbility::SpawnEffect()
@@ -56,5 +64,7 @@ void UFallingSwordAbility::AbilityEnd()
 	if (AValkyrie* valkyrie = Cast<AValkyrie>(owner))
 	{
 		valkyrie->CameraSwitch(false);
+		valkyrie->SetActionState(EActionState::EAS_Attack_Skill, false);
+		valkyrie->SetSkillState(ESkillState::ESS_None);
 	}
 }
