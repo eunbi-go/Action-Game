@@ -260,7 +260,7 @@ protected:
 
 protected:
 	// 몬스터의 현재 공격이 끝났는가.
-	bool	mIsAttackEnd;
+	bool	mIsAttackEnd = true;
 
 
 protected:

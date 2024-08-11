@@ -18,7 +18,7 @@ class AG_API AMeteo : public AParticleNiagara
 
 public:
 	AMeteo();
-
+	virtual void Tick(float DeltaTime) override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,7 +27,7 @@ public:
 		void ParticleFinish(UNiagaraComponent* _particle);
 
 	UFUNCTION()
-		void Check();
+	void SpawnCollisionActor();
 
 	UFUNCTION()
 		void Temp(class ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor);
@@ -45,4 +45,7 @@ public:
 public:
 	UPROPERTY()
 		class ACollisionObject* collObj;
+
+private:
+	bool mIsSpawnCollisionActor = false;
 };

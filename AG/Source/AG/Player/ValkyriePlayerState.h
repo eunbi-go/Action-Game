@@ -32,10 +32,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-		TObjectPtr<UAbilitySystemComponent> mAbilitySystemComp;
+	UAbilitySystemComponent* mAbilitySystemComp;
 
 	UPROPERTY(VisibleAnywhere)
-		TObjectPtr<UAttributeSet> mAttributeSet;
+	UAttributeSet* mAttributeSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
@@ -44,3 +44,7 @@ private:
 	UFUNCTION()
 	void OnRep_Level(int32 PreLevel);
 };
+
+
+
+

@@ -10,7 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
-
+#include "../AGGameplayTags.h"
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -133,7 +133,7 @@ void AAGPlayerController::Tick(float DeltaTime)
 
 	if (mIsCheckPressingTime)
 	{
-		PrintViewport(2.f, FColor::Yellow, FString("Tick"));
+		//PrintViewport(2.f, FColor::Yellow, FString("Tick"));
 		mPressingTime += DeltaTime;
 	}
 }
@@ -174,6 +174,7 @@ void AAGPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
+	PrintViewport(3.f, FColor::Red, *InputTag.ToString());
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
@@ -181,11 +182,11 @@ void AAGPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
-
+	PrintViewport(3.f, FColor::Blue, *InputTag.ToString());
 	// 체크하고 있을 때 떼었다.
 	if (mIsCheckPressingTime)
 	{
-		PrintViewport(10.f, FColor::Orange, FString("Play1erController"));
+		//PrintViewport(10.f, FColor::Orange, FString("Play1erController"));
 		mOnRangeRelease.Broadcast(mPressingTime);
 
 		mPressingTime = 0.f;
@@ -200,6 +201,6 @@ void AAGPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
-
+	PrintViewport(3.f, FColor::Yellow, *InputTag.ToString());
 	GetASC()->AbilityInputTagHeld(InputTag);
 }

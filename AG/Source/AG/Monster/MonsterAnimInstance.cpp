@@ -40,11 +40,8 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UMonsterAnimInstance::AnimNotify_DeathEnd()
 {
 	SpawnItem();
-	GetWorld()->GetTimerManager().SetTimer(mTimer, FTimerDelegate::CreateLambda([&]() {
-		Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
-		Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
-		}), 1.f, false);
-	
+	Cast<AMonster>(TryGetPawnOwner())->SetIsDead(true);
+	Cast<AMonster>(TryGetPawnOwner())->DestroyMonster();
 }
 
 void UMonsterAnimInstance::AnimNotify_HitEnd()
@@ -168,7 +165,8 @@ void UMonsterAnimInstance::SpawnItem()
 	FRotator rotation = TryGetPawnOwner()->GetActorRotation();
 
 	FActorSpawnParameters	params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	params.SpawnCollisionHandlingOverride 
+		= ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	position.X += randomXPlus;
 	position.Y += randomYPlus;
@@ -177,10 +175,12 @@ void UMonsterAnimInstance::SpawnItem()
 	position.Y -= randomYMinus;
 
 	UAGGameInstance* game = Cast<UAGGameInstance>(GetWorld()->GetGameInstance());
+
 	const FName& name = UInventoryManager::GetInst(GetWorld())->GetRandomItem();
+
 	const FItemAsset* it = game->FindItemAssetTable(name);
 
-	GetWorld()->SpawnActor<AItemActor>(it->asset, position, rotation, params);
+	//GetWorld()->SpawnActor<AItemActor>(it->asset, position, rotation, params);
 }
 
 void UMonsterAnimInstance::Hit()

@@ -244,36 +244,36 @@ void AWarriorCharacter::Tick(float DeltaTime)
 	{
 	case SKILL_TYPE::TELEPORT:
 	{
-		if (mIsGaugeEnd)
-		{
-			FVector pos = GetActorLocation();
-			FVector dest = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
-			
-			// 목표 지점으로 회전.
-			FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
-				dest);
+		//if (mIsGaugeEnd)
+		//{
+		//	FVector pos = GetActorLocation();
+		//	FVector dest = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
+		//	
+		//	// 목표 지점으로 회전.
+		//	FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+		//		dest);
 
-			FRotator rotator = GetActorRotation();
+		//	FRotator rotator = GetActorRotation();
 
-			rotator = FMath::RInterpTo(rotator, targetRot, DeltaTime, 1000.f);
+		//	rotator = FMath::RInterpTo(rotator, targetRot, DeltaTime, 1000.f);
 
-			SetActorRotation(rotator);
+		//	SetActorRotation(rotator);
 
-			// 이동.
-			CustomTimeDilation = 3.f;
-			FVector direction = (dest - pos).GetSafeNormal();
+		//	// 이동.
+		//	CustomTimeDilation = 3.f;
+		//	FVector direction = (dest - pos).GetSafeNormal();
 
-			SetActorLocation(pos + direction * DeltaTime * 1000.f);
+		//	SetActorLocation(pos + direction * DeltaTime * 1000.f);
 
-			if (FVector::Distance(pos, dest) <= 100.f)
-			{
-				CustomTimeDilation = 1.f;
-				mIsGaugeEnd = false;
+		//	if (FVector::Distance(pos, dest) <= 100.f)
+		//	{
+		//		CustomTimeDilation = 1.f;
+		//		mIsGaugeEnd = false;
 
-				StopLaunchCharacter();
-				//PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
-			}
-		}
+		//		StopLaunchCharacter();
+		//		//PrintViewport(10.f, FColor::Red, TEXT("FINISH"));
+		//	}
+		//}
 	}
 	break;
 
@@ -752,23 +752,23 @@ void AWarriorCharacter::GaugeEnd()
 		//mTempCamera->GetCamera()->bConstrainAspectRatio = true;
 		//mTempCamera->GetCameraComponent()->SetAspectRatio(1.777778);
 
-		FVector target = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
-		// 목표 지점으로 회전.
-		FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
-			target);
+		//FVector target = Cast<AAGPlayerController>(GetController())->GetPickingPosition();
+		//// 목표 지점으로 회전.
+		//FRotator targetRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),
+		//	target);
 
-		FRotator rotator = GetActorRotation();
+		//FRotator rotator = GetActorRotation();
 
-		mSpringArm->SetActive(false);
+		//mSpringArm->SetActive(false);
 
-		FVector pos = GetActorLocation();
-		
-		//pos.Z += 200.f;
+		//FVector pos = GetActorLocation();
+		//
+		////pos.Z += 200.f;
 
-		target.Z += 300.f;
-		target += GetActorForwardVector() * 700.f;
-		targetRot = UKismetMathLibrary::FindLookAtRotation(target,
-			pos);
+		//target.Z += 300.f;
+		//target += GetActorForwardVector() * 700.f;
+		//targetRot = UKismetMathLibrary::FindLookAtRotation(target,
+		//	pos);
 
 		/*mTempCamera->SetActorLocation(target);
 		mTempCamera->SetActorRotation(targetRot);*/

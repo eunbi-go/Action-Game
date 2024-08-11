@@ -9,6 +9,7 @@ AParticleActor::AParticleActor()
 	mAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
 
 	SetRootComponent(mAudio);
+
 }
 
 void AParticleActor::BeginPlay()

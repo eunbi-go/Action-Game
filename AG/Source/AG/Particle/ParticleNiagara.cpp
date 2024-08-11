@@ -11,12 +11,12 @@ AParticleNiagara::AParticleNiagara()
 {
 	mParticle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Particle"));
 	mParticle->SetupAttachment(mAudio);
+
 }
 
 void AParticleNiagara::BeginPlay()
 {
 	Super::BeginPlay();
-
 	mParticle->OnSystemFinished.AddDynamic(this, &AParticleNiagara::OnSystemFinish);
 }
 

@@ -6,6 +6,7 @@
 #include "../Player/PlayerAnimInstance.h"
 #include "../Monster/FengMao.h"
 #include "../Basic/CollisionObject.h"
+#include "../Collision/CollisionActor.h"
 
 AMeteo::AMeteo()
 {
@@ -13,11 +14,22 @@ AMeteo::AMeteo()
 	mParticle->SetVisibility(true);
 }
 
+void AMeteo::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	/*if (!mIsSpawnCollisionActor && GetActorLocation().Z <= 1000.f)
+	{
+		mIsSpawnCollisionActor = true;
+		SpawnCollisionActor();
+	}*/
+}
+
 void AMeteo::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AMeteo::Check, 0.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &AMeteo::SpawnCollisionActor, 1.f, false);
 
 	mParticle->OnSystemFinished.AddDynamic(this, &AMeteo::ParticleFinish);
 }
@@ -30,7 +42,7 @@ void AMeteo::ParticleFinish(UNiagaraComponent* _particle)
 	Destroy();
 }
 
-void AMeteo::Check()
+void AMeteo::SpawnCollisionActor()
 {
 	mCameraShake.Broadcast(this);
 
@@ -45,6 +57,7 @@ void AMeteo::Check()
 		params);
 	collObjg->SetCollisionBoxExtent(FVector(120.0f));
 	collObjg->mOnHit.AddDynamic(this, &AMeteo::Temp);
+
 }
 
 void AMeteo::Temp(ACollisionObject* collisionObject, const FHitResult& Hit, AActor* hitActor)

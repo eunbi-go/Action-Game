@@ -102,19 +102,6 @@ AActor* UTargetingComponent::GetClosetActor(TArray<AActor*> actors)
 	ignoreActors.Add(mOwner);
 	for (int i = 0; i < num; ++i)
 	{
-		//FHitResult res;
-		//UKismetSystemLibrary::LineTraceSingle(
-		//	GetWorld(),
-		//	actors[i]->GetActorLocation(),
-		//	mOwner->GetActorLocation(),
-		//	ETraceTypeQuery::TraceTypeQuery1,	// Visibility
-		//	false,
-		//	ignoreActors,
-		//	EDrawDebugTrace::ForDuration,
-		//	res,
-		//	true
-		//);
-
 		if (IsValid(Cast<AMonster>(actors[i])))
 		{
 			float dis = actors[i]->GetDistanceTo(mOwner);

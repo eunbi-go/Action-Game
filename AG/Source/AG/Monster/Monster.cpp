@@ -331,53 +331,7 @@ float AMonster::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		damage = 1;
 
 
-	int32 randomValue = FMath::RandRange(0, 5);
-	damage -= randomValue;
-	damage = fabsf(damage);
 
-	damage *= 2.4f;
-
-	mInfo.hp -= damage;
-	//Cast<UAGAttributeSet>(mAttributeSet)->SetmHp(Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() - damage);
-
-
-	
-
-	if (Cast<UAGAttributeSet>(mAttributeSet)->GetmHp() <= 0)
-	{
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		mAnimInst->SetMonsterMotionType(MONSTER_MOTION::DEATH);
-
-
-		// 동작되고 있던 로직을 멈춘다.
-		AAIController* ai = Cast<AAIController>(GetController());
-		if (IsValid(ai))
-			ai->BrainComponent->StopLogic(TEXT("Death"));
-
-
-		mSpawnPoint->RemoveMonster(this);
-	}
-
-	if (IsValid(mWidgetComopnent))
-	{
-		//UMonsterHpWidget* hpWidget = Cast<UMonsterHpWidget>(mWidgetComopnent->GetWidget());
-		//if (IsValid(hpWidget))
-		//{
-		//	hpWidget->SetTargetRatio(UKismetMathLibrary::SafeDivide(mInfo.hp, mInfo.maxHp));
-		//}
-
-		/*if (Cast<AFengMao>(this))
-		{
-			AAGGameModeBase* GameMode = Cast<AAGGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-			AAGHUD* hud = Cast<AAGHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-			if (!IsValid(hud))
-				return damage;
-			UMainWidget* mainWidget = hud->mMainWidget;
-			if (!IsValid(mainWidget))
-				return damage;
-			mainWidget->BossInfoOnOff(false);
-		}*/
-	}
 
 	return damage;
 }
