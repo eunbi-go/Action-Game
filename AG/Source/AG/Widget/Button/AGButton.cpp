@@ -14,8 +14,6 @@ void UAGButton::NativeConstruct()
 	mButton = Cast<UButton>(GetWidgetFromName(TEXT("Button")));
 	mSizeBox = Cast<USizeBox>(GetWidgetFromName(TEXT("SizeBox_Root")));
 	mText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Text_ButtonName")));
-
-	mButtonState = BUTTON_STATE::UNCLICKED;
 }
 
 void UAGButton::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

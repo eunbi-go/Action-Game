@@ -15,9 +15,7 @@
  */
 
 class UAttributeInfo;
-
 struct FAGAttributeInfo;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FAGAttributeInfo&, Info);
 
 
@@ -38,3 +36,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAttributeInfo* mAttributeInfo;
 };
+
+
+
+

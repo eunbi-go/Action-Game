@@ -27,7 +27,8 @@ struct FUIWidgetRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UTexture2D* image = nullptr;
 };
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChange, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 /**
  * 
  */
@@ -36,8 +37,7 @@ class AG_API UMainWidgetController : public UAGWidgetController
 {
 	GENERATED_BODY()
 		//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChange, float, NewValue);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+
 
 public:
 	virtual void BroadcastInitValues() override;

@@ -6,11 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AGButton.generated.h"
 
-UENUM(BlueprintType)
-enum class BUTTON_STATE : uint8
-{
-	CLICKED, UNCLICKED
-};
+
 
 /**
  * 
@@ -31,7 +27,6 @@ public:
 	USizeBox* mSizeBox;
 	UTextBlock* mText;
 
-	BUTTON_STATE	mButtonState;
 
 	float	mButtonWidth;
 	float	mButtonHeight;

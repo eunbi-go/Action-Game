@@ -24,4 +24,7 @@ public:
 private:
 	UImage* mImage;
 	class UTextBlock* mMessage;
+
+	UPROPERTY()
+	FTimerHandle	mTimer;
 };

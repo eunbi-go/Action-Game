@@ -8,6 +8,7 @@
 #include "../../AbilitySystem/AGAbilitySystemLibrary.h"
 #include "../HUD/AGHUD.h"
 #include "../MainWidget.h"
+#include "../../Player/AGPlayerController.h"
 
 void UStatMenuButton::NativeConstruct()
 {
@@ -28,33 +29,31 @@ void UStatMenuButton::ButtonClicked()
 {
 	PrintViewport(3.f, FColor::Yellow, FString("Clicked StatMenu Button"));
 
-	if (mButton->mButtonState == BUTTON_STATE::UNCLICKED)
+
+	mButton->GetButton()->SetIsEnabled(false);
+
+	FStringClassReference MyWidgetClassRef(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/AttributeMenu/UI_StatMenu.UI_StatMenu_C'"));
+
+	if (UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UUserWidget>())
 	{
-		mButton->GetButton()->SetIsEnabled(false);
-		mButton->mButtonState = BUTTON_STATE::CLICKED;
+		mStatWidget = CreateWidget<UStatWidget>(GetWorld(), MyWidgetClass);
+		mStatWidget->AddToViewport();
+		mStatWidget->SetPositionInViewport(FVector2D(50.f, 50.f));
 
-		FStringClassReference MyWidgetClassRef(TEXT("WidgetBlueprint'/Game/Blueprints/UMG/AttributeMenu/UI_StatMenu.UI_StatMenu_C'"));
+		mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
+		mStatWidget->SetWidgetController(mAttributeWidgetController);
 
-		if (UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UUserWidget>())
-		{
-			mStatWidget = CreateWidget<UStatWidget>(GetWorld(), MyWidgetClass);
-			mStatWidget->AddToViewport();
-			mStatWidget->SetPositionInViewport(FVector2D(50.f, 50.f));
+		APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0);
+		Cast<AAGPlayerController>(controller)->bShowMouseCursor = true;
 
-			mAttributeWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(this);
-			mStatWidget->SetWidgetController(mAttributeWidgetController);
-
-
-			mStatWidget->mOnCloseButtonClickedDelegate.AddLambda([this]()
-				{
-					mButton->GetButton()->SetIsEnabled(true);
-				});
+		mStatWidget->mOnCloseButtonClickedDelegate.AddLambda([this]()
+			{
+				mButton->GetButton()->SetIsEnabled(true);
+				APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0);
+				Cast<AAGPlayerController>(controller)->bShowMouseCursor = false;
+			});
 
 
-		}
 	}
-	else if (mButton->mButtonState == BUTTON_STATE::CLICKED)
-	{
-		mButton->mButtonState = BUTTON_STATE::UNCLICKED;
-	}
+
 }

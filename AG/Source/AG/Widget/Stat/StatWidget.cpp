@@ -16,16 +16,12 @@ void UStatWidget::NativeConstruct()
 
 	mCloseButton = Cast<UCloseButton>(GetWidgetFromName(FName(TEXT("CloseButton"))));
 	mCloseButton->mButton->GetButton()->OnClicked.AddDynamic(this, &UStatWidget::CloseButtonClicked);
-	
-
 
 	mStrengthRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Stength"))));
 	mDexterityRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Dexterity"))));
 	mIntelligenceRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Intelligence"))));
 	mResilienceRow = Cast<UAGAttributeValueButtonRow>(GetWidgetFromName(FName(TEXT("First_Resilience"))));
 	mCoinRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("First_Coin"))));
-
-
 
 	mArmorRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_Armor"))));
 	mBlockPercentRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_BlockPercent"))));
@@ -36,16 +32,12 @@ void UStatWidget::NativeConstruct()
 	mMaxMpRow = Cast<UAttributeValueRow>(GetWidgetFromName(FName(TEXT("Second_MaxMp"))));
 	
 
-
 	// Attribute Row에 Tag 할당
-
 	mStrengthRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Strength;
 	mDexterityRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Dexterity;
 	mIntelligenceRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Intelligence;
 	mResilienceRow->mRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Resilience;
 	mCoinRow->mTag = FAGGameplayTags::Get().Attributes_Primary_Coin;
-
-
 
 	mArmorRow->mTag = FAGGameplayTags::Get().Attributes_Second_Armor;
 	mBlockPercentRow->mTag = FAGGameplayTags::Get().Attributes_Second_BlockPercent;
@@ -55,11 +47,8 @@ void UStatWidget::NativeConstruct()
 	mMaxHpRow->mTag = FAGGameplayTags::Get().Attributes_Second_MaxHp;
 	mMaxMpRow->mTag = FAGGameplayTags::Get().Attributes_Second_MaxMp;
 
-	// Set WidgetController
+	// WidgetController 할당
 	mWidgetController = UAGAbilitySystemLibrary::GetAttributeWidgetController(GetWorld());
-
-
-
 }
 
 void UStatWidget::NativeTick(const FGeometry& _geo, float _DeltaTime)

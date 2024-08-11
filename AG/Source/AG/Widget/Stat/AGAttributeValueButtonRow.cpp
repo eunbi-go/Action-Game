@@ -18,7 +18,9 @@ void UAGAttributeValueButtonRow::NativeConstruct()
 	mRow = Cast<UAttributeValueRow>(GetWidgetFromName(TEXT("UI_AttributeValueRow")));
 	mPlusButton = Cast<UPlusButton>(GetWidgetFromName(TEXT("UI_PlusButton")));
 
-	mPlusButton->mButton->GetButton()->OnClicked.AddDynamic(this, &UAGAttributeValueButtonRow::PlusButtonClicked);
+	mPlusButton->mButton->GetButton()->OnClicked.AddDynamic(
+		this, &UAGAttributeValueButtonRow::PlusButtonClicked
+	);
 }
 
 void UAGAttributeValueButtonRow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -28,9 +30,6 @@ void UAGAttributeValueButtonRow::NativeTick(const FGeometry& MyGeometry, float I
 
 void UAGAttributeValueButtonRow::PlusButtonClicked()
 {
-	//PrintViewport(3.f, FColor::Green, FString("UAGAttributeValueButtonRow::PlusButtonClicked()"));
-
-	// Attribute를 증가시켜야 함
 	APlayerController* pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	check(pc);
 
@@ -50,3 +49,5 @@ void UAGAttributeValueButtonRow::PlusButtonClicked()
 	const FActiveGameplayEffectHandle agpeHandle = asc->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
 	
 }
+
+

@@ -12,7 +12,8 @@ void UAttributeValueRow::NativeConstruct()
 	mAttributeName = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextBlock_AttributeName")));
 	mAttributeValue = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextBlock_AttributeValue")));
 
-	UAGAbilitySystemLibrary::GetAttributeWidgetController(GetWorld())->mAttributeInfoDelegate.AddDynamic(this, &UAttributeValueRow::ValueChanged);
+	UAGAbilitySystemLibrary::GetAttributeWidgetController(GetWorld())
+		->mAttributeInfoDelegate.AddDynamic(this, &UAttributeValueRow::ValueChanged);
 }
 
 void UAttributeValueRow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -29,3 +30,5 @@ void UAttributeValueRow::ValueChanged(const FAGAttributeInfo& Info)
 		mAttributeValue->SetText(FText::FromString(valueString));
 	}
 }
+
+

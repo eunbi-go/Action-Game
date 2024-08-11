@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "../AbilitySystem/AGAttributeSet.h"
+#include "../AbilitySystem/AGAbilitySystemComponent.h"
 
 UItemData::UItemData()
 {
@@ -20,9 +21,13 @@ void UItemData::ApplyEffect(ACharacter* target)
 	UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(target);
 	if (targetASC == nullptr)
 		return;
+	UAGAbilitySystemComponent* asc = Cast<UAGAbilitySystemComponent>(targetASC);
+	if (asc == nullptr)
+		return;
 
-	FGameplayEffectContextHandle ecHandle = targetASC->MakeEffectContext();
+	FGameplayEffectContextHandle ecHandle = asc->MakeEffectContext();
 	ecHandle.AddSourceObject(this);
 
-	const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(mEffect, 1.f, ecHandle);
-	const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());}
+	const FGameplayEffectSpecHandle esHandle = asc->MakeOutgoingSpec(mEffect, 1.f, ecHandle);
+	const FActiveGameplayEffectHandle agpeHandle = asc->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
+}
