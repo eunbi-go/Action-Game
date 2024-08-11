@@ -29,21 +29,23 @@ AValkyrieProjectile::AValkyrieProjectile()
 
 
 	mProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
-	mProjectileMovement->InitialSpeed = 550.f;
-	mProjectileMovement->MaxSpeed = 550.f;
+	mProjectileMovement->InitialSpeed = 900.f;
+	mProjectileMovement->MaxSpeed = 900.f;
 	mProjectileMovement->ProjectileGravityScale = 0.f;
+	mProjectileMovement->bAutoActivate = false;
+}
 
+void AValkyrieProjectile::ProjectileStart()
+{
+	PrintViewport(4.f, FColor::Yellow, FString("AValkyrieProjectile::ProjectileStart()"));
+	mProjectileMovement->Activate(true);
 }
 
 void AValkyrieProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SetReplicateMovement(true);
-	
-	SetLifeSpan(mLifeSpan);
 	mSphere->OnComponentBeginOverlap.AddDynamic(this, &AValkyrieProjectile::OnSphereOverlap);
-	
-	//mLoopingSoundComp = UGameplayStatics::SpawnSoundAttached(mLoopingSound, GetRootComponent());
 }
 
 void AValkyrieProjectile::Tick(float DeltaTime)
@@ -71,8 +73,6 @@ void AValkyrieProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedCompone
 
 	if (HasAuthority())
 	{
-		// UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
-		
 		if (UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			targetASC->ApplyGameplayEffectSpecToSelf(*mDamageEffectSpecHandle.Data.Get());

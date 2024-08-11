@@ -25,13 +25,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn=true))
 	FGameplayEffectSpecHandle mDamageEffectSpecHandle;
 
+	UFUNCTION()
+	void ProjectileStart();
 
 
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* mSphere;
@@ -45,7 +47,7 @@ private:
 	UPROPERTY()
 	UAudioComponent* mLoopingSoundComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	UNiagaraSystem* mImpactEffect;
 
 	bool	mIsOverlap = false;
