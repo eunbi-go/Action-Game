@@ -13,4 +13,4 @@ UE 5.0.3을 활용한 Action Game 개발
 4) 주요 개발 내용:
 
 
-https://github.com/user-attachments/assets/5e06211b-c1dd-44d8-b964-6f2dca243b22
+![화면 캡처 2024-08-11 222605](https://github.com/user-attachments/assets/5e06211b-c1dd-44d8-b964-6f2dca243b22)
