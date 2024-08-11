@@ -78,33 +78,24 @@ void AItemActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	{
 		if (mItemId == EITEM_ID::COIN)
 		{
-			UAGGameInstance* gameInst = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
-			const FItemDataTable* item = gameInst->FindItemInfoTable("Coin");
-
 			UAbilitySystemComponent* targetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 			if (targetASC == nullptr)
 				return;
-
 			FGameplayEffectContextHandle ecHandle = targetASC->MakeEffectContext();
 			ecHandle.AddSourceObject(this);
 
+			UAGGameInstance* gameInst = Cast<UAGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+			const FItemDataTable* item = gameInst->FindItemInfoTable("Coin");
+
 			const FGameplayEffectSpecHandle esHandle = targetASC->MakeOutgoingSpec(*item->effect, 1.f, ecHandle);
 			const FActiveGameplayEffectHandle agpeHandle = targetASC->ApplyGameplayEffectSpecToSelf(*esHandle.Data.Get());
-
-
-
-
 
 			Destroy();
 
 		}
 		else if (Cast<AAGPlayer>(OtherActor)->AddItem(mItemId))
 		{
-
-
 			Destroy();
-
 		}
 	}
 }

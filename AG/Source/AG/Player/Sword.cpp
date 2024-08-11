@@ -52,7 +52,7 @@ void ASword::BeginPlay()
 	mTrail->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 
 	mBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnBoxOverlap);
-	mBoxComp->bHiddenInGame = false;
+	//mBoxComp->bHiddenInGame = false;
 }
 
 void ASword::Equip(USceneComponent* _parent, FName _socketName, AActor* _newOwner, APawn* _newInstigator)

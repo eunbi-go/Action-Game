@@ -75,7 +75,7 @@ ENUM_CLASS_FLAGS(EActionState)
 
 
 USTRUCT(BlueprintType)
-struct FCharacterInfo
+struct FCharacterInfo2
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -123,7 +123,7 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FPlayerInfo : public FCharacterInfo
+struct FPlayerInfo : public FCharacterInfo2
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -190,7 +190,7 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FMonsterInfo : public FCharacterInfo
+struct FMonsterInfo : public FCharacterInfo2
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -286,8 +286,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 		int32	maxDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-		class ASkillActor* skillActor;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	//	class ASkillActor* skillActor;
 };
 
 
@@ -480,7 +480,7 @@ public:
 UENUM(BlueprintType)
 enum class EITEM_TYPE : uint8
 {
-	POTION, CONSUME, WEAPON, ARMOAR, PANTS, SHOES, ACCESARY, END
+	POTION, CONSUME, WEAPON, ARMOAR, PANTS, SHOES, ACCESARY, COIN, END
 };
 
 

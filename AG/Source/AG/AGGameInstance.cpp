@@ -36,7 +36,7 @@ UAGGameInstance::UAGGameInstance()
 	}
 
 
-	static ConstructorHelpers::FObjectFinder<UDataTable>	itemAssetTable(TEXT("DataTable'/Game/Blueprints/DataTable/ItemAssetTable.ItemAssetTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable>	itemAssetTable(TEXT("DataTable'/Game/Blueprints/DataTable/DT_ItemAsset.DT_ItemAsset'"));
 	if (itemAssetTable.Succeeded())
 	{
 		mItemAssetTable = itemAssetTable.Object;

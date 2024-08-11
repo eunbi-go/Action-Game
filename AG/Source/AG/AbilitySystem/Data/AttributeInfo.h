@@ -41,3 +41,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FAGAttributeInfo> mAttributeInfosArray;
 };
+
+
+
+
+

@@ -157,7 +157,7 @@ void UValkyrieAnimInstance::AnimNotify_Launch()
 
 void UValkyrieAnimInstance::AnimNotify_SpawnEffect()
 {
-	mCharacter->SpawnEffect();
+	//mCharacter->SpawnEffect();
 }
 
 void UValkyrieAnimInstance::AnimNotify_ChangeCamera()

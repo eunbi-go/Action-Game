@@ -105,6 +105,8 @@ void AMonsterSpawnPoint::Tick(float DeltaTime)
 	if (!IsValid(mSpawnClass))
 		return;
 
+	//// 몬스터 죽으면 다시 스폰되지 않도록 주석처리해둠!
+	
 	//if (mMonstersArray.Num() < mSpawnCount)
 	//{
 	//	mSpawnCheckTime += DeltaTime;

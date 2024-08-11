@@ -5,7 +5,7 @@ FAGAttributeInfo UAttributeInfo::FindAttributeInfoByTag(const FGameplayTag& Attr
 {
 	for (const FAGAttributeInfo& info : mAttributeInfosArray)
 	{
-		// 정확히 일치하는지 확인한다.
+		// MatchesTagExact() : 정확히 일치하는지 확인한다.
 		if (info.mAttributeTag.MatchesTagExact(AttributeTag))
 		{
 			return info;
@@ -14,3 +14,6 @@ FAGAttributeInfo UAttributeInfo::FindAttributeInfoByTag(const FGameplayTag& Attr
 
 	return FAGAttributeInfo();
 }
+
+
+
