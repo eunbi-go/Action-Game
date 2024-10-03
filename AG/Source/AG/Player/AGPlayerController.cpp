@@ -11,6 +11,7 @@
 #include "InputMappingContext.h"
 #include "../AbilitySystem/AGAbilitySystemComponent.h"
 #include "../AGGameplayTags.h"
+#include "Valkyrie.h"
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -174,7 +175,7 @@ void AAGPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
-	PrintViewport(3.f, FColor::Red, *InputTag.ToString());
+	//PrintViewport(3.f, FColor::Red, *InputTag.ToString());
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
@@ -182,7 +183,8 @@ void AAGPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
-	PrintViewport(3.f, FColor::Blue, *InputTag.ToString());
+	//PrintViewport(3.f, FColor::Blue, *InputTag.ToString());
+
 	// 체크하고 있을 때 떼었다.
 	if (mIsCheckPressingTime)
 	{
@@ -194,13 +196,13 @@ void AAGPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 
 
-	GetASC()->AbilityInputTagReleased(InputTag);
+	//GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void AAGPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr)
 		return;
-	PrintViewport(3.f, FColor::Yellow, *InputTag.ToString());
+	//PrintViewport(3.f, FColor::Yellow, *InputTag.ToString());
 	GetASC()->AbilityInputTagHeld(InputTag);
 }

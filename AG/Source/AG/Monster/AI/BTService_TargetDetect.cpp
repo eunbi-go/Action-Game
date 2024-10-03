@@ -73,7 +73,7 @@ void UBTService_TargetDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		// Target이 Crouch 상태이면 탐지X
 		if (target->CheckActionState(EActionState::EAS_Crouch, false)) return;
 
-		controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
+		//controller->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), resultArray[0].GetActor());
 	}
 	
 	else
