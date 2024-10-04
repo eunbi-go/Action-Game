@@ -132,11 +132,7 @@ void AAGPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (mIsCheckPressingTime)
-	{
-		//PrintViewport(2.f, FColor::Yellow, FString("Tick"));
-		mPressingTime += DeltaTime;
-	}
+	
 }
 
 
@@ -176,6 +172,12 @@ void AAGPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	if (GetASC() == nullptr)
 		return;
 	//PrintViewport(3.f, FColor::Red, *InputTag.ToString());
+	if (mIsCheckPressingTime)
+	{
+		//PrintViewport(2.f, FColor::Yellow, FString("Tick"));
+		mPressingTime += GetWorld()->GetDeltaSeconds();
+	}
+
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
@@ -188,11 +190,15 @@ void AAGPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	// 체크하고 있을 때 떼었다.
 	if (mIsCheckPressingTime)
 	{
-		//PrintViewport(10.f, FColor::Orange, FString("Play1erController"));
-		mOnRangeRelease.Broadcast(mPressingTime);
+		if (InputTag == FAGGameplayTags::Get().InputTag_R ||
+			InputTag == FAGGameplayTags::Get().InputTag_T)
+		{
+			PrintViewport(10.f, FColor::Orange, FString("AGPlay1erController released"));
+			mOnRangeRelease.Broadcast(mPressingTime);
 
-		mPressingTime = 0.f;
-		mIsCheckPressingTime = false;
+			mPressingTime = 0.f;
+			mIsCheckPressingTime = false;
+		}
 	}
 
 

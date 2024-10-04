@@ -25,7 +25,7 @@ void UGAValkyrieProjectile::ActivateAbility(
 		apc->mOnRangeRelease.AddDynamic(this, &UGAValkyrieProjectile::SpawnProjectile);
 
 		apc->mPressingTime = 0.f;
-		apc->mIsCheckPressingTime = false;
+		apc->mIsCheckPressingTime = true;
 	}
 
 	AActor* actor = GetAvatarActorFromActorInfo();

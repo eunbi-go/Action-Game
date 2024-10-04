@@ -15,22 +15,7 @@ void URangeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 	AActor* owner = GetAvatarActorFromActorInfo();
 	AValkyrie* player = Cast<AValkyrie>(owner);
-	if (IsValid(player))
-	{
-		player->SetMp(-10);
-		player->SetActionState(EActionState::EAS_Attack_Skill, true);
-		player->SetSkillState(ESkillState::ESS_Range);
-	}
-
-	APlayerController* pc = GetCurrentActorInfo()->PlayerController.Get();
-	AAGPlayerController* apc = Cast<AAGPlayerController>(pc);
-	if (IsValid(apc))
-	{
-		apc->mOnRangeRelease.AddDynamic(this, &URangeAbility::SpawnEffect);
-
-		apc->mPressingTime = 0.f;
-		apc->mIsCheckPressingTime = false;
-	}
+	
 }
 
 void URangeAbility::SpawnEffect(const float& PressingTime)
@@ -38,7 +23,10 @@ void URangeAbility::SpawnEffect(const float& PressingTime)
 	bool isServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!isServer) return;
 
-	PrintViewport(10.f, FColor::Orange, FString("Spawn2Effect"));
+	if (mIsSpawnEffect)
+		return;
+
+	//PrintViewport(10.f, FColor::Orange, FString("Spawn2Effect"));
 	UAnimMontage* montage = GetCurrentMontage();
 	mIsSpawnEffect = true;
 
@@ -46,6 +34,14 @@ void URangeAbility::SpawnEffect(const float& PressingTime)
 	if (IsValid(valkyrie) && !valkyrie->GetAnimInst()->Montage_IsPlaying(montage))
 	{
 		valkyrie->GetAnimInst()->Montage_Resume(montage);
+	}
+
+	APlayerController* pc = GetCurrentActorInfo()->PlayerController.Get();
+	AAGPlayerController* apc = Cast<AAGPlayerController>(pc);
+	if (IsValid(apc))
+	{
+		apc->mPressingTime = 0.f;
+		apc->mIsCheckPressingTime = false;
 	}
 
 	const FVector& location = GetAvatarActorFromActorInfo()->GetActorLocation();
@@ -82,7 +78,6 @@ void URangeAbility::Pause()
 	// 키가 바로 해제됨 -> 델리게이트 변수의 브로드캐스트로 이미 이펙트가 스폰됨, 애니메이션 멈출 필요X
 	if (mIsSpawnEffect)
 	{
-		//SpawnEffect(0.f);
 		return;
 	}
 
@@ -113,4 +108,37 @@ void URangeAbility::AbilityEnd()
 		player->SetActionState(EActionState::EAS_Attack_Skill, false);
 		player->SetSkillState(ESkillState::ESS_None);
 	}
+}
+
+bool URangeAbility::CheckStartEnable()
+{
+	bool isServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!isServer) return false;
+	AActor* owner = GetAvatarActorFromActorInfo();
+
+	// 현재 공격중일 경우 EndAbility()
+	AValkyrie* player = Cast<AValkyrie>(owner);
+	if (IsValid(player) && player->CheckActionState(EActionState::EAS_Attack_Skill, false))
+		return false;
+
+	if (IsValid(player))
+	{
+		player->SetMp(-10);
+		player->SetActionState(EActionState::EAS_Attack_Skill, true);
+		player->SetSkillState(ESkillState::ESS_Range);
+	}
+
+	APlayerController* pc = GetCurrentActorInfo()->PlayerController.Get();
+	AAGPlayerController* apc = Cast<AAGPlayerController>(pc);
+	if (!IsValid(apc)) return false;
+
+	// 키가 떼어졌을 때 호출할 함수 : URangeAbility::SpawnEffect()
+	apc->mOnRangeRelease.AddDynamic(this, &URangeAbility::SpawnEffect);
+	apc->mPressingTime = 0.f;
+	apc->mIsCheckPressingTime = true;
+	
+
+	mIsSpawnEffect = false;
+
+	return true;
 }
