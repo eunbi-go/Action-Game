@@ -48,6 +48,7 @@ public:
 	void SetMotionWarpingComponent(const FVector& TargetLocation);
 	void SetMp(float NewValue);
 	void CameraSwitch(bool _value);
+	void StartCameraShake(const FName Shake);
 
 	//-------------------------------
 	// Combat Interface
@@ -117,6 +118,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> mCameraShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> mCameraShake_LocZ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS|Ability", meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<UGameplayAbility>> mAbilites;

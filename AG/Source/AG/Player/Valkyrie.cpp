@@ -179,9 +179,14 @@ AValkyrie::AValkyrie()
 
 
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_PlayerNormalAttack.CS_PlayerNormalAttack_C'"));
+	//static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Gontinuous.CS_Gontinuous_C'"));
 
 	if (cameraShake.Succeeded())
 		mCameraShake = cameraShake.Class;
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase>	cameraShake2(TEXT("Blueprint'/Game/Blueprints/CameraShake/CS_Loc_Z.CS_Loc_Z_C'"));
+	if (cameraShake2.Succeeded())
+		mCameraShake_LocZ = cameraShake2.Class;
 
 
 
@@ -683,6 +688,18 @@ void AValkyrie::CameraSwitch(bool _value)
 	}
 }
 
+void AValkyrie::StartCameraShake(const FName Shake)
+{
+	if (Shake == FName("NormalAttack"))
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake);
+	}
+	else if (Shake == FName("Loc_Z"))
+	{
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake_LocZ);
+	}
+}
+
 //-------------------------------
 // Combat Effect Functions
 //-------------------------------
@@ -772,6 +789,8 @@ void AValkyrie::SetMotionWarpingComponent(const FVector& TargetLocation)
 	mwt.Transform.SetLocation(TargetLocation);
 	mwt.Transform.SetRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation).Quaternion());
 	mMotionWarpComp->AddOrUpdateWarpTarget(FName("SprintTarget"), mwt);
+	// 카메라 세이킹
+	GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(mCameraShake_LocZ);
 }
 
 void AValkyrie::SetMp(float NewValue)

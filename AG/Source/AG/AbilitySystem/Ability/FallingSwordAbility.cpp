@@ -31,6 +31,7 @@ void UFallingSwordAbility::SpawnEffect()
 	if (AValkyrie* valkyrie = Cast<AValkyrie>(owner))
 	{
 		valkyrie->CameraSwitch(true);
+		valkyrie->StartCameraShake(FName("Loc_Z"));
 	}
 
 	FTransform spawnTransform = FTransform();
@@ -58,8 +59,23 @@ void UFallingSwordAbility::SpawnEffect()
 	effect->FinishSpawning(spawnTransform);
 }
 
+void UFallingSwordAbility::StartCameraShake()
+{
+	bool isServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!isServer) return;
+
+	AActor* owner = GetAvatarActorFromActorInfo();
+
+	if (AValkyrie* valkyrie = Cast<AValkyrie>(owner))
+	{
+		valkyrie->StartCameraShake(FName("Loc_Z"));
+	}
+}
+
 void UFallingSwordAbility::AbilityEnd()
 {
+	GetWorld()->GetTimerManager().ClearTimer(mTimer);
+
 	AActor* owner = GetAvatarActorFromActorInfo();
 
 	if (AValkyrie* valkyrie = Cast<AValkyrie>(owner))

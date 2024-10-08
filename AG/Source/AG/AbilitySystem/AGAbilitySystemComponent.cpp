@@ -56,7 +56,10 @@ void UAGAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag
 void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
-
+	else if (InputTag.GetTagName() == FName("InputTag_Q"))
+	{
+		return;
+	}
 
 	for (FGameplayAbilitySpec& abilitySpec : GetActivatableAbilities())
 	{
@@ -70,6 +73,7 @@ void UAGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 			{
 				break;
 			}
+			
 			else
 			{
 				AbilitySpecInputReleased(abilitySpec);

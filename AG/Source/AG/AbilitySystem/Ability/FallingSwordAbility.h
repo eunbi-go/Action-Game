@@ -21,6 +21,9 @@ protected:
 	void SpawnEffect();
 
 	UFUNCTION(BlueprintCallable, Category = "FallingSword")
+	void StartCameraShake();
+
+	UFUNCTION(BlueprintCallable, Category = "FallingSword")
 	void AbilityEnd();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -28,4 +31,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> mDamageEffectClass;
+
+	UPROPERTY()
+	FTimerHandle	mTimer;
 };
